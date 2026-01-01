@@ -42,34 +42,34 @@ describe('useToast', () => {
         it('should add success toast', () => {
             toast.success('Success!', 0)
 
-            const lastToast = toast.toasts.value.at(-1)
-            expect(lastToast).toBeDefined()
-            expect(lastToast?.type).toBe('success')
-            expect(lastToast?.message).toBe('Success!')
+            expect(toast.toasts.value.length).toBeGreaterThan(0)
+            const lastToast = toast.toasts.value[toast.toasts.value.length - 1]!
+            expect(lastToast.type).toBe('success')
+            expect(lastToast.message).toBe('Success!')
         })
 
         it('should add error toast', () => {
             toast.error('Error!', 0)
 
-            const lastToast = toast.toasts.value.at(-1)
-            expect(lastToast).toBeDefined()
-            expect(lastToast?.type).toBe('error')
+            expect(toast.toasts.value.length).toBeGreaterThan(0)
+            const lastToast = toast.toasts.value[toast.toasts.value.length - 1]!
+            expect(lastToast.type).toBe('error')
         })
 
         it('should add warning toast', () => {
             toast.warning('Warning!', 0)
 
-            const lastToast = toast.toasts.value.at(-1)
-            expect(lastToast).toBeDefined()
-            expect(lastToast?.type).toBe('warning')
+            expect(toast.toasts.value.length).toBeGreaterThan(0)
+            const lastToast = toast.toasts.value[toast.toasts.value.length - 1]!
+            expect(lastToast.type).toBe('warning')
         })
 
         it('should add info toast', () => {
             toast.info('Info!', 0)
 
-            const lastToast = toast.toasts.value.at(-1)
-            expect(lastToast).toBeDefined()
-            expect(lastToast?.type).toBe('info')
+            expect(toast.toasts.value.length).toBeGreaterThan(0)
+            const lastToast = toast.toasts.value[toast.toasts.value.length - 1]!
+            expect(lastToast.type).toBe('info')
         })
     })
 
