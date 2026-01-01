@@ -1,6 +1,6 @@
-package com.myeongho.lumia.core.domain.scrim
+package com.lumiaops.lumiacore.domain.scrim
 
-import com.myeongho.lumia.core.domain.common.BaseTimeEntity
+import com.lumiaops.lumiacore.domain.common.BaseTimeEntity
 import jakarta.persistence.*
 import java.time.LocalDateTime
 

@@ -1,11 +1,12 @@
-package com.myeongho.lumia.core.domain.scrim
+package com.lumiaops.lumiacore.domain.scrim
 
-import com.myeongho.lumia.core.domain.team.Team
+import com.lumiaops.lumiacore.domain.Team
+import com.lumiaops.lumiacore.domain.scrim.ScrimMatch
 import jakarta.persistence.*
 
 @Entity
 @Table(name = "match_results")
-class MatchResult(
+class  MatchResult(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "match_id")
     val match: ScrimMatch,

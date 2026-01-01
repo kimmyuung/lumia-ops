@@ -24,27 +24,35 @@ withDefaults(defineProps<Props>(), {
 
 <style scoped>
 .card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: var(--card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
+  transition: all var(--transition-normal);
 }
 
 .card-hoverable {
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  cursor: pointer;
 }
 
 .card-hoverable:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-color: var(--glass-border);
+}
+
+.card-hoverable:active {
+  transform: translateY(-2px) scale(0.99);
 }
 
 .card-header {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-color);
   font-weight: 600;
+  color: var(--text-color);
 }
 
 .card-body {
@@ -53,7 +61,7 @@ withDefaults(defineProps<Props>(), {
 
 .card-footer {
   padding: 1rem 1.5rem;
-  border-top: 1px solid #f0f0f0;
-  background: #fafafa;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-color-alt);
 }
 </style>

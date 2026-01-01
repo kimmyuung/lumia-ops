@@ -1,0 +1,303 @@
+<template>
+  <div class="auth-page">
+    <div class="auth-container">
+      <div class="auth-header">
+        <router-link to="/" class="auth-logo">
+          <Map :size="32" />
+          <span>Lumia Ops</span>
+        </router-link>
+        <h1>회원가입</h1>
+        <p>새로운 계정을 만들어 시작하세요</p>
+      </div>
+
+      <form class="auth-form" @submit.prevent="handleSubmit">
+        <div class="form-field">
+          <label for="nickname">닉네임</label>
+          <Input
+            id="nickname"
+            v-model="form.nickname"
+            type="text"
+            placeholder="닉네임을 입력하세요"
+            :error="errors.nickname"
+            :disabled="isLoading"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="email">이메일</label>
+          <Input
+            id="email"
+            v-model="form.email"
+            type="email"
+            placeholder="이메일을 입력하세요"
+            :error="errors.email"
+            :disabled="isLoading"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="password">비밀번호</label>
+          <Input
+            id="password"
+            v-model="form.password"
+            type="password"
+            placeholder="비밀번호를 입력하세요 (8자 이상)"
+            :error="errors.password"
+            :disabled="isLoading"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="confirmPassword">비밀번호 확인</label>
+          <Input
+            id="confirmPassword"
+            v-model="form.confirmPassword"
+            type="password"
+            placeholder="비밀번호를 다시 입력하세요"
+            :error="errors.confirmPassword"
+            :disabled="isLoading"
+          />
+        </div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          :loading="isLoading"
+          :disabled="!isFormValid"
+          class="submit-btn"
+        >
+          <UserPlus :size="20" />
+          <span>가입하기</span>
+        </Button>
+      </form>
+
+      <div class="auth-footer">
+        <p>이미 계정이 있으신가요?</p>
+        <router-link to="/login" class="auth-link">
+          <LogIn :size="18" />
+          <span>로그인</span>
+        </router-link>
+      </div>
+
+      <div class="auth-divider">
+        <span>또는</span>
+      </div>
+
+      <Button variant="secondary" disabled class="social-btn">
+        <MessageCircle :size="20" />
+        <span>Discord로 계속하기</span>
+      </Button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, reactive } from 'vue'
+import { Map, LogIn, UserPlus, MessageCircle } from 'lucide-vue-next'
+import { Button, Input } from '@/components/common'
+import { useAuth } from '@/composables/useAuth'
+
+const { register, isLoading } = useAuth()
+
+const form = reactive({
+  nickname: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
+
+const errors = reactive({
+  nickname: '',
+  email: '',
+  password: '',
+  confirmPassword: ''
+})
+
+const isFormValid = computed(() => {
+  return (
+    form.nickname.trim() !== '' &&
+    form.email.trim() !== '' &&
+    form.password.trim() !== '' &&
+    form.confirmPassword.trim() !== ''
+  )
+})
+
+function validateForm(): boolean {
+  errors.nickname = ''
+  errors.email = ''
+  errors.password = ''
+  errors.confirmPassword = ''
+  let valid = true
+
+  if (!form.nickname.trim()) {
+    errors.nickname = '닉네임을 입력해 주세요.'
+    valid = false
+  } else if (form.nickname.length < 2) {
+    errors.nickname = '닉네임은 2자 이상이어야 합니다.'
+    valid = false
+  }
+
+  if (!form.email.trim()) {
+    errors.email = '이메일을 입력해 주세요.'
+    valid = false
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    errors.email = '올바른 이메일 형식이 아닙니다.'
+    valid = false
+  }
+
+  if (!form.password.trim()) {
+    errors.password = '비밀번호를 입력해 주세요.'
+    valid = false
+  } else if (form.password.length < 8) {
+    errors.password = '비밀번호는 8자 이상이어야 합니다.'
+    valid = false
+  }
+
+  if (!form.confirmPassword.trim()) {
+    errors.confirmPassword = '비밀번호 확인을 입력해 주세요.'
+    valid = false
+  } else if (form.password !== form.confirmPassword) {
+    errors.confirmPassword = '비밀번호가 일치하지 않습니다.'
+    valid = false
+  }
+
+  return valid
+}
+
+async function handleSubmit() {
+  if (!validateForm()) return
+  await register({
+    nickname: form.nickname,
+    email: form.email,
+    password: form.password
+  })
+}
+</script>
+
+<style scoped>
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.05) 0%,
+    rgba(118, 75, 162, 0.05) 100%
+  );
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+}
+
+.auth-header h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.auth-header p {
+  color: var(--text-muted);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field label {
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.submit-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.auth-footer p {
+  color: var(--text-muted);
+}
+
+.auth-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity var(--transition-fast);
+}
+
+.auth-link:hover {
+  opacity: 0.8;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  gap: 1rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.auth-divider span {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.social-btn {
+  width: 100%;
+  justify-content: center;
+}
+</style>
