@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { teamApi, type UpdateTeamRequest, type InviteMemberRequest } from '@/api/team'
-import type { Team, TeamMember, CreateTeamRequest } from '@/types/team'
+import type { Team, CreateTeamRequest } from '@/types/team'
 import { useUserStore } from './user'
 import { useToast } from '@/composables/useToast'
 

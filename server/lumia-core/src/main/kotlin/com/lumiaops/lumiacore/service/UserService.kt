@@ -1,6 +1,7 @@
 package com.lumiaops.lumiacore.service
 
 
+import com.lumiaops.lumiacore.domain.AccountStatus
 import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.domain.UserRole
 import com.lumiaops.lumiacore.repository.UserRepository
@@ -20,23 +21,42 @@ class UserService(
 
     fun findAll(): List<User> = userRepository.findAll()
 
-
+    /**
+     * 닉네임 설정 (첫 설정 - 이메일 인증 후)
+     */
     @Transactional
-    fun createUser(email: String, nickname: String, role: UserRole = UserRole.USER): User {
-        if (existsByEmail(email)) {
-            throw IllegalArgumentException("이미 존재하는 이메일입니다: $email")
+    fun setInitialNickname(userId: Long, nickname: String): User {
+        val user = findById(userId) 
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다: $userId")
+        
+        if (user.status != AccountStatus.PENDING_NICKNAME) {
+            throw IllegalArgumentException("닉네임 설정 대기 상태가 아닙니다")
         }
-        return userRepository.save(User(email = email, nickname = nickname, role = role))
+        
+        user.setInitialNickname(nickname)
+        return user
     }
 
-
+    /**
+     * 닉네임 변경 (30일 제한)
+     */
     @Transactional
     fun updateNickname(userId: Long, newNickname: String): User {
-        val user = findById(userId) ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다: $userId")
+        val user = findById(userId) 
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다: $userId")
+        
         user.updateNickname(newNickname)
         return user
     }
 
+    /**
+     * 닉네임 변경까지 남은 일수 조회
+     */
+    fun getDaysUntilNicknameChange(userId: Long): Long {
+        val user = findById(userId) 
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다: $userId")
+        return user.daysUntilNicknameChange()
+    }
 
     @Transactional
     fun deleteUser(userId: Long) {
