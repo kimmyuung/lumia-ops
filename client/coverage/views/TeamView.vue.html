@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for components/common/Button.vue</title>
+    <title>Code coverage report for views/TeamView.vue</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">components/common</a> Button.vue</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">views</a> TeamView.vue</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -186,10 +186,16 @@
 <a name='L121'></a><a href='#L121'>121</a>
 <a name='L122'></a><a href='#L122'>122</a>
 <a name='L123'></a><a href='#L123'>123</a>
-<a name='L124'></a><a href='#L124'>124</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -198,18 +204,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -310,125 +322,131 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
-  &lt;button
-    :class="['btn', `btn-${variant}`, `btn-${size}`, { 'btn-loading': loading }]"
-    :disabled="disabled || loading"
-    @click="$emit('click', $event)"
-  &gt;
-    &lt;span v-if="loading" class="spinner"&gt;&lt;/span&gt;
-    &lt;slot v-else /&gt;
-  &lt;/button&gt;
+  &lt;div class="team-view"&gt;
+    &lt;div class="container"&gt;
+      &lt;header class="page-header"&gt;
+        &lt;div class="header-content"&gt;
+          &lt;h1&gt;
+            &lt;Users :size="32" class="header-icon" /&gt;
+            &lt;span&gt;팀 관리&lt;/span&gt;
+          &lt;/h1&gt;
+          &lt;p class="page-description"&gt;팀원 초대, 역할 배정, 일정 관리&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;Button variant="primary"&gt;
+          &lt;Plus :size="20" /&gt;
+          &lt;span&gt;팀 생성&lt;/span&gt;
+        &lt;/Button&gt;
+      &lt;/header&gt;
+&nbsp;
+      &lt;section class="empty-state"&gt;
+        &lt;div class="empty-icon"&gt;
+          &lt;Users :size="64" /&gt;
+        &lt;/div&gt;
+        &lt;h2&gt;아직 팀이 없습니다&lt;/h2&gt;
+        &lt;p&gt;새로운 팀을 생성하거나 초대 링크로 팀에 참여하세요.&lt;/p&gt;
+        &lt;div class="empty-actions"&gt;
+          &lt;Button variant="primary"&gt;
+            &lt;Plus :size="20" /&gt;
+            &lt;span&gt;팀 생성하기&lt;/span&gt;
+          &lt;/Button&gt;
+          &lt;Button variant="secondary"&gt;
+            &lt;UserPlus :size="20" /&gt;
+            &lt;span&gt;초대 코드 입력&lt;/span&gt;
+          &lt;/Button&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
 &lt;/template&gt;
 &nbsp;
 &lt;script setup lang="ts"&gt;
-interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
-  size?: 'sm' | 'md' | 'lg'
-  disabled?: boolean
-  loading?: boolean
-}
-&nbsp;
-withDefaults(defineProps&lt;Props&gt;(), {
-  variant: 'primary',
-  size: 'md',
-  disabled: false,
-  loading: false
-})
-&nbsp;
-defineEmits&lt;{
-  click: [event: MouseEvent]
-}&gt;()
+import { Users, Plus, UserPlus } from 'lucide-vue-next'
+import { Button } from '@/components/common'
 &lt;/script&gt;
 &nbsp;
 &lt;style scoped&gt;
-.btn {
-  display: inline-flex;
+.team-view {
+  min-height: 100%;
+}
+&nbsp;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--page-padding);
+}
+&nbsp;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+&nbsp;
+.header-content h1 {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 &nbsp;
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-&nbsp;
-/* Sizes */
-.btn-sm {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-}
-&nbsp;
-.btn-md {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-}
-&nbsp;
-.btn-lg {
-  padding: 1rem 2rem;
-  font-size: 1.125rem;
-}
-&nbsp;
-/* Variants */
-.btn-primary {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: white;
-}
-&nbsp;
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-&nbsp;
-.btn-secondary {
-  background: #f0f0f0;
-  color: #333;
-}
-&nbsp;
-.btn-secondary:hover:not(:disabled) {
-  background: #e0e0e0;
-}
-&nbsp;
-.btn-ghost {
-  background: transparent;
+.header-icon {
   color: var(--primary-color);
 }
 &nbsp;
-.btn-ghost:hover:not(:disabled) {
-  background: rgba(102, 126, 234, 0.1);
+.page-description {
+  color: var(--text-muted);
 }
 &nbsp;
-.btn-danger {
-  background: #ef4444;
-  color: white;
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 &nbsp;
-.btn-danger:hover:not(:disabled) {
-  background: #dc2626;
-}
-&nbsp;
-/* Loading */
-.btn-loading {
-  position: relative;
-}
-&nbsp;
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid transparent;
-  border-top-color: currentColor;
+.empty-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.1) 0%,
+    rgba(118, 75, 162, 0.1) 100%
+  );
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  color: var(--primary-color);
 }
 &nbsp;
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+.empty-state h2 {
+  margin-bottom: 0.5rem;
+}
+&nbsp;
+.empty-state p {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+&nbsp;
+.empty-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+&nbsp;
+/* 반응형 */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+  }
+&nbsp;
+  .empty-actions {
+    flex-direction: column;
   }
 }
 &lt;/style&gt;
@@ -441,14 +459,14 @@ defineEmits&lt;{
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
                 at 2026-01-01T07:43:55.185Z
             </div>
-        <script src="../../prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     
