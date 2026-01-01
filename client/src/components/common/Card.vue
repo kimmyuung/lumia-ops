@@ -31,7 +31,9 @@ withDefaults(defineProps<Props>(), {
 }
 
 .card-hoverable {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .card-hoverable:hover {
