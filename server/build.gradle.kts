@@ -19,6 +19,15 @@ allprojects {
 	}
 }
 
+// 루트 프로젝트는 애플리케이션이 아니므로 bootJar/jar 비활성화
+tasks.getByName("bootJar") {
+	enabled = false
+}
+
+tasks.getByName("jar") {
+	enabled = false
+}
+
 subprojects {
 	apply(plugin = "java-library")
 	apply(plugin = "org.jetbrains.kotlin.jvm")
