@@ -67,7 +67,9 @@
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .btn:hover {

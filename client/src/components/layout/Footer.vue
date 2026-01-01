@@ -3,9 +3,7 @@
     <div class="footer-content">
       <div class="footer-brand">
         <span class="footer-logo">🗺️ Lumia Ops</span>
-        <p class="footer-description">
-          이터널 리턴 팀 전략 & 스크림 관리 플랫폼
-        </p>
+        <p class="footer-description">이터널 리턴 팀 전략 & 스크림 관리 플랫폼</p>
       </div>
 
       <div class="footer-links">

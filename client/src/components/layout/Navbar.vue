@@ -3,7 +3,7 @@
     <div class="nav-brand">
       <router-link to="/">🗺️ Lumia Ops</router-link>
     </div>
-    
+
     <div class="nav-links">
       <router-link to="/">홈</router-link>
       <router-link to="/team">팀 관리</router-link>
