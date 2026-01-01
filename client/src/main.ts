@@ -6,6 +6,35 @@ import pinia from './stores'
 
 const app = createApp(App)
 
+// 전역 Vue 에러 핸들러
+app.config.errorHandler = (err, instance, info) => {
+    console.error('[Vue Error]', err)
+    console.error('[Component]', instance)
+    console.error('[Info]', info)
+
+    // 프로덕션에서는 에러 로깅 서비스로 전송
+    if (import.meta.env.PROD) {
+        // TODO: Sentry, LogRocket 등으로 전송
+    }
+}
+
+// 전역 경고 핸들러 (개발 모드)
+app.config.warnHandler = (msg, _instance, trace) => {
+    console.warn('[Vue Warning]', msg)
+    if (trace) console.warn('[Trace]', trace)
+}
+
+// 처리되지 않은 Promise 거부 핸들러
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('[Unhandled Promise Rejection]', event.reason)
+    event.preventDefault()
+})
+
+// 전역 JavaScript 에러 핸들러
+window.addEventListener('error', (event) => {
+    console.error('[Global Error]', event.error || event.message)
+})
+
 app.use(pinia)
 app.use(router)
 

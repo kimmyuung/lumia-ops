@@ -16,4 +16,7 @@ dependencies {
 	// [Database]
 	runtimeOnly("com.h2database:h2")
 	// runtimeOnly("org.postgresql:postgresql")
+
+	// [Test - MockK]
+	testImplementation("io.mockk:mockk:1.13.8")
 }

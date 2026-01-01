@@ -2,11 +2,15 @@
   <div class="home">
     <section class="hero">
       <div class="hero-content">
+        <div class="hero-badge">
+          <Sparkles :size="16" />
+          <span>이터널 리턴 전략 플랫폼</span>
+        </div>
         <h1>
           <Map :size="48" class="hero-icon" />
           <span>Lumia Ops</span>
         </h1>
-        <p class="tagline">이터널 리턴 팀 전략 & 스크림 관리 플랫폼</p>
+        <p class="tagline">팀 전략 수립부터 스크림 관리까지, 승리를 위한 모든 것</p>
         <div class="cta-buttons">
           <router-link to="/team" class="btn btn-primary">
             <Users :size="20" />
@@ -49,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { Map, Users, Target, Trophy } from 'lucide-vue-next'
+import { Map, Users, Target, Trophy, Sparkles } from 'lucide-vue-next'
 import { Card } from '@/components/common'
 </script>
 
@@ -63,14 +67,52 @@ import { Card } from '@/components/common'
   padding: var(--section-gap) var(--page-padding);
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
+    rgba(102, 126, 234, 0.08) 0%,
+    rgba(118, 75, 162, 0.08) 100%
   );
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at 30% 50%,
+    rgba(102, 126, 234, 0.1) 0%,
+    transparent 50%
+  );
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(2%, 2%) rotate(5deg); }
 }
 
 .hero-content {
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
 }
 
 .hero h1 {
@@ -78,7 +120,7 @@ import { Card } from '@/components/common'
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 6vw, 4rem);
   margin-bottom: 1rem;
   background: linear-gradient(
     135deg,
@@ -93,12 +135,21 @@ import { Card } from '@/components/common'
 .hero-icon {
   color: var(--secondary-color);
   -webkit-text-fill-color: initial;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 .tagline {
   font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: var(--text-muted);
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cta-buttons {
@@ -112,16 +163,19 @@ import { Card } from '@/components/common'
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  border-radius: var(--radius-md);
+  padding: 1rem 2rem;
+  border-radius: var(--radius-lg);
   text-decoration: none;
   font-weight: 600;
   transition: all var(--transition-normal);
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px) scale(1.02);
+}
+
+.btn:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
 .btn-primary {
@@ -131,16 +185,24 @@ import { Card } from '@/components/common'
     var(--secondary-color) 100%
   );
   color: white;
+  box-shadow: var(--shadow-md), 0 0 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-lg), 0 0 30px rgba(102, 126, 234, 0.4);
 }
 
 .btn-secondary {
-  background: white;
+  background: var(--card-bg);
+  backdrop-filter: var(--glass-blur);
   color: var(--text-color);
+  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
-  background: #f8f8f8;
+  background: var(--card-bg-solid);
+  box-shadow: var(--shadow-md);
 }
 
 .features {
@@ -154,32 +216,40 @@ import { Card } from '@/components/common'
 
 .feature-card {
   text-align: center;
-  padding: 2rem;
+  padding: 2.5rem 2rem;
 }
 
 .feature-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 1rem;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
   background: linear-gradient(
     135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
+    rgba(102, 126, 234, 0.15) 0%,
+    rgba(118, 75, 162, 0.15) 100%
   );
   border-radius: 50%;
   color: var(--primary-color);
+  transition: all var(--transition-normal);
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: var(--shadow-glow);
 }
 
 .feature-card h3 {
   margin-bottom: 0.5rem;
   color: var(--text-color);
+  font-size: 1.25rem;
 }
 
 .feature-card p {
   color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 /* 반응형 */

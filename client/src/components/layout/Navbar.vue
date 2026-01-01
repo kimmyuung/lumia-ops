@@ -27,7 +27,21 @@
     </div>
 
     <div class="nav-actions">
-      <slot name="actions" />
+      <template v-if="isLoggedIn">
+        <div class="user-info">
+          <User :size="18" />
+          <span>{{ user?.nickname }}</span>
+        </div>
+        <button class="logout-btn" @click="handleLogout" aria-label="로그아웃">
+          <LogOut :size="18" />
+        </button>
+      </template>
+      <template v-else>
+        <router-link to="/login" class="login-btn">
+          <LogIn :size="18" />
+          <span>로그인</span>
+        </router-link>
+      </template>
     </div>
 
     <!-- 모바일 메뉴 버튼 -->
@@ -55,16 +69,44 @@
           <Swords :size="20" />
           <span>스크림</span>
         </router-link>
+        <div class="mobile-auth">
+          <template v-if="isLoggedIn">
+            <div class="user-info-mobile">
+              <User :size="20" />
+              <span>{{ user?.nickname }}</span>
+            </div>
+            <button class="mobile-logout" @click="handleLogout">
+              <LogOut :size="20" />
+              <span>로그아웃</span>
+            </button>
+          </template>
+          <router-link v-else to="/login" class="mobile-login" @click="isMenuOpen = false">
+            <LogIn :size="20" />
+            <span>로그인</span>
+          </router-link>
+        </div>
       </div>
     </Transition>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Map, Home, Users, Target, Swords, Menu, X } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { Map, Home, Users, Target, Swords, Menu, X, LogIn, LogOut, User } from 'lucide-vue-next'
+import { useUserStore } from '@/stores/user'
+import { useAuth } from '@/composables/useAuth'
+
+const userStore = useUserStore()
+const { logout } = useAuth()
 
 const isMenuOpen = ref(false)
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+const user = computed(() => userStore.user)
+
+function handleLogout() {
+  isMenuOpen.value = false
+  logout()
+}
 </script>
 
 <style scoped>
@@ -72,13 +114,16 @@ const isMenuOpen = ref(false)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 var(--page-padding, 2rem);
-  height: var(--nav-height, 60px);
-  background: white;
-  box-shadow: var(--shadow-sm);
+  padding: 0 var(--page-padding);
+  height: var(--nav-height);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: all var(--transition-normal);
 }
 
 .nav-brand a {
@@ -89,6 +134,11 @@ const isMenuOpen = ref(false)
   font-weight: 700;
   text-decoration: none;
   color: var(--primary-color);
+  transition: transform var(--transition-fast);
+}
+
+.nav-brand a:hover {
+  transform: scale(1.02);
 }
 
 .nav-brand .brand-icon {
@@ -115,6 +165,7 @@ const isMenuOpen = ref(false)
 .nav-links a:hover {
   background: rgba(102, 126, 234, 0.1);
   color: var(--primary-color);
+  transform: translateY(-1px);
 }
 
 .nav-links a.router-link-active {
@@ -124,6 +175,7 @@ const isMenuOpen = ref(false)
     var(--secondary-color) 100%
   );
   color: white;
+  box-shadow: var(--shadow-sm);
 }
 
 .nav-actions {
@@ -141,11 +193,15 @@ const isMenuOpen = ref(false)
   padding: 0.5rem;
   color: var(--text-color);
   border-radius: var(--radius-md);
-  transition: background var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .nav-mobile-toggle:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--bg-color-alt);
+}
+
+.nav-mobile-toggle:active {
+  transform: scale(0.95);
 }
 
 /* 모바일 메뉴 */
@@ -154,8 +210,11 @@ const isMenuOpen = ref(false)
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  box-shadow: var(--shadow-md);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   padding: 0.5rem;
@@ -165,7 +224,7 @@ const isMenuOpen = ref(false)
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   text-decoration: none;
   color: var(--text-color);
   border-radius: var(--radius-md);
@@ -181,7 +240,7 @@ const isMenuOpen = ref(false)
 /* 모바일 메뉴 트랜지션 */
 .mobile-menu-enter-active,
 .mobile-menu-leave-active {
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mobile-menu-enter-from,
@@ -200,5 +259,95 @@ const isMenuOpen = ref(false)
   .nav-mobile-toggle {
     display: flex;
   }
+}
+
+/* 로그인/사용자 정보 */
+.login-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-color-alt);
+  border-radius: var(--radius-md);
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.logout-btn:hover {
+  color: var(--error-color);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* 모바일 인증 */
+.mobile-auth {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.user-info-mobile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  color: var(--text-color);
+}
+
+.mobile-login,
+.mobile-logout {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  text-decoration: none;
+  color: var(--text-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+.mobile-login:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.mobile-logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
 }
 </style>

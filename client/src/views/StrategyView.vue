@@ -1,17 +1,11 @@
 <template>
   <div class="strategy-view">
     <div class="container">
-      <header class="page-header">
-        <div class="header-content">
-          <h1>
-            <Target :size="32" class="header-icon" />
-            <span>전략 수립 보드</span>
-          </h1>
-          <p class="page-description">
-            실시간 동기화 택티컬 맵으로 팀 전략을 수립하세요.
-          </p>
-        </div>
-      </header>
+      <PageHeader
+        title="전략 수립 보드"
+        description="실시간 동기화 택티컬 맵으로 팀 전략을 수립하세요."
+        :icon="Target"
+      />
 
       <section class="map-section">
         <div class="tactical-map">
@@ -30,21 +24,21 @@
       <section class="tools-section">
         <h2>전략 도구</h2>
         <div class="tools-grid">
-          <Card hoverable>
+          <Card hoverable class="tool-card">
             <div class="tool-icon">
               <MapPin :size="24" />
             </div>
             <h4>마커</h4>
             <p>맵에 마커 배치</p>
           </Card>
-          <Card hoverable>
+          <Card hoverable class="tool-card">
             <div class="tool-icon">
               <Route :size="24" />
             </div>
             <h4>경로</h4>
             <p>이동 경로 그리기</p>
           </Card>
-          <Card hoverable>
+          <Card hoverable class="tool-card">
             <div class="tool-icon">
               <MessageSquare :size="24" />
             </div>
@@ -66,7 +60,7 @@ import {
   MessageSquare,
   Sparkles
 } from 'lucide-vue-next'
-import { Card, Button } from '@/components/common'
+import { Card, Button, PageHeader } from '@/components/common'
 </script>
 
 <style scoped>
@@ -80,35 +74,18 @@ import { Card, Button } from '@/components/common'
   padding: var(--page-padding);
 }
 
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.header-content h1 {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.header-icon {
-  color: var(--primary-color);
-}
-
-.page-description {
-  color: var(--text-muted);
-}
-
 .map-section {
   margin-bottom: var(--section-gap);
 }
 
 .tactical-map {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
   border-radius: var(--radius-lg);
   overflow: hidden;
   aspect-ratio: 16 / 9;
   max-height: 600px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
 }
 
 .map-placeholder {
@@ -124,7 +101,13 @@ import { Card, Button } from '@/components/common'
 }
 
 .map-icon {
-  opacity: 0.4;
+  opacity: 0.5;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
 }
 
 .map-placeholder h3 {
@@ -138,33 +121,45 @@ import { Card, Button } from '@/components/common'
 
 .tools-section h2 {
   margin-bottom: 1.5rem;
+  color: var(--text-color);
 }
 
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
 }
 
-.tools-grid .card {
+.tool-card {
   text-align: center;
   padding: 1.5rem;
 }
 
 .tool-icon {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   margin: 0 auto 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(102, 126, 234, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.15) 0%,
+    rgba(118, 75, 162, 0.15) 100%
+  );
   border-radius: 50%;
   color: var(--primary-color);
+  transition: all var(--transition-normal);
+}
+
+.tool-card:hover .tool-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: var(--shadow-glow);
 }
 
 .tools-grid h4 {
   margin-bottom: 0.25rem;
+  color: var(--text-color);
 }
 
 .tools-grid p {

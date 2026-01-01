@@ -1,6 +1,5 @@
-package com.myeongho.lumia.core.domain.team
+package com.lumiaops.lumiacore.domain
 
-import com.myeongho.lumia.core.domain.user.User
 import jakarta.persistence.*
 
 @Entity

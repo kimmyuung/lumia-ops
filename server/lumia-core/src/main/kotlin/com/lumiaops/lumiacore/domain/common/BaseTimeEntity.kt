@@ -1,4 +1,4 @@
-package com.myeongho.lumia.core.domain.common
+package com.lumiaops.lumiacore.domain.common
 
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.MappedSuperclass

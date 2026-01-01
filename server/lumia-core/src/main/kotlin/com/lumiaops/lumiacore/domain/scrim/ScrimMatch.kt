@@ -1,4 +1,4 @@
-package com.myeongho.lumia.core.domain.scrim
+package com.lumiaops.lumiacore.domain.scrim
 
 import jakarta.persistence.*
 
@@ -17,4 +17,8 @@ class ScrimMatch(
 ) {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    // ▼ [핵심 추가] 이 부분이 있어야 match.matchResults 로 접근 가능합니다!
+    @OneToMany(mappedBy = "match", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
+    var matchResults: MutableList<MatchResult> = mutableListOf()
 }

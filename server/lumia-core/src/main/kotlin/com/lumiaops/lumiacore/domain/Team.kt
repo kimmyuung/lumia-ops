@@ -1,6 +1,6 @@
-package com.myeongho.lumia.core.domain.team
+package com.lumiaops.lumiacore.domain
 
-import com.myeongho.lumia.core.domain.common.BaseTimeEntity
+import com.lumiaops.lumiacore.domain.common.BaseTimeEntity
 import jakarta.persistence.*
 
 @Entity
