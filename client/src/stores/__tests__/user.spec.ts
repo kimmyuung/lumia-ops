@@ -1,6 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useUserStore } from '../user'
+
+// 토큰 유효성 검사 모킹
+vi.mock('@/utils/token', () => ({
+    isTokenExpired: () => false,
+    getTokenRemainingTime: () => 3600000 // 1시간
+}))
 
 describe('useUserStore', () => {
     beforeEach(() => {
@@ -36,6 +42,7 @@ describe('useUserStore', () => {
             }
 
             store.setUser(mockUser)
+            store.setToken('valid-token') // 토큰도 설정해야 isLoggedIn이 true
 
             expect(store.user).toEqual(mockUser)
             expect(store.isLoggedIn).toBe(true)
@@ -87,17 +94,40 @@ describe('useUserStore', () => {
             localStorage.setItem('token', 'saved-token')
             const store = useUserStore()
 
-            store.loadToken()
+            const result = store.loadToken()
 
+            expect(result).toBe(true)
             expect(store.token).toBe('saved-token')
         })
 
         it('should not set token if localStorage is empty', () => {
             const store = useUserStore()
 
-            store.loadToken()
+            const result = store.loadToken()
 
+            expect(result).toBe(false)
             expect(store.token).toBeNull()
+        })
+    })
+
+    describe('tempUser for nickname setup', () => {
+        it('should set and clear tempUser', () => {
+            const store = useUserStore()
+
+            store.setTempUser({
+                id: 1,
+                email: 'test@example.com',
+                status: 'PENDING_NICKNAME'
+            })
+
+            expect(store.tempUser).not.toBeNull()
+            expect(store.needsNickname).toBe(true)
+
+            // setUser를 호출하면 tempUser가 클리어됨
+            store.setUser({ id: '1', nickname: 'Test', email: 'test@example.com' })
+
+            expect(store.tempUser).toBeNull()
+            expect(store.needsNickname).toBe(false)
         })
     })
 })

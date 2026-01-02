@@ -1,17 +1,27 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { isTokenExpired, getTokenRemainingTime } from '@/utils/token'
+import type { AccountStatus } from '@/api/auth'
 
 export interface User {
   id: string
   nickname: string
   email: string
   teamId?: string
+  status?: AccountStatus
+}
+
+/** 임시 사용자 정보 (닉네임 설정 전) */
+export interface TempUser {
+  id: number
+  email: string
+  status: AccountStatus
 }
 
 export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(null)
   const token = ref<string | null>(null)
+  const tempUser = ref<TempUser | null>(null) // 닉네임 설정 전 임시 정보
   let tokenCheckInterval: ReturnType<typeof setInterval> | null = null
 
   // 토큰이 유효한지 확인 (존재하고 만료되지 않았는지)
@@ -22,9 +32,15 @@ export const useUserStore = defineStore('user', () => {
 
   const isLoggedIn = computed(() => !!user.value && isValidToken.value)
   const hasTeam = computed(() => !!user.value?.teamId)
+  const needsNickname = computed(() => !!tempUser.value)
 
   function setUser(newUser: User) {
     user.value = newUser
+    tempUser.value = null // 닉네임 설정 완료
+  }
+
+  function setTempUser(newTempUser: TempUser) {
+    tempUser.value = newTempUser
   }
 
   function setToken(newToken: string) {
@@ -36,6 +52,7 @@ export const useUserStore = defineStore('user', () => {
   function logout() {
     user.value = null
     token.value = null
+    tempUser.value = null
     localStorage.removeItem('token')
     stopTokenCheck()
   }
@@ -101,10 +118,13 @@ export const useUserStore = defineStore('user', () => {
   return {
     user,
     token,
+    tempUser,
     isLoggedIn,
     isValidToken,
     hasTeam,
+    needsNickname,
     setUser,
+    setTempUser,
     setToken,
     logout,
     loadToken
