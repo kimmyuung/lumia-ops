@@ -17,7 +17,7 @@ class TeamMemberTest {
         fun `should create team member with valid parameters`() {
             // given
             val team = Team(name = "테스트팀", description = null, ownerId = 1L)
-            val user = User(email = "test@example.com", nickname = "테스트유저")
+            val user = User(email = "test@example.com", password = "encodedPassword", nickname = "테스트유저")
             val role = TeamRole.MEMBER
 
             // when
@@ -34,7 +34,7 @@ class TeamMemberTest {
         fun `should have default role as MEMBER`() {
             // given
             val team = Team(name = "테스트팀", description = null, ownerId = 1L)
-            val user = User(email = "test@example.com", nickname = "테스트유저")
+            val user = User(email = "test@example.com", password = "encodedPassword", nickname = "테스트유저")
 
             // when
             val teamMember = TeamMember(team = team, user = user)
@@ -48,7 +48,7 @@ class TeamMemberTest {
         fun `should create team member with OWNER role`() {
             // given
             val team = Team(name = "테스트팀", description = null, ownerId = 1L)
-            val user = User(email = "owner@example.com", nickname = "팀장")
+            val user = User(email = "owner@example.com", password = "encodedPassword", nickname = "팀장")
 
             // when
             val teamMember = TeamMember(team = team, user = user, role = TeamRole.OWNER)
@@ -62,7 +62,7 @@ class TeamMemberTest {
         fun `should create team member with LEADER role`() {
             // given
             val team = Team(name = "테스트팀", description = null, ownerId = 1L)
-            val user = User(email = "leader@example.com", nickname = "리더")
+            val user = User(email = "leader@example.com", password = "encodedPassword", nickname = "리더")
 
             // when
             val teamMember = TeamMember(team = team, user = user, role = TeamRole.LEADER)
@@ -81,7 +81,7 @@ class TeamMemberTest {
         fun `should update role successfully`() {
             // given
             val team = Team(name = "테스트팀", description = null, ownerId = 1L)
-            val user = User(email = "test@example.com", nickname = "테스트유저")
+            val user = User(email = "test@example.com", password = "encodedPassword", nickname = "테스트유저")
             val teamMember = TeamMember(team = team, user = user, role = TeamRole.MEMBER)
 
             // when
@@ -96,7 +96,7 @@ class TeamMemberTest {
         fun `should change role from MEMBER to OWNER`() {
             // given
             val team = Team(name = "테스트팀", description = null, ownerId = 1L)
-            val user = User(email = "test@example.com", nickname = "테스트유저")
+            val user = User(email = "test@example.com", password = "encodedPassword", nickname = "테스트유저")
             val teamMember = TeamMember(team = team, user = user, role = TeamRole.MEMBER)
 
             // when
