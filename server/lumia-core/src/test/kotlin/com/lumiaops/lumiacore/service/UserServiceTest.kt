@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -114,48 +115,6 @@ class UserServiceTest {
     }
 
     @Nested
-    @DisplayName("createUser 테스트")
-    inner class CreateUserTest {
-        @Test
-        @DisplayName("새 사용자 생성 성공")
-        fun `should create user when email is unique`() {
-            // given
-            val email = "new@example.com"
-            val nickname = "새사용자"
-            val savedUser = User(email = email, nickname = nickname, role = UserRole.USER)
-            
-            every { userRepository.existsByEmail(email) } returns false
-            every { userRepository.save(any<User>()) } returns savedUser
-
-            // when
-            val result = userService.createUser(email, nickname)
-
-            // then
-            assertEquals(email, result.email)
-            assertEquals(nickname, result.nickname)
-            verify(exactly = 1) { userRepository.existsByEmail(email) }
-            verify(exactly = 1) { userRepository.save(any<User>()) }
-        }
-
-        @Test
-        @DisplayName("중복 이메일로 사용자 생성 시 예외 발생")
-        fun `should throw exception when email already exists`() {
-            // given
-            val email = "existing@example.com"
-            val nickname = "중복사용자"
-            every { userRepository.existsByEmail(email) } returns true
-
-            // when & then
-            val exception = assertThrows<IllegalArgumentException> {
-                userService.createUser(email, nickname)
-            }
-            assertEquals("이미 존재하는 이메일입니다: $email", exception.message)
-            verify(exactly = 1) { userRepository.existsByEmail(email) }
-            verify(exactly = 0) { userRepository.save(any<User>()) }
-        }
-    }
-
-    @Nested
     @DisplayName("updateNickname 테스트")
     inner class UpdateNicknameTest {
         @Test
@@ -164,7 +123,14 @@ class UserServiceTest {
             // given
             val userId = 1L
             val newNickname = "새닉네임"
-            val user = User(email = "test@example.com", nickname = "기존닉네임")
+            val user = User(email = "test@example.com", password = "encodedPassword", nickname = "기존닉네임").apply {
+                verifyEmail()
+                setInitialNickname("기존닉네임")
+                // 30일 제한을 우회하기 위해 리플렉션으로 nicknameChangedAt을 31일 전으로 설정
+                val field = User::class.java.getDeclaredField("nicknameChangedAt")
+                field.isAccessible = true
+                field.set(this, LocalDateTime.now().minusDays(31))
+            }
             
             every { userRepository.findById(userId) } returns Optional.of(user)
 
@@ -218,8 +184,8 @@ class UserServiceTest {
         fun `should return all users`() {
             // given
             val users = listOf(
-                User(email = "user1@example.com", nickname = "유저1"),
-                User(email = "user2@example.com", nickname = "유저2")
+                User(email = "user1@example.com", password = "encodedPassword", nickname = "유저1"),
+                User(email = "user2@example.com", password = "encodedPassword", nickname = "유저2")
             )
             every { userRepository.findAll() } returns users
 

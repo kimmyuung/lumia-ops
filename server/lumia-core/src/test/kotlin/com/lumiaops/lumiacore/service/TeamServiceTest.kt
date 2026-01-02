@@ -191,7 +191,7 @@ class TeamServiceTest {
         @BeforeEach
         fun setUpMember() {
             team = Team(name = "테스트팀", description = null, ownerId = 1L)
-            user = User(email = "test@example.com", nickname = "테스트유저")
+            user = User(email = "test@example.com", password = "encodedPassword", nickname = "테스트유저")
         }
 
         @Test

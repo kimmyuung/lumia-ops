@@ -3,7 +3,6 @@ package com.lumiaops.lumiacore.service
 
 import com.lumiaops.lumiacore.domain.AccountStatus
 import com.lumiaops.lumiacore.domain.User
-import com.lumiaops.lumiacore.domain.UserRole
 import com.lumiaops.lumiacore.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
