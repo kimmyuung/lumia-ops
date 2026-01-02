@@ -13,10 +13,17 @@ dependencies {
 	// [JPA]
 	api("org.springframework.boot:spring-boot-starter-data-jpa")
 
+	// [Mail]
+	api("org.springframework.boot:spring-boot-starter-mail")
+
+	// [Security - BCrypt]
+	api("org.springframework.security:spring-security-crypto")
+
 	// [Database]
 	runtimeOnly("com.h2database:h2")
 	// runtimeOnly("org.postgresql:postgresql")
 
 	// [Test - MockK]
 	testImplementation("io.mockk:mockk:1.13.8")
+	testImplementation("io.mockk:mockk-jvm:1.13.8")
 }

@@ -139,10 +139,12 @@ import TeamFormModal from '@/components/team/TeamFormModal.vue'
 import TeamInviteModal from '@/components/team/TeamInviteModal.vue'
 import PendingInvitations from '@/components/team/PendingInvitations.vue'
 import { useTeamStore } from '@/stores/team'
+import { useConfirm } from '@/composables/useConfirm'
 import { storeToRefs } from 'pinia'
 import type { Team, TeamRole } from '@/types/team'
 
 const teamStore = useTeamStore()
+const { confirm } = useConfirm()
 
 const pendingInvitationsRef = ref<InstanceType<typeof PendingInvitations> | null>(null)
 
@@ -188,13 +190,30 @@ function handleInvited() {
 
 async function confirmDelete() {
   if (!currentTeam.value) return
-  if (confirm('정말 팀을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+  
+  const confirmed = await confirm({
+    title: '팀 삭제',
+    message: '정말 팀을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+    confirmText: '삭제',
+    cancelText: '취소',
+    variant: 'danger'
+  })
+  
+  if (confirmed) {
     await teamStore.deleteTeam(currentTeam.value.id)
   }
 }
 
 async function confirmLeave() {
-  if (confirm('정말 팀에서 탈퇴하시겠습니까?')) {
+  const confirmed = await confirm({
+    title: '팀 탈퇴',
+    message: '정말 팀에서 탈퇴하시겠습니까?',
+    confirmText: '탈퇴',
+    cancelText: '취소',
+    variant: 'warning'
+  })
+  
+  if (confirmed) {
     await teamStore.leaveTeam()
   }
 }

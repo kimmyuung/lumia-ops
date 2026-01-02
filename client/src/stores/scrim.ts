@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { scrimApi, type UpdateScrimRequest, type AddResultRequest } from '@/api/scrim'
-import type { Scrim, ScrimResult, CreateScrimRequest, ScrimStatus } from '@/types/scrim'
+import type { Scrim, CreateScrimRequest, ScrimStatus } from '@/types/scrim'
 import { useToast } from '@/composables/useToast'
 
 export const useScrimStore = defineStore('scrim', () => {

@@ -27,6 +27,12 @@
     </div>
 
     <div class="nav-actions">
+      <!-- 테마 토글 버튼 -->
+      <button class="theme-toggle" @click="toggleTheme" :aria-label="resolvedTheme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'">
+        <Sun v-if="resolvedTheme === 'dark'" :size="20" />
+        <Moon v-else :size="20" />
+      </button>
+      
       <template v-if="isLoggedIn">
         <div class="user-info">
           <User :size="18" />
@@ -69,6 +75,14 @@
           <Swords :size="20" />
           <span>스크림</span>
         </router-link>
+        
+        <!-- 모바일 테마 토글 -->
+        <button class="mobile-theme-toggle" @click="toggleTheme">
+          <Sun v-if="resolvedTheme === 'dark'" :size="20" />
+          <Moon v-else :size="20" />
+          <span>{{ resolvedTheme === 'dark' ? '라이트 모드' : '다크 모드' }}</span>
+        </button>
+        
         <div class="mobile-auth">
           <template v-if="isLoggedIn">
             <div class="user-info-mobile">
@@ -92,12 +106,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Map, Home, Users, Target, Swords, Menu, X, LogIn, LogOut, User } from 'lucide-vue-next'
+import { Map, Home, Users, Target, Swords, Menu, X, LogIn, LogOut, User, Sun, Moon } from 'lucide-vue-next'
 import { useUserStore } from '@/stores/user'
 import { useAuth } from '@/composables/useAuth'
+import { useTheme } from '@/composables/useTheme'
 
 const userStore = useUserStore()
 const { logout } = useAuth()
+const { toggleTheme, resolvedTheme } = useTheme()
 
 const isMenuOpen = ref(false)
 const isLoggedIn = computed(() => userStore.isLoggedIn)
@@ -309,6 +325,31 @@ function handleLogout() {
   background: rgba(239, 68, 68, 0.1);
 }
 
+/* 테마 토글 버튼 */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-color-alt);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+.theme-toggle:hover {
+  background: var(--card-bg-solid);
+  color: var(--primary-color);
+  transform: rotate(15deg);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95) rotate(15deg);
+}
+
 /* 모바일 인증 */
 .mobile-auth {
   margin-top: 0.5rem;
@@ -349,5 +390,26 @@ function handleLogout() {
 .mobile-logout:hover {
   background: rgba(239, 68, 68, 0.1);
   color: var(--error-color);
+}
+
+/* 모바일 테마 토글 */
+.mobile-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  color: var(--text-color);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+}
+
+.mobile-theme-toggle:hover {
+  background: var(--primary-color);
+  color: white;
 }
 </style>

@@ -55,6 +55,11 @@ const routes: RouteRecordRaw[] = [
     path: '/invite/:token',
     name: 'AcceptInvitation',
     component: () => import('@/views/AcceptInvitationView.vue')
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFoundView.vue')
   }
 ]
 
