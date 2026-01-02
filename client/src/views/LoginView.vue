@@ -47,6 +47,19 @@
         </Button>
       </form>
 
+      <!-- 헬프 링크 -->
+      <div class="help-links">
+        <router-link to="/auth/forgot-password" class="help-link">
+          <Key :size="16" />
+          <span>비밀번호 찾기</span>
+        </router-link>
+        <span class="separator">|</span>
+        <router-link to="/auth/find-username" class="help-link">
+          <Search :size="16" />
+          <span>아이디 찾기</span>
+        </router-link>
+      </div>
+
       <div class="auth-footer">
         <p>계정이 없으신가요?</p>
         <router-link to="/register" class="auth-link">
@@ -69,7 +82,7 @@
 
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import { Map, LogIn, UserPlus, MessageCircle } from 'lucide-vue-next'
+import { Map, LogIn, UserPlus, MessageCircle, Key, Search } from 'lucide-vue-next'
 import { Button, Input } from '@/components/common'
 import { useAuth } from '@/composables/useAuth'
 
@@ -189,6 +202,35 @@ async function handleSubmit() {
   margin-top: 0.5rem;
   width: 100%;
   justify-content: center;
+}
+
+/* 헬프 링크 */
+.help-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color var(--transition-fast);
+}
+
+.help-link:hover {
+  color: var(--primary-color);
+}
+
+.separator {
+  color: var(--border-color);
 }
 
 .auth-footer {

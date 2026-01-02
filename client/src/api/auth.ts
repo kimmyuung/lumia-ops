@@ -1,49 +1,115 @@
 import apiClient from './client'
 
-// 인증 관련 타입
+// ==================== 타입 정의 ====================
+
+/** 회원가입 요청 */
+export interface RegisterRequest {
+    email: string
+    password: string
+}
+
+/** 로그인 요청 */
 export interface LoginRequest {
     email: string
     password: string
 }
 
-export interface RegisterRequest {
-    nickname: string
+/** 로그인 응답 */
+export interface LoginResponse {
+    userId: number
     email: string
-    password: string
+    nickname: string | null
+    status: AccountStatus
+    needsNickname: boolean
+    message?: string
 }
 
-export interface AuthResponse {
+/** 계정 상태 */
+export type AccountStatus =
+    | 'PENDING_EMAIL'     // 이메일 인증 대기
+    | 'PENDING_NICKNAME'  // 닉네임 설정 대기
+    | 'ACTIVE'            // 정상 활성
+    | 'LOCKED'            // 로그인 5회 실패로 잠김
+    | 'DORMANT'           // 6개월 이상 미로그인 휴면
+
+/** 이메일 인증 요청 */
+export interface VerifyEmailRequest {
     token: string
-    user: {
-        id: string
-        nickname: string
-        email: string
-        teamId?: string
-    }
 }
 
-export interface User {
-    id: string
-    nickname: string
+/** 아이디 찾기 요청 */
+export interface FindUsernameRequest {
     email: string
-    teamId?: string
 }
 
-// 인증 API
+/** 아이디 찾기 응답 */
+export interface FindUsernameResponse {
+    email: string | null
+    exists: boolean
+}
+
+/** 인증 이메일 재발송 요청 */
+export interface ResendVerificationRequest {
+    email: string
+}
+
+/** 공통 메시지 응답 */
+export interface MessageResponse {
+    success: boolean
+    message: string
+}
+
+/** 사용자 정보 */
+export interface User {
+    id: number
+    email: string
+    nickname: string | null
+    status: AccountStatus
+    daysUntilNicknameChange: number
+}
+
+// ==================== API 함수 ====================
+
 export const authApi = {
     /**
-     * 로그인
+     * 회원가입 (이메일/비밀번호만)
+     * 가입 후 이메일 인증 필요
      */
-    async login(data: LoginRequest): Promise<AuthResponse> {
-        const response = await apiClient.post<AuthResponse>('/auth/login', data)
+    async register(data: RegisterRequest): Promise<MessageResponse> {
+        const response = await apiClient.post<MessageResponse>('/auth/register', data)
         return response.data
     },
 
     /**
-     * 회원가입
+     * 로그인
+     * 다양한 상태 반환: Success, NeedsNickname, Locked, Dormant
      */
-    async register(data: RegisterRequest): Promise<AuthResponse> {
-        const response = await apiClient.post<AuthResponse>('/auth/register', data)
+    async login(data: LoginRequest): Promise<LoginResponse> {
+        const response = await apiClient.post<LoginResponse>('/auth/login', data)
+        return response.data
+    },
+
+    /**
+     * 이메일 인증
+     */
+    async verifyEmail(token: string): Promise<MessageResponse> {
+        const response = await apiClient.post<MessageResponse>('/auth/verify-email', { token })
+        return response.data
+    },
+
+    /**
+     * 인증 이메일 재발송
+     */
+    async resendVerification(email: string): Promise<MessageResponse> {
+        const response = await apiClient.post<MessageResponse>('/auth/resend-verification', { email })
+        return response.data
+    },
+
+    /**
+     * 아이디 찾기 (인증 없이)
+     */
+    async findUsername(email: string): Promise<FindUsernameResponse> {
+        const response = await apiClient.post<FindUsernameResponse>('/auth/find-username', { email })
         return response.data
     },
 
@@ -52,22 +118,6 @@ export const authApi = {
      */
     async logout(): Promise<void> {
         await apiClient.post('/auth/logout')
-    },
-
-    /**
-     * 현재 사용자 정보 조회
-     */
-    async me(): Promise<User> {
-        const response = await apiClient.get<User>('/auth/me')
-        return response.data
-    },
-
-    /**
-     * 토큰 갱신
-     */
-    async refresh(): Promise<{ token: string }> {
-        const response = await apiClient.post<{ token: string }>('/auth/refresh')
-        return response.data
     }
 }
 

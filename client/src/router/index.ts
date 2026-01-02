@@ -6,6 +6,7 @@ declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
     guestOnly?: boolean
+    requiresNickname?: boolean // 닉네임 설정 필요
   }
 }
 
@@ -27,6 +28,36 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/RegisterView.vue'),
     meta: { guestOnly: true }
   },
+  // 인증 관련 라우트
+  {
+    path: '/auth/verify',
+    name: 'EmailVerify',
+    component: () => import('@/views/EmailVerifyView.vue')
+  },
+  {
+    path: '/auth/set-nickname',
+    name: 'SetNickname',
+    component: () => import('@/views/SetNicknameView.vue'),
+    meta: { requiresNickname: true }
+  },
+  {
+    path: '/auth/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('@/views/ForgotPasswordView.vue'),
+    meta: { guestOnly: true }
+  },
+  {
+    path: '/auth/reset-password',
+    name: 'ResetPassword',
+    component: () => import('@/views/ResetPasswordView.vue')
+  },
+  {
+    path: '/auth/find-username',
+    name: 'FindUsername',
+    component: () => import('@/views/FindUsernameView.vue'),
+    meta: { guestOnly: true }
+  },
+  // 보호된 라우트
   {
     path: '/team',
     name: 'Team',

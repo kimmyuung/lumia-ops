@@ -4,7 +4,7 @@ import App from './App.vue'
 import router from './router'
 import pinia from './stores'
 import { useUserStore } from './stores/user'
-import { authApi } from './api/auth'
+import { userApi } from './api/user'
 
 const app = createApp(App)
 
@@ -53,8 +53,13 @@ async function initializeAuth() {
 
     if (hasValidToken && userStore.token) {
         try {
-            const userData = await authApi.me()
-            userStore.setUser(userData)
+            const userData = await userApi.getMyInfo()
+            userStore.setUser({
+                id: String(userData.id),
+                email: userData.email,
+                nickname: userData.nickname || '',
+                status: userData.status
+            })
             console.info('[Auth] 사용자 정보 로드 완료')
         } catch (error) {
             console.warn('[Auth] 사용자 정보 로드 실패, 로그아웃 처리')
