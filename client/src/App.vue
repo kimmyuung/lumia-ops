@@ -6,12 +6,13 @@
     </main>
     <Footer />
     <ToastContainer />
+    <ConfirmProvider />
   </div>
 </template>
 
 <script setup lang="ts">
 import { Navbar, Footer } from '@/components/layout'
-import { ToastContainer } from '@/components/common'
+import { ToastContainer, ConfirmProvider } from '@/components/common'
 </script>
 
 <style>
@@ -64,9 +65,25 @@ import { ToastContainer } from '@/components/common'
   --glass-border: rgba(255, 255, 255, 0.3);
 }
 
-/* 다크 모드 */
+/* 다크 모드 - data-theme 속성 기반 */
+[data-theme="dark"] {
+  --bg-color: #0f0f1a;
+  --bg-color-alt: #1a1a2e;
+  --card-bg: rgba(30, 30, 50, 0.8);
+  --card-bg-solid: #1e1e32;
+  --text-color: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --glass-bg: rgba(30, 30, 50, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* 시스템 테마 (data-theme 미설정 시 fallback) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --bg-color: #0f0f1a;
     --bg-color-alt: #1a1a2e;
     --card-bg: rgba(30, 30, 50, 0.8);

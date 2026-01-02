@@ -1,3 +1,6 @@
 // Composables re-export
-export { useMediaQuery, useIsMobile } from './useMediaQuery'
+export { useAuth } from './useAuth'
 export { useToast } from './useToast'
+export { useMediaQuery } from './useMediaQuery'
+export { useTheme } from './useTheme'
+export { useConfirm } from './useConfirm'

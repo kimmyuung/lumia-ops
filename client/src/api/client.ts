@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios'
+import { isTokenExpired } from '@/utils/token'
 
 // 에러 타입 정의
 export interface ApiError {
@@ -16,11 +17,25 @@ const apiClient: AxiosInstance = axios.create({
   }
 })
 
-// Request interceptor - 토큰 자동 첨부
+// Request interceptor - 토큰 자동 첨부 및 만료 체크
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token')
+
     if (token) {
+      // 토큰 만료 체크 (60초 버퍼)
+      if (isTokenExpired(token, 60)) {
+        console.warn('[API] 토큰이 만료되었습니다.')
+        localStorage.removeItem('token')
+        window.dispatchEvent(new CustomEvent('auth:token-expired'))
+
+        return Promise.reject({
+          status: 401,
+          message: '세션이 만료되었습니다. 다시 로그인해 주세요.',
+          code: 'TOKEN_EXPIRED'
+        } as ApiError)
+      }
+
       config.headers.Authorization = `Bearer ${token}`
     }
     return config
