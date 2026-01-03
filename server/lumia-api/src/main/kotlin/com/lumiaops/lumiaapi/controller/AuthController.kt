@@ -77,8 +77,10 @@ class AuthController(
             is LoginResult.Success -> {
                 val user = result.user
                 val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
+                val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
                 ResponseEntity.ok(LoginResponse(
                     token = token,
+                    refreshToken = refreshToken,
                     userId = user.id!!,
                     email = user.email,
                     nickname = user.nickname,
@@ -89,8 +91,10 @@ class AuthController(
             is LoginResult.NeedsNickname -> {
                 val user = result.user
                 val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
+                val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
                 ResponseEntity.ok(LoginResponse(
                     token = token,
+                    refreshToken = refreshToken,
                     userId = user.id!!,
                     email = user.email,
                     nickname = null,
@@ -111,6 +115,45 @@ class AuthController(
                 ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(MessageResponse(success = false, message = result.message))
             }
+        }
+    }
+
+    /**
+     * 토큰 갱신
+     * POST /api/auth/refresh
+     */
+    @PostMapping("/refresh")
+    fun refreshToken(
+        @Valid @RequestBody request: RefreshTokenRequest
+    ): ResponseEntity<Any> {
+        return try {
+            // Refresh Token 검증
+            if (!jwtTokenProvider.validateToken(request.refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(MessageResponse(success = false, message = "유효하지 않은 리프레시 토큰입니다"))
+            }
+            
+            if (!jwtTokenProvider.isRefreshToken(request.refreshToken)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(MessageResponse(success = false, message = "리프레시 토큰이 아닙니다"))
+            }
+            
+            // 새 토큰 발급
+            val userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken)
+            val user = authService.findUserById(userId)
+                ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(MessageResponse(success = false, message = "사용자를 찾을 수 없습니다"))
+            
+            val newAccessToken = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
+            val newRefreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
+            
+            ResponseEntity.ok(TokenResponse(
+                token = newAccessToken,
+                refreshToken = newRefreshToken
+            ))
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(MessageResponse(success = false, message = "토큰 갱신에 실패했습니다"))
         }
     }
 
@@ -152,3 +195,4 @@ class AuthController(
         }
     }
 }
+

@@ -135,6 +135,13 @@ class AuthService(
     }
 
     /**
+     * ID로 사용자 조회 (토큰 갱신용)
+     */
+    fun findUserById(userId: Long): User? {
+        return userRepository.findById(userId).orElse(null)
+    }
+
+    /**
      * 인증 이메일 발송
      */
     @Transactional

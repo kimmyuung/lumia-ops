@@ -59,6 +59,9 @@ export function useAuth() {
         try {
             const response = await authApi.login(data)
 
+            // 토큰 저장 (닉네임 설정 필요 여부와 관계없이)
+            userStore.setToken(response.token, response.refreshToken)
+
             // 닉네임 설정 필요
             if (response.needsNickname) {
                 userStore.setTempUser({
