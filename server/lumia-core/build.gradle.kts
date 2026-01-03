@@ -20,8 +20,8 @@ dependencies {
 	api("org.springframework.security:spring-security-crypto")
 
 	// [Database]
-	runtimeOnly("com.h2database:h2")
-	// runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("com.h2database:h2")  // 개발/테스트용
+	runtimeOnly("org.postgresql:postgresql")  // 프로덕션용
 
 	// [JWT - jjwt]
 	api("io.jsonwebtoken:jjwt-api:0.12.5")

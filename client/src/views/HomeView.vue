@@ -219,3 +219,4 @@ import { Card, Button } from '@/components/common'
     justify-content: center;
   }
 }
+</style>

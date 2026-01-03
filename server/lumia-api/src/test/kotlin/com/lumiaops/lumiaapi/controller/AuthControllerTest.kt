@@ -175,7 +175,7 @@ class AuthControllerTest {
         @Test
         @DisplayName("토큰 없이 보호된 엔드포인트 접근 시 401")
         fun accessProtectedEndpoint_WithoutToken_Returns401() {
-            mockMvc.perform(get("/users/me"))
+            mockMvc.perform(get("/statistics/leaderboard"))
                 .andExpect(status().isUnauthorized)
         }
 
@@ -193,9 +193,9 @@ class AuthControllerTest {
 
             val token = jwtTokenProvider.generateAccessToken(savedUser.id!!, savedUser.email)
 
-            // when & then
+            // when & then - /statistics/leaderboard는 인증된 사용자에게 200 반환
             mockMvc.perform(
-                get("/users/me")
+                get("/statistics/leaderboard")
                     .header("Authorization", "Bearer $token")
             )
                 .andExpect(status().isOk)
@@ -205,7 +205,7 @@ class AuthControllerTest {
         @DisplayName("잘못된 토큰으로 보호된 엔드포인트 접근 시 401")
         fun accessProtectedEndpoint_WithInvalidToken_Returns401() {
             mockMvc.perform(
-                get("/users/me")
+                get("/statistics/leaderboard")
                     .header("Authorization", "Bearer invalid.token.here")
             )
                 .andExpect(status().isUnauthorized)
