@@ -16,12 +16,20 @@ export interface LoginRequest {
 
 /** 로그인 응답 */
 export interface LoginResponse {
+    token: string
+    refreshToken: string
     userId: number
     email: string
     nickname: string | null
     status: AccountStatus
     needsNickname: boolean
     message?: string
+}
+
+/** 토큰 갱신 응답 */
+export interface TokenResponse {
+    token: string
+    refreshToken: string
 }
 
 /** 계정 상태 */
@@ -118,6 +126,15 @@ export const authApi = {
      */
     async logout(): Promise<void> {
         await apiClient.post('/auth/logout')
+    },
+
+    /**
+     * 토큰 갱신
+     * Refresh Token을 사용하여 새 Access Token 발급
+     */
+    async refreshToken(refreshToken: string): Promise<TokenResponse> {
+        const response = await apiClient.post<TokenResponse>('/auth/refresh', { refreshToken })
+        return response.data
     }
 }
 

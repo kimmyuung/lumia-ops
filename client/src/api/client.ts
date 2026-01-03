@@ -18,23 +18,73 @@ const apiClient: AxiosInstance = axios.create({
   }
 })
 
-// Request interceptor - 토큰 자동 첨부 및 만료 체크
+// Request interceptor - 토큰 자동 첨부 및 만료 체크/갱신
+let isRefreshing = false
+let refreshSubscribers: ((token: string) => void)[] = []
+
+function subscribeTokenRefresh(cb: (token: string) => void) {
+  refreshSubscribers.push(cb)
+}
+
+function onTokenRefreshed(token: string) {
+  refreshSubscribers.forEach(cb => cb(token))
+  refreshSubscribers = []
+}
+
+async function refreshAccessToken(): Promise<string | null> {
+  const refreshToken = localStorage.getItem('refreshToken')
+  if (!refreshToken) return null
+
+  try {
+    const response = await axios.post<{ token: string; refreshToken: string }>(
+      `${import.meta.env.VITE_API_URL || 'http://localhost:8080/api'}/auth/refresh`,
+      { refreshToken }
+    )
+
+    const { token, refreshToken: newRefreshToken } = response.data
+    localStorage.setItem('token', token)
+    localStorage.setItem('refreshToken', newRefreshToken)
+    return token
+  } catch {
+    // Refresh 실패 시 로그아웃
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    return null
+  }
+}
+
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token')
+  async (config: InternalAxiosRequestConfig) => {
+    let token = localStorage.getItem('token')
 
     if (token) {
-      // 토큰 만료 체크 (60초 버퍼)
-      if (isTokenExpired(token, 60)) {
-        console.warn('[API] 토큰이 만료되었습니다.')
-        localStorage.removeItem('token')
-        window.dispatchEvent(new CustomEvent('auth:token-expired'))
+      // 토큰 만료 체크 (5분 버퍼 - 만료 5분 전에 갱신)
+      if (isTokenExpired(token, 300)) {
+        console.log('[API] 토큰 만료 임박, 갱신 시도...')
 
-        return Promise.reject({
-          status: 401,
-          message: '세션이 만료되었습니다. 다시 로그인해 주세요.',
-          code: 'TOKEN_EXPIRED'
-        } as ApiError)
+        if (!isRefreshing) {
+          isRefreshing = true
+          const newToken = await refreshAccessToken()
+          isRefreshing = false
+
+          if (newToken) {
+            token = newToken
+            onTokenRefreshed(newToken)
+            console.log('[API] 토큰 갱신 성공')
+          } else {
+            console.warn('[API] 토큰 갱신 실패, 로그아웃')
+            window.dispatchEvent(new CustomEvent('auth:token-expired'))
+            return Promise.reject({
+              status: 401,
+              message: '세션이 만료되었습니다. 다시 로그인해 주세요.',
+              code: 'TOKEN_EXPIRED'
+            } as ApiError)
+          }
+        } else {
+          // 다른 요청이 갱신 중이면 대기
+          await new Promise<string>(resolve => subscribeTokenRefresh(resolve))
+          token = localStorage.getItem('token')
+        }
       }
 
       config.headers.Authorization = `Bearer ${token}`

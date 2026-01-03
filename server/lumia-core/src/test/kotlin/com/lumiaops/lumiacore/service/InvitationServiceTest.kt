@@ -71,30 +71,30 @@ class InvitationServiceTest {
         @Test
         fun `should create invitation and send email`() {
             // given
-            val invitedEmail = "invited@example.com"
+            val emailToInvite = "invited@example.com"
             val savedInvitation = mockk<TeamInvitation> {
                 every { id } returns 1L
                 every { token } returns "test-token"
                 every { team } returns testTeam
                 every { invitedBy } returns testInviter
-                every { invitedEmail } returns invitedEmail
+                every { invitedEmail } returns emailToInvite
                 every { message } returns null
             }
 
             every {
                 invitationRepository.existsByTeamAndInvitedEmailAndStatus(
-                    testTeam, invitedEmail, InvitationStatus.PENDING
+                    testTeam, emailToInvite, InvitationStatus.PENDING
                 )
             } returns false
 
-            every { userRepository.findByEmail(invitedEmail) } returns null
+            every { userRepository.findByEmail(emailToInvite) } returns null
             every { invitationRepository.save(any()) } returns savedInvitation
             every { emailService.sendInvitationEmail(savedInvitation) } returns true
 
             // when
             val (invitation, emailSent) = invitationService.createInvitation(
                 team = testTeam,
-                invitedEmail = invitedEmail,
+                invitedEmail = emailToInvite,
                 inviter = testInviter
             )
 

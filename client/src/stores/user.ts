@@ -21,6 +21,7 @@ export interface TempUser {
 export const useUserStore = defineStore('user', () => {
   const user = ref<User | null>(null)
   const token = ref<string | null>(null)
+  const refreshToken = ref<string | null>(null)
   const tempUser = ref<TempUser | null>(null) // 닉네임 설정 전 임시 정보
   let tokenCheckInterval: ReturnType<typeof setInterval> | null = null
 
@@ -43,30 +44,44 @@ export const useUserStore = defineStore('user', () => {
     tempUser.value = newTempUser
   }
 
-  function setToken(newToken: string) {
+  function setToken(newToken: string, newRefreshToken?: string) {
     token.value = newToken
     localStorage.setItem('token', newToken)
+    if (newRefreshToken) {
+      refreshToken.value = newRefreshToken
+      localStorage.setItem('refreshToken', newRefreshToken)
+    }
     startTokenCheck()
   }
 
   function logout() {
     user.value = null
     token.value = null
+    refreshToken.value = null
     tempUser.value = null
     localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
     stopTokenCheck()
   }
 
   function loadToken() {
     const savedToken = localStorage.getItem('token')
+    const savedRefreshToken = localStorage.getItem('refreshToken')
+
     if (savedToken) {
       // 저장된 토큰이 만료되었는지 확인
       if (isTokenExpired(savedToken)) {
-        console.info('[Auth] 저장된 토큰이 만료되어 제거합니다.')
-        localStorage.removeItem('token')
-        return false
+        // Access Token 만료됨, Refresh Token이 있으면 갱신은 API client에서 처리
+        if (!savedRefreshToken) {
+          console.info('[Auth] 저장된 토큰이 만료되어 제거합니다.')
+          localStorage.removeItem('token')
+          return false
+        }
       }
       token.value = savedToken
+      if (savedRefreshToken) {
+        refreshToken.value = savedRefreshToken
+      }
       startTokenCheck()
       return true
     }
@@ -118,6 +133,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     user,
     token,
+    refreshToken,
     tempUser,
     isLoggedIn,
     isValidToken,

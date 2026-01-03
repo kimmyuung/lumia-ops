@@ -34,6 +34,7 @@ data class LoginRequest(
  */
 data class LoginResponse(
     val token: String,  // JWT 액세스 토큰
+    val refreshToken: String,  // JWT 리프레시 토큰
     val userId: Long,
     val email: String,
     val nickname: String?,
@@ -126,4 +127,20 @@ data class UserResponse(
 data class MessageResponse(
     val success: Boolean,
     val message: String
+)
+
+/**
+ * 토큰 갱신 요청 DTO
+ */
+data class RefreshTokenRequest(
+    @field:NotBlank(message = "리프레시 토큰은 필수입니다")
+    val refreshToken: String
+)
+
+/**
+ * 토큰 갱신 응답 DTO
+ */
+data class TokenResponse(
+    val token: String,
+    val refreshToken: String
 )
