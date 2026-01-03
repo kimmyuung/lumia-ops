@@ -146,11 +146,13 @@ import { Swords, Plus, Calendar, Trophy, TrendingUp, Edit, Trash2 } from 'lucide
 import { Card, Button, PageHeader, Skeleton, SkeletonCard } from '@/components/common'
 import ScrimFormModal from '@/components/scrim/ScrimFormModal.vue'
 import { useScrimStore } from '@/stores/scrim'
+import { useConfirm } from '@/composables/useConfirm'
 import { storeToRefs } from 'pinia'
 import type { Scrim, ScrimStatus } from '@/types/scrim'
 import { formatDateTime } from '@/utils/formatters'
 
 const scrimStore = useScrimStore()
+const { confirm } = useConfirm()
 
 const { 
   scrims, 
@@ -214,7 +216,15 @@ function handleScrimSaved(_scrim: Scrim) {
 }
 
 async function confirmDelete(scrim: Scrim) {
-  if (confirm(`"${scrim.title}" 스크림을 삭제하시겠습니까?`)) {
+  const confirmed = await confirm({
+    title: '스크림 삭제',
+    message: `"${scrim.title}" 스크림을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`,
+    confirmText: '삭제',
+    cancelText: '취소',
+    variant: 'danger'
+  })
+  
+  if (confirmed) {
     await scrimStore.deleteScrim(scrim.id)
   }
 }

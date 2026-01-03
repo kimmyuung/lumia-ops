@@ -36,15 +36,19 @@ PR을 생성하거나 `main`/`dev` 브랜치에 푸시하면 자동으로 빌드
 graph LR
     A[Checkout] --> B[Setup Node.js]
     B --> C[npm ci]
-    C --> D[Type Check]
-    D --> E[Build]
+    C --> D[Lint]
+    D --> E[Type Check]
+    E --> F[Test]
+    F --> G[Build]
 ```
 
-**실행 명령어:**
+**실행 명령어 (working-directory: ./client):**
 ```bash
-npm ci           # 의존성 설치
+npm ci              # 의존성 설치
+npm run lint        # ESLint 검사
 npm run type-check  # TypeScript 타입 검사
-npm run build    # 프로덕션 빌드
+npm run test:run    # 테스트 실행
+npm run build       # 프로덕션 빌드
 ```
 
 ### Backend (Spring Boot + Kotlin)
@@ -56,7 +60,7 @@ graph LR
     C --> D[Run Tests]
 ```
 
-**실행 명령어:**
+**실행 명령어 (working-directory: ./server):**
 ```bash
 ./gradlew build -x test  # 빌드 (테스트 제외)
 ./gradlew test           # 단위 테스트 실행
@@ -69,7 +73,9 @@ graph LR
 ### Frontend
 ```bash
 cd client
+npm run lint         # 린트 오류 확인
 npm run type-check   # 타입 오류 확인
+npm run test:run     # 테스트 실행
 npm run build        # 빌드 가능 여부 확인
 ```
 
@@ -79,6 +85,35 @@ cd server
 ./gradlew build      # 빌드
 ./gradlew test       # 테스트
 ```
+
+---
+
+## 🔧 GitHub Actions working-directory 설정
+
+GitHub Actions에서는 `cd` 명령어 대신 `working-directory`를 사용합니다.
+
+### Job 레벨 설정 (현재 사용 중)
+```yaml
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client  # 모든 run에 적용
+    steps:
+      - run: npm ci        # ./client에서 실행됨
+      - run: npm run build # ./client에서 실행됨
+```
+
+### Step 레벨 설정
+```yaml
+steps:
+  - name: Build server
+    working-directory: ./server
+    run: ./gradlew build
+```
+
+> ⚠️ **주의:** 각 `run` 단계는 독립적이므로, `cd` 명령어는 해당 `run` 블록 내에서만 유효합니다.
 
 ---
 
@@ -94,29 +129,35 @@ cd server
 
 ## ❌ CI 실패 시 해결 방법
 
-### 1. Frontend 타입 에러
+### 1. Frontend 린트 에러
 ```bash
-# 로컬에서 타입 오류 확인
+cd client
+npm run lint
+```
+→ ESLint 오류 수정 후 다시 푸시
+
+### 2. Frontend 타입 에러
+```bash
 cd client
 npm run type-check
 ```
 → 표시된 타입 오류 수정 후 다시 푸시
 
-### 2. Frontend 빌드 실패
+### 3. Frontend 테스트 실패
 ```bash
 cd client
-npm run build
+npm run test:run
 ```
-→ 빌드 오류 메시지 확인 후 수정
+→ 실패한 테스트 수정 후 다시 푸시
 
-### 3. Backend 빌드 실패
+### 4. Backend 빌드 실패
 ```bash
 cd server
 ./gradlew build --stacktrace
 ```
 → 컴파일 오류 확인 후 수정
 
-### 4. Backend 테스트 실패
+### 5. Backend 테스트 실패
 ```bash
 cd server
 ./gradlew test
@@ -132,7 +173,7 @@ cd server
    └─ git checkout -b feature/팀관리
 
 2. 커밋 전 로컬에서 확인
-   └─ npm run type-check (Frontend)
+   └─ npm run lint && npm run type-check (Frontend)
    └─ ./gradlew test (Backend)
 
 3. dev 브랜치로 PR 생성
@@ -149,14 +190,17 @@ cd server
 
 `.github/workflows/ci.yml` 파일을 수정하면 됩니다.
 
-**예: 린트 검사 추가**
-```yaml
-- name: Lint
-  run: npm run lint
-```
-
 **예: 테스트 커버리지 추가**
 ```yaml
 - name: Test with Coverage
   run: npm run test:coverage
+```
+
+**예: 캐시 설정**
+```yaml
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'npm'
+    cache-dependency-path: './client/package-lock.json'
 ```

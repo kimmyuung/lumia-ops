@@ -128,6 +128,13 @@
       @close="showInviteModal = false"
       @invited="handleInvited"
     />
+
+    <!-- 팀 참여 모달 -->
+    <TeamJoinModal
+      v-if="showJoinModal"
+      @close="showJoinModal = false"
+      @joined="handleJoinedTeam"
+    />
   </div>
 </template>
 
@@ -137,6 +144,7 @@ import { Users, Plus, UserPlus, Edit, Trash2, User, LogOut } from 'lucide-vue-ne
 import { Button, Card, PageHeader, SkeletonCard } from '@/components/common'
 import TeamFormModal from '@/components/team/TeamFormModal.vue'
 import TeamInviteModal from '@/components/team/TeamInviteModal.vue'
+import TeamJoinModal from '@/components/team/TeamJoinModal.vue'
 import PendingInvitations from '@/components/team/PendingInvitations.vue'
 import { useTeamStore } from '@/stores/team'
 import { useConfirm } from '@/composables/useConfirm'
@@ -216,6 +224,10 @@ async function confirmLeave() {
   if (confirmed) {
     await teamStore.leaveTeam()
   }
+}
+
+function handleJoinedTeam(_teamId: string) {
+  showJoinModal.value = false
 }
 </script>
 
