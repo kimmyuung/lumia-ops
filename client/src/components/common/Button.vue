@@ -1,32 +1,69 @@
 <template>
-  <button
+  <component
+    :is="componentType"
+    :to="to"
+    :href="href"
     :class="['btn', `btn-${variant}`, `btn-${size}`, { 'btn-loading': loading }]"
     :disabled="disabled || loading"
-    @click="$emit('click', $event)"
+    v-bind="$attrs"
+    @click="handleClick"
   >
-    <span v-if="loading" class="spinner"></span>
+    <Spinner v-if="loading" :size="spinnerSize" />
     <slot v-else />
-  </button>
+  </component>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import Spinner from './Spinner.vue'
+
 interface Props {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
   size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   loading?: boolean
+  as?: string
+  to?: string | object
+  href?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   variant: 'primary',
   size: 'md',
   disabled: false,
-  loading: false
+  loading: false,
+  as: 'button',
+  to: undefined,
+  href: undefined
 })
 
-defineEmits<{
+const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
+
+const componentType = computed(() => {
+  if (props.to) return RouterLink
+  if (props.href) return 'a'
+  return props.as
+})
+
+const spinnerSize = computed(() => {
+  switch (props.size) {
+    case 'sm': return 14
+    case 'lg': return 22
+    default: return 18
+  }
+})
+
+const handleClick = (event: MouseEvent) => {
+  if (props.disabled || props.loading) {
+    event.preventDefault()
+    event.stopPropagation()
+    return
+  }
+  emit('click', event)
+}
 </script>
 
 <style scoped>
@@ -57,10 +94,12 @@ defineEmits<{
   opacity: 1;
 }
 
-.btn:disabled {
+.btn:disabled,
+.btn[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none !important;
+  pointer-events: none;
 }
 
 .btn:active:not(:disabled) {
@@ -130,20 +169,5 @@ defineEmits<{
 /* Loading */
 .btn-loading {
   pointer-events: none;
-}
-
-.spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid transparent;
-  border-top-color: currentColor;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 </style>

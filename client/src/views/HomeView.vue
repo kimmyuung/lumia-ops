@@ -12,14 +12,14 @@
         </h1>
         <p class="tagline">팀 전략 수립부터 스크림 관리까지, 승리를 위한 모든 것</p>
         <div class="cta-buttons">
-          <router-link to="/team" class="btn btn-primary">
+          <Button to="/team" variant="primary" size="lg">
             <Users :size="20" />
             <span>팀 관리</span>
-          </router-link>
-          <router-link to="/strategy" class="btn btn-secondary">
+          </Button>
+          <Button to="/strategy" variant="secondary" size="lg">
             <Target :size="20" />
             <span>전략 보드</span>
-          </router-link>
+          </Button>
         </div>
       </div>
     </section>
@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { Map, Users, Target, Trophy, Sparkles } from 'lucide-vue-next'
-import { Card } from '@/components/common'
+import { Card, Button } from '@/components/common'
 </script>
 
 <style scoped>
@@ -159,51 +159,7 @@ import { Card } from '@/components/common'
   flex-wrap: wrap;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  border-radius: var(--radius-lg);
-  text-decoration: none;
-  font-weight: 600;
-  transition: all var(--transition-normal);
-}
 
-.btn:hover {
-  transform: translateY(-3px) scale(1.02);
-}
-
-.btn:active {
-  transform: translateY(-1px) scale(0.98);
-}
-
-.btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
-  color: white;
-  box-shadow: var(--shadow-md), 0 0 20px rgba(102, 126, 234, 0.3);
-}
-
-.btn-primary:hover {
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(102, 126, 234, 0.4);
-}
-
-.btn-secondary {
-  background: var(--card-bg);
-  backdrop-filter: var(--glass-blur);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-}
-
-.btn-secondary:hover {
-  background: var(--card-bg-solid);
-  box-shadow: var(--shadow-md);
-}
 
 .features {
   display: grid;
@@ -257,10 +213,9 @@ import { Card } from '@/components/common'
   .cta-buttons {
     flex-direction: column;
   }
-
-  .btn {
+  
+  .cta-buttons :deep(.btn) {
     width: 100%;
     justify-content: center;
   }
 }
-</style>

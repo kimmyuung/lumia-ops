@@ -2,6 +2,7 @@ package com.lumiaops.lumiaapi.controller
 
 import com.lumiaops.lumiaapi.dto.*
 import com.lumiaops.lumiacore.domain.AccountStatus
+import com.lumiaops.lumiacore.security.JwtTokenProvider
 import com.lumiaops.lumiacore.service.AuthService
 import com.lumiaops.lumiacore.service.LoginResult
 import jakarta.validation.Valid
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val jwtTokenProvider: JwtTokenProvider
 ) {
 
     /**
@@ -74,7 +76,9 @@ class AuthController(
         return when (val result = authService.login(request.email, request.password)) {
             is LoginResult.Success -> {
                 val user = result.user
+                val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
                 ResponseEntity.ok(LoginResponse(
+                    token = token,
                     userId = user.id!!,
                     email = user.email,
                     nickname = user.nickname,
@@ -84,7 +88,9 @@ class AuthController(
             }
             is LoginResult.NeedsNickname -> {
                 val user = result.user
+                val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
                 ResponseEntity.ok(LoginResponse(
+                    token = token,
                     userId = user.id!!,
                     email = user.email,
                     nickname = null,

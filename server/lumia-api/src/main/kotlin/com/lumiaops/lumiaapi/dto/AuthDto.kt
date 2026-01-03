@@ -33,6 +33,7 @@ data class LoginRequest(
  * 로그인 응답 DTO
  */
 data class LoginResponse(
+    val token: String,  // JWT 액세스 토큰
     val userId: Long,
     val email: String,
     val nickname: String?,

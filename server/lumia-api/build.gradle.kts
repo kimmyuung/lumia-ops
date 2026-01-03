@@ -5,6 +5,17 @@ dependencies {
     // [Web]
     implementation("org.springframework.boot:spring-boot-starter-web")
 
+    // [Security]
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
     // [Validation] DTO 검증 (@NotNull, @Size 등)
     implementation("org.springframework.boot:spring-boot-starter-validation")
+
+    // Mail
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+
+    // Test
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("io.mockk:mockk:1.13.8")
 }

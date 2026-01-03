@@ -39,6 +39,14 @@ class ScrimService(
     }
 
     @Transactional
+    fun updateScrim(scrimId: Long, title: String?, startTime: LocalDateTime?): Scrim {
+        val scrim = findScrimById(scrimId) ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
+        title?.let { scrim.title = it }
+        startTime?.let { scrim.startTime = it }
+        return scrim
+    }
+
+    @Transactional
     fun finishScrim(scrimId: Long): Scrim {
         val scrim = findScrimById(scrimId) ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
         scrim.isFinished = true
@@ -97,5 +105,73 @@ class ScrimService(
         result.killCount = killCount
         result.totalScore = totalScore
         return result
+    }
+
+    // ==================== 점수 자동 계산 메서드 ====================
+
+    /**
+     * 매치 결과 추가 (점수 자동 계산)
+     * @param match 매치
+     * @param team 팀
+     * @param rank 순위
+     * @param killCount 킬 수
+     * @param killMultiplier 킬 점수 배수 (기본값: 1)
+     * @return 저장된 매치 결과
+     */
+    @Transactional
+    fun addMatchResultWithAutoScore(
+        match: ScrimMatch,
+        team: Team,
+        rank: Int,
+        killCount: Int,
+        killMultiplier: Int = com.lumiaops.lumiacore.util.ScoreCalculator.DEFAULT_KILL_MULTIPLIER
+    ): MatchResult {
+        val totalScore = com.lumiaops.lumiacore.util.ScoreCalculator.calculateScore(rank, killCount, killMultiplier)
+        return matchResultRepository.save(
+            MatchResult(
+                match = match,
+                team = team,
+                rank = rank,
+                killCount = killCount,
+                totalScore = totalScore
+            )
+        )
+    }
+
+    /**
+     * 매치 결과 업데이트 (점수 자동 재계산)
+     */
+    @Transactional
+    fun updateMatchResultWithAutoScore(
+        resultId: Long,
+        rank: Int,
+        killCount: Int,
+        killMultiplier: Int = com.lumiaops.lumiacore.util.ScoreCalculator.DEFAULT_KILL_MULTIPLIER
+    ): MatchResult {
+        val result = matchResultRepository.findById(resultId).orElse(null)
+            ?: throw IllegalArgumentException("결과를 찾을 수 없습니다: $resultId")
+        result.rank = rank
+        result.killCount = killCount
+        result.totalScore = com.lumiaops.lumiacore.util.ScoreCalculator.calculateScore(rank, killCount, killMultiplier)
+        return result
+    }
+
+    /**
+     * 스크림의 모든 매치 결과 점수 재계산
+     */
+    @Transactional
+    fun recalculateScrimScores(scrimId: Long, killMultiplier: Int = com.lumiaops.lumiacore.util.ScoreCalculator.DEFAULT_KILL_MULTIPLIER) {
+        val scrim = findScrimById(scrimId)
+            ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
+        
+        val matches = findMatchesByScrim(scrim)
+        matches.forEach { match ->
+            val results = findResultsByMatch(match)
+            results.forEach { result ->
+                result.totalScore = com.lumiaops.lumiacore.util.ScoreCalculator.calculateScore(
+                    result.rank, result.killCount, killMultiplier
+                )
+            }
+        }
     }
 }
