@@ -1,15 +1,20 @@
 package com.lumiaops.lumiaapi.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.lumiaops.lumiaapi.security.JwtAuthenticationFilter
 import com.lumiaops.lumiacore.config.JwtProperties
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.MediaType
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
@@ -24,7 +29,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 @EnableConfigurationProperties(JwtProperties::class)
 class SecurityConfig(
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val objectMapper: ObjectMapper
 ) {
 
     @Bean
@@ -36,6 +42,10 @@ class SecurityConfig(
             .csrf { it.disable() }
             // 세션 미사용 (Stateless)
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            // 예외 처리 - 인증 실패 시 401 반환
+            .exceptionHandling { exceptions ->
+                exceptions.authenticationEntryPoint(authenticationEntryPoint())
+            }
             // 요청별 인증 규칙
             .authorizeHttpRequests { auth ->
                 auth
@@ -58,6 +68,28 @@ class SecurityConfig(
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
+    }
+
+    /**
+     * 인증 실패 시 401 Unauthorized 응답 반환
+     */
+    @Bean
+    fun authenticationEntryPoint(): AuthenticationEntryPoint {
+        return AuthenticationEntryPoint { request: HttpServletRequest, response: HttpServletResponse, _ ->
+            response.status = HttpServletResponse.SC_UNAUTHORIZED
+            response.contentType = MediaType.APPLICATION_JSON_VALUE
+            response.characterEncoding = "UTF-8"
+            
+            val errorResponse = mapOf(
+                "status" to 401,
+                "error" to "Unauthorized",
+                "code" to "AUTHENTICATION_REQUIRED",
+                "message" to "인증이 필요합니다",
+                "path" to request.requestURI
+            )
+            
+            response.writer.write(objectMapper.writeValueAsString(errorResponse))
+        }
     }
 
     @Bean

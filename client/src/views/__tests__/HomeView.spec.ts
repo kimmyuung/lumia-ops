@@ -61,15 +61,17 @@ describe('HomeView', () => {
         it('should have link to team page', () => {
             const wrapper = mountComponent()
 
-            const teamLink = wrapper.find('a[href="/team"]')
-            expect(teamLink.exists()).toBe(true)
+            // Button 컴포넌트는 to prop으로 router-link를 렌더링함
+            const ctaButtons = wrapper.find('.cta-buttons')
+            expect(ctaButtons.text()).toContain('팀 관리')
         })
 
         it('should have link to strategy page', () => {
             const wrapper = mountComponent()
 
-            const strategyLink = wrapper.find('a[href="/strategy"]')
-            expect(strategyLink.exists()).toBe(true)
+            // Button 컴포넌트는 to prop으로 router-link를 렌더링함
+            const ctaButtons = wrapper.find('.cta-buttons')
+            expect(ctaButtons.text()).toContain('전략 보드')
         })
     })
 
