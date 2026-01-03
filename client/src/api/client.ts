@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { isTokenExpired } from '@/utils/token'
+import router from '@/router'
 
 // 에러 타입 정의
 export interface ApiError {
@@ -81,8 +82,8 @@ apiClient.interceptors.response.use(
         console.error('[API Unauthorized]')
         localStorage.removeItem('token')
         // 로그인 페이지로 리다이렉트 (router가 준비되면 사용)
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login'
+        if (router.currentRoute.value.name !== 'Login') {
+          router.push({ name: 'Login', query: { redirect: router.currentRoute.value.fullPath } })
         }
         break
       case 403:

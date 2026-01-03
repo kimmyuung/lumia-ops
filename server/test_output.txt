@@ -1,4 +1,8 @@
-﻿> Task :lumia-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :cleanTest UP-TO-DATE
+> Task :lumia-api:cleanTest
+> Task :lumia-core:cleanTest UP-TO-DATE
+> Task :lumia-socket:cleanTest UP-TO-DATE
+> Task :lumia-api:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :lumia-core:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :lumia-core:compileKotlin UP-TO-DATE
 > Task :lumia-core:compileJava NO-SOURCE
@@ -8,71 +12,44 @@
 > Task :lumia-api:classes UP-TO-DATE
 > Task :lumia-api:compileTestKotlin UP-TO-DATE
 > Task :lumia-api:compileTestJava NO-SOURCE
-> Task :lumia-api:processTestResources NO-SOURCE
+> Task :lumia-api:processTestResources UP-TO-DATE
 > Task :lumia-api:testClasses UP-TO-DATE
 > Task :lumia-core:processResources UP-TO-DATE
 > Task :lumia-core:classes UP-TO-DATE
 > Task :lumia-core:jar UP-TO-DATE
-.\gradlew : Could not write standard input to Gradle Test Exec
-utor 6.
-위치 줄:1 문자:1
-+ .\gradlew :lumia-api:test --tests "com.lumiaops.lumiaapi.Lum
-iaApiAppl ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (Could not write. 
-   ..est Executor 6.:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-java.io.IOException: ?뚯씠?꾧? ?ロ엳??以묒엯?덈떎
-	at java.base/java.io.FileOutputStream.writeBytes(Native Metho
-d)
-	at java.base/java.io.FileOutputStream.write(FileOutputStream.
-java:367)
-	at java.base/java.io.BufferedOutputStream.flushBuffer(Buffere
-dOutputStream.java:125)
-	at java.base/java.io.BufferedOutputStream.implFlush(BufferedO
-utputStream.java:252)
-	at java.base/java.io.BufferedOutputStream.flush(BufferedOutpu
-tStream.java:240)
-	at org.gradle.process.internal.streams.ExecOutputHandleRunner
-.writeBuffer(ExecOutputHandleRunner.java:98)
-	at org.gradle.process.internal.streams.ExecOutputHandleRunner
-.forwardContent(ExecOutputHandleRunner.java:85)
-	at org.gradle.process.internal.streams.ExecOutputHandleRunner
-.run(ExecOutputHandleRunner.java:64)
-	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndReco
-rdFailures.onExecute(ExecutorPolicy.java:64)
-	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.r
-un(AbstractManagedExecutor.java:47)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorke
-r(ThreadPoolExecutor.java:1144)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.r
-un(ThreadPoolExecutor.java:642)
+Could not write standard input to Gradle Test Executor 4.
+java.io.IOException: 파이프가 닫히는 중입니다
+	at java.base/java.io.FileOutputStream.writeBytes(Native Method)
+	at java.base/java.io.FileOutputStream.write(FileOutputStream.java:367)
+	at java.base/java.io.BufferedOutputStream.flushBuffer(BufferedOutputStream.java:125)
+	at java.base/java.io.BufferedOutputStream.implFlush(BufferedOutputStream.java:252)
+	at java.base/java.io.BufferedOutputStream.flush(BufferedOutputStream.java:240)
+	at org.gradle.process.internal.streams.ExecOutputHandleRunner.writeBuffer(ExecOutputHandleRunner.java:98)
+	at org.gradle.process.internal.streams.ExecOutputHandleRunner.forwardContent(ExecOutputHandleRunner.java:85)
+	at org.gradle.process.internal.streams.ExecOutputHandleRunner.run(ExecOutputHandleRunner.java:64)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
 > Task :lumia-api:test FAILED
-Error: Could not find or load main class worker.org.gradle.pro
-cess.internal.worker.GradleWorkerMain
-Caused by: java.lang.ClassNotFoundException: worker.org.gradle
-.process.internal.worker.GradleWorkerMain
+Error: Could not find or load main class worker.org.gradle.process.internal.worker.GradleWorkerMain
+Caused by: java.lang.ClassNotFoundException: worker.org.gradle.process.internal.worker.GradleWorkerMain
 
 FAILURE: Build failed with an exception.
 
 * What went wrong:
 Execution failed for task ':lumia-api:test'.
 > Test process encountered an unexpected problem.
-   > Process 'Gradle Test Executor 6' finished with non-zero e
-xit value 1
+   > Process 'Gradle Test Executor 4' finished with non-zero exit value 1
 
 * Try:
-> Check common problems https://docs.gradle.org/9.2.1/userguid
-e/java_testing.html#sec:java_testing_troubleshooting.
+> Check common problems https://docs.gradle.org/9.2.1/userguide/java_testing.html#sec:java_testing_troubleshooting.
 > Run with --stacktrace option to get the stack trace.
 > Run with --info or --debug option to get more log output.
-> Run with --scan to generate a Build Scan (powered by Develoc
-ity).
+> Run with --scan to generate a Build Scan (powered by Develocity).
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 3s
-7 actionable tasks: 1 executed, 6 up-to-date
+BUILD FAILED in 5s
+12 actionable tasks: 2 executed, 10 up-to-date

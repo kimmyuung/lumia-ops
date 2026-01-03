@@ -39,6 +39,14 @@ class ScrimService(
     }
 
     @Transactional
+    fun updateScrim(scrimId: Long, title: String?, startTime: LocalDateTime?): Scrim {
+        val scrim = findScrimById(scrimId) ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
+        title?.let { scrim.title = it }
+        startTime?.let { scrim.startTime = it }
+        return scrim
+    }
+
+    @Transactional
     fun finishScrim(scrimId: Long): Scrim {
         val scrim = findScrimById(scrimId) ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
         scrim.isFinished = true

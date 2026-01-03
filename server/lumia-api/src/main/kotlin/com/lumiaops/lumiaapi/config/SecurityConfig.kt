@@ -1,0 +1,79 @@
+package com.lumiaops.lumiaapi.config
+
+import com.lumiaops.lumiaapi.security.JwtAuthenticationFilter
+import com.lumiaops.lumiacore.config.JwtProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+
+/**
+ * Spring Security 설정
+ * JWT 기반 무상태(Stateless) 인증 구성
+ */
+@Configuration
+@EnableWebSecurity
+@EnableConfigurationProperties(JwtProperties::class)
+class SecurityConfig(
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+) {
+
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            // CORS 설정
+            .cors { it.configurationSource(corsConfigurationSource()) }
+            // CSRF 비활성화 (JWT 사용 시 불필요)
+            .csrf { it.disable() }
+            // 세션 미사용 (Stateless)
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+            // 요청별 인증 규칙
+            .authorizeHttpRequests { auth ->
+                auth
+                    // 인증 없이 접근 가능한 경로
+                    .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/password/**").permitAll()
+                    .requestMatchers("/invitations/accept/**").permitAll()
+                    // H2 콘솔 (개발용)
+                    .requestMatchers("/h2-console/**").permitAll()
+                    // Swagger UI (추후 추가 시)
+                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    // 나머지는 인증 필요
+                    .anyRequest().authenticated()
+            }
+            // H2 콘솔을 위한 frameOptions 설정 (개발용)
+            .headers { headers ->
+                headers.frameOptions { it.sameOrigin() }
+            }
+            // JWT 필터 추가
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+
+        return http.build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration().apply {
+            allowedOrigins = listOf("http://localhost:5173", "http://localhost:3000")
+            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+            allowedHeaders = listOf("*")
+            allowCredentials = true
+            maxAge = 3600L
+        }
+        return UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", configuration)
+        }
+    }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+}
