@@ -1,10 +1,11 @@
 package com.lumiaops.lumiacore.service
 
 import com.lumiaops.lumiacore.domain.*
+import com.lumiaops.lumiacore.exception.*
 import com.lumiaops.lumiacore.repository.EmailVerificationRepository
 import com.lumiaops.lumiacore.repository.UserRepository
 import org.slf4j.LoggerFactory
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional
 class AuthService(
     private val userRepository: UserRepository,
     private val emailVerificationRepository: EmailVerificationRepository,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    private val passwordEncoder: PasswordEncoder
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
-    private val passwordEncoder = BCryptPasswordEncoder()
 
     /**
      * 회원가입 - 이메일 인증 발송
@@ -30,7 +31,7 @@ class AuthService(
     fun registerUser(email: String, password: String): Pair<User, Boolean> {
         // 이메일 중복 확인
         if (userRepository.existsByEmail(email)) {
-            throw IllegalArgumentException("이미 존재하는 이메일입니다: $email")
+            throw DuplicateException.email(email)
         }
 
         // 비밀번호 유효성 검사
@@ -55,19 +56,19 @@ class AuthService(
     @Transactional
     fun verifyEmail(token: String): User {
         val verification = emailVerificationRepository.findByToken(token)
-            ?: throw IllegalArgumentException("유효하지 않은 인증 토큰입니다")
+            ?: throw NotFoundException.verificationToken()
 
         if (!verification.canVerify()) {
             if (verification.isExpired()) {
-                throw IllegalArgumentException("만료된 인증 토큰입니다")
+                throw InvalidStateException.tokenExpired()
             }
-            throw IllegalArgumentException("이미 사용된 인증 토큰입니다")
+            throw InvalidStateException.tokenUsed()
         }
 
         verification.verify()
 
         val user = userRepository.findByEmail(verification.email)
-            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다")
+            ?: throw NotFoundException.userByEmail(verification.email)
 
         when (verification.type) {
             VerificationType.SIGNUP -> user.verifyEmail()
@@ -163,13 +164,13 @@ class AuthService(
      */
     private fun validatePassword(password: String) {
         if (password.length < 8) {
-            throw IllegalArgumentException("비밀번호는 8자 이상이어야 합니다")
+            throw ValidationException.passwordTooShort()
         }
         if (!password.any { it.isDigit() }) {
-            throw IllegalArgumentException("비밀번호에 숫자가 포함되어야 합니다")
+            throw ValidationException.passwordNoNumber()
         }
         if (!password.any { it.isLetter() }) {
-            throw IllegalArgumentException("비밀번호에 영문자가 포함되어야 합니다")
+            throw ValidationException.passwordNoLetter()
         }
     }
 }
