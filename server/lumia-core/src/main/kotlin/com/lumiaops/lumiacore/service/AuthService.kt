@@ -88,18 +88,27 @@ class AuthService(
     @Transactional
     fun login(email: String, password: String): LoginResult {
         val user = userRepository.findByEmail(email)
-            ?: return LoginResult.Failure("이메일 또는 비밀번호가 올바르지 않습니다")
+        if (user == null) {
+            log.warn("로그인 실패 - 존재하지 않는 이메일: email=$email")
+            return LoginResult.Failure("이메일 또는 비밀번호가 올바르지 않습니다")
+        }
 
         // 계정 상태 확인
         when (user.status) {
-            AccountStatus.PENDING_EMAIL -> 
+            AccountStatus.PENDING_EMAIL -> {
+                log.info("로그인 차단 - 이메일 인증 대기: email=$email")
                 return LoginResult.Failure("이메일 인증이 필요합니다")
+            }
             AccountStatus.PENDING_NICKNAME ->
                 return LoginResult.NeedsNickname(user)
-            AccountStatus.LOCKED -> 
+            AccountStatus.LOCKED -> {
+                log.warn("로그인 차단 - 계정 잠김: email=$email")
                 return LoginResult.Locked("계정이 잠겼습니다. 이메일 인증 후 비밀번호를 재설정해주세요")
-            AccountStatus.DORMANT -> 
+            }
+            AccountStatus.DORMANT -> {
+                log.info("로그인 차단 - 휴면 계정: email=$email")
                 return LoginResult.Dormant("휴면 계정입니다. 이메일 인증 후 비밀번호를 재설정해주세요")
+            }
             AccountStatus.ACTIVE -> { /* 진행 */ }
         }
 
@@ -107,6 +116,7 @@ class AuthService(
         if (user.isDormantCandidate()) {
             user.markAsDormant()
             sendVerificationEmail(email, VerificationType.DORMANT_REACTIVATION)
+            log.info("휴면 계정 전환: email=$email, userId=${user.id}")
             return LoginResult.Dormant("6개월 이상 로그인하지 않아 휴면 계정으로 전환되었습니다. 이메일을 확인해주세요")
         }
 
@@ -115,8 +125,10 @@ class AuthService(
             val locked = user.loginFailed()
             if (locked) {
                 sendVerificationEmail(email, VerificationType.UNLOCK_ACCOUNT)
+                log.warn("계정 잠김 - 비밀번호 5회 오류: email=$email, userId=${user.id}")
                 return LoginResult.Locked("비밀번호 5회 오류로 계정이 잠겼습니다. 이메일을 확인해주세요")
             }
+            log.warn("로그인 실패 - 비밀번호 불일치: email=$email, failCount=${user.loginFailCount}")
             return LoginResult.Failure("이메일 또는 비밀번호가 올바르지 않습니다 (${5 - user.loginFailCount}회 남음)")
         }
 

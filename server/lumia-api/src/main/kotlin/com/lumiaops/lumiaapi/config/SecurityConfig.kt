@@ -27,10 +27,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
  */
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(JwtProperties::class)
+@EnableConfigurationProperties(JwtProperties::class, CorsProperties::class)
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val corsProperties: CorsProperties
 ) {
 
     @Bean
@@ -52,7 +53,8 @@ class SecurityConfig(
                     // 인증 없이 접근 가능한 경로
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/password/**").permitAll()
-                    .requestMatchers("/invitations/accept/**").permitAll()
+                    // 초대 토큰 검증만 허용 (수락/거절은 인증 필요)
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/invitations/{token}").permitAll()
                     // H2 콘솔 (개발용)
                     .requestMatchers("/h2-console/**").permitAll()
                     // Swagger UI (추후 추가 시)
@@ -95,11 +97,11 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
-            allowedOrigins = listOf("http://localhost:5173", "http://localhost:3000")
-            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-            allowedHeaders = listOf("*")
-            allowCredentials = true
-            maxAge = 3600L
+            allowedOrigins = corsProperties.allowedOrigins
+            allowedMethods = corsProperties.allowedMethods
+            allowedHeaders = corsProperties.allowedHeaders
+            allowCredentials = corsProperties.allowCredentials
+            maxAge = corsProperties.maxAge
         }
         return UrlBasedCorsConfigurationSource().apply {
             registerCorsConfiguration("/**", configuration)

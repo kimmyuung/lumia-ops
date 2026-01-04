@@ -1,14 +1,9 @@
 package com.lumiaops.lumiaapi.dto
 
+import com.lumiaops.lumiacore.domain.scrim.ScrimStatus
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
-
-enum class ScrimStatus {
-    WAITING,
-    PLAYING,
-    FINISHED
-}
 
 data class CreateScrimRequest(
     @field:NotBlank(message = "스크림 제목은 필수입니다")
@@ -43,4 +38,14 @@ data class AddMatchResultRequest(
     val kills: Int,
 
     val notes: String?
+)
+
+data class ScrimResponse(
+    val id: Long,
+    val title: String,
+    val startTime: LocalDateTime,
+    val status: ScrimStatus,
+    val matchCount: Int,
+    val createdAt: LocalDateTime?,
+    val updatedAt: LocalDateTime?
 )

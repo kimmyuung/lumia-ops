@@ -4,7 +4,12 @@ import com.lumiaops.lumiacore.domain.common.BaseTimeEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "teams")
+@Table(
+    name = "teams",
+    indexes = [
+        Index(name = "idx_team_owner_id", columnList = "ownerId")
+    ]
+)
 class Team(
     @Column(nullable = false)
     var name: String,
@@ -13,8 +18,19 @@ class Team(
     var description: String? = null,
 
     @Column(nullable = false)
-    val ownerId: Long // 팀장(방장)의 User ID (연관관계 끊어내기 전략)
+    var ownerId: Long // 팀장(방장)의 User ID
 ) : BaseTimeEntity() {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    @Version
+    val version: Long = 0
+
+    /**
+     * 팀장 변경
+     */
+    fun transferOwnership(newOwnerId: Long) {
+        require(newOwnerId != ownerId) { "이미 해당 사용자가 팀장입니다" }
+        this.ownerId = newOwnerId
+    }
 }

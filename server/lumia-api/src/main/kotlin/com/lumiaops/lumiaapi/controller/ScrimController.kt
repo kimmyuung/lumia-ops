@@ -1,11 +1,11 @@
 package com.lumiaops.lumiaapi.controller
 
-import com.lumiaops.lumiaapi.dto.AddMatchResultRequest
-import com.lumiaops.lumiaapi.dto.CreateScrimRequest
-import com.lumiaops.lumiaapi.dto.UpdateScrimRequest
-import com.lumiaops.lumiaapi.dto.UpdateScrimStatusRequest
-import com.lumiaops.lumiacore.domain.scrim.MatchResult
+import com.lumiaops.lumiaapi.dto.*
 import com.lumiaops.lumiacore.domain.scrim.Scrim
+import com.lumiaops.lumiacore.domain.scrim.ScrimMatch
+import com.lumiaops.lumiacore.domain.scrim.ScrimStatus
+import com.lumiaops.lumiacore.domain.scrim.MatchResult
+import com.lumiaops.lumiacore.exception.NotFoundException
 import com.lumiaops.lumiacore.service.ScrimService
 import com.lumiaops.lumiacore.service.TeamService
 import com.lumiaops.lumiacore.service.UserService
@@ -25,32 +25,39 @@ class ScrimController(
 ) {
 
     @GetMapping
-    fun getScrims(): List<Scrim> {
-        return scrimService.findAllScrims()
+    fun getScrims(@RequestParam(required = false) status: ScrimStatus?): List<ScrimResponse> {
+        val scrims = if (status != null) {
+            scrimService.findScrimsByStatus(status)
+        } else {
+            scrimService.findAllScrims()
+        }
+        return scrims.map { it.toResponse() }
     }
 
     @GetMapping("/{id}")
-    fun getScrim(@PathVariable id: Long): Scrim {
-        return scrimService.findScrimById(id)
+    fun getScrim(@PathVariable id: Long): ScrimResponse {
+        val scrim = scrimService.findScrimById(id)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found")
+        return scrim.toResponse()
     }
 
     @PostMapping
-    fun createScrim(
-        @RequestBody @Valid request: CreateScrimRequest
-    ): Scrim {
-        return scrimService.createScrim(request.title, request.startTime)
+    fun createScrim(@RequestBody @Valid request: CreateScrimRequest): ScrimResponse {
+        val scrim = scrimService.createScrim(request.title, request.startTime)
+        return scrim.toResponse()
     }
 
     @PatchMapping("/{id}")
     fun updateScrim(
         @PathVariable id: Long,
         @RequestBody request: UpdateScrimRequest
-    ): Scrim {
-        return scrimService.updateScrim(id, request.title, request.startTime)
+    ): ScrimResponse {
+        val scrim = scrimService.updateScrim(id, request.title, request.startTime)
+        return scrim.toResponse()
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteScrim(@PathVariable id: Long) {
         scrimService.deleteScrim(id)
     }
@@ -59,12 +66,25 @@ class ScrimController(
     fun updateStatus(
         @PathVariable id: Long,
         @RequestBody @Valid request: UpdateScrimStatusRequest
-    ): Scrim {
-        // ScrimStatus에 따라 로직 분기. 서비스엔 finishScrim만 있음.
-        if (request.status == com.lumiaops.lumiaapi.dto.ScrimStatus.FINISHED) {
-             return scrimService.finishScrim(id)
+    ): ScrimResponse {
+        val scrim = when (request.status) {
+            ScrimStatus.IN_PROGRESS -> scrimService.startScrim(id)
+            ScrimStatus.FINISHED -> scrimService.finishScrim(id)
+            ScrimStatus.CANCELLED -> scrimService.cancelScrim(id)
+            ScrimStatus.SCHEDULED -> throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST, 
+                "Cannot change status back to SCHEDULED"
+            )
         }
-        return scrimService.findScrimById(id)!!
+        return scrim.toResponse()
+    }
+
+    @PostMapping("/{id}/matches")
+    fun addMatch(
+        @PathVariable id: Long,
+        @RequestParam(required = false) gameId: String?
+    ): ScrimMatch {
+        return scrimService.addMatch(id, gameId)
     }
 
     @PostMapping("/{id}/results")
@@ -76,24 +96,31 @@ class ScrimController(
         val scrim = scrimService.findScrimById(id)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found")
 
-        // 현재 유저의 팀을 찾아서 결과에 연결해야 함
+        // 현재 유저의 팀을 찾아서 결과에 연결
         val user = userService.findByEmail(userDetails.username)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
         val team = teamService.findTeamsByUser(user).firstOrNull()?.team
             ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "User has no team")
 
-        // 매치 생성 또는 조회 (라운드별)
-        // ScrimService에 findMatchByScrimAndRound 같은게 필요하지만, 없으면 addMatch로 생성
-        val matches = scrimService.findMatchesByScrim(scrim)
-        var match = matches.find { it.roundNumber == request.round }
-        
+        // 매치 조회 또는 생성
+        var match = scrim.getMatch(request.round)
         if (match == null) {
-            match = scrimService.addMatch(scrim, request.round)
+            match = scrimService.addMatch(id)
         }
 
-        // 점수 계산 (kill * 1 + placement based score) - 기본 로직
-        val totalScore = request.kills + (9 - request.placement) // 예시 점수
-
-        return scrimService.addMatchResult(match, team, request.placement, request.kills, totalScore)
+        // 결과 추가 (도메인 메서드 사용)
+        return match.addResult(team, request.placement, request.kills)
     }
+
+    // ==================== Helper Extensions ====================
+
+    private fun Scrim.toResponse() = ScrimResponse(
+        id = this.id!!,
+        title = this.title,
+        startTime = this.startTime,
+        status = this.status,
+        matchCount = this.matchCount(),
+        createdAt = this.createdAt,
+        updatedAt = this.updatedAt
+    )
 }
