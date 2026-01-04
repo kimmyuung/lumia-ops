@@ -6,6 +6,7 @@ import type { Team, TeamMember } from '@/types/team'
 // API 모킹
 vi.mock('@/api/team', () => ({
     teamApi: {
+        getTeams: vi.fn(),
         getMyTeam: vi.fn(),
         getTeam: vi.fn(),
         createTeam: vi.fn(),
@@ -70,6 +71,11 @@ describe('useTeamStore', () => {
             const store = useTeamStore()
             expect(store.error).toBeNull()
         })
+
+        it('should have empty teams array initially', () => {
+            const store = useTeamStore()
+            expect(store.teams).toEqual([])
+        })
     })
 
     describe('hasTeam', () => {
@@ -83,6 +89,20 @@ describe('useTeamStore', () => {
             store.currentTeam = mockTeam
 
             expect(store.hasTeam).toBe(true)
+        })
+    })
+
+    describe('isOwner', () => {
+        it('should return false when no team', () => {
+            const store = useTeamStore()
+            expect(store.isOwner).toBe(false)
+        })
+    })
+
+    describe('isAdmin', () => {
+        it('should return false when no team', () => {
+            const store = useTeamStore()
+            expect(store.isAdmin).toBe(false)
         })
     })
 
@@ -108,6 +128,32 @@ describe('useTeamStore', () => {
             store.clearError()
 
             expect(store.error).toBeNull()
+        })
+    })
+
+    describe('state mutations', () => {
+        it('should set currentTeam', () => {
+            const store = useTeamStore()
+            store.currentTeam = mockTeam
+            expect(store.currentTeam).toEqual(mockTeam)
+        })
+
+        it('should add team to teams array', () => {
+            const store = useTeamStore()
+            store.teams = [mockTeam]
+            expect(store.teams).toHaveLength(1)
+        })
+
+        it('should set isLoading', () => {
+            const store = useTeamStore()
+            store.isLoading = true
+            expect(store.isLoading).toBe(true)
+        })
+
+        it('should set error', () => {
+            const store = useTeamStore()
+            store.error = 'Test error'
+            expect(store.error).toBe('Test error')
         })
     })
 })

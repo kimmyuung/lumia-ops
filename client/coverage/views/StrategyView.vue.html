@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>24/24</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>16/16</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -239,20 +239,9 @@
 <a name='L174'></a><a href='#L174'>174</a>
 <a name='L175'></a><a href='#L175'>175</a>
 <a name='L176'></a><a href='#L176'>176</a>
-<a name='L177'></a><a href='#L177'>177</a>
-<a name='L178'></a><a href='#L178'>178</a>
-<a name='L179'></a><a href='#L179'>179</a>
-<a name='L180'></a><a href='#L180'>180</a>
-<a name='L181'></a><a href='#L181'>181</a>
-<a name='L182'></a><a href='#L182'>182</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L177'></a><a href='#L177'>177</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -294,6 +283,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -428,17 +418,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
   &lt;div class="strategy-view"&gt;
     &lt;div class="container"&gt;
-      &lt;header class="page-header"&gt;
-        &lt;div class="header-content"&gt;
-          &lt;h1&gt;
-            &lt;Target :size="32" class="header-icon" /&gt;
-            &lt;span&gt;전략 수립 보드&lt;/span&gt;
-          &lt;/h1&gt;
-          &lt;p class="page-description"&gt;
-            실시간 동기화 택티컬 맵으로 팀 전략을 수립하세요.
-          &lt;/p&gt;
-        &lt;/div&gt;
-      &lt;/header&gt;
+      &lt;PageHeader
+        title="전략 수립 보드"
+        description="실시간 동기화 택티컬 맵으로 팀 전략을 수립하세요."
+        :icon="Target"
+      /&gt;
 &nbsp;
       &lt;section class="map-section"&gt;
         &lt;div class="tactical-map"&gt;
@@ -457,21 +441,21 @@
       &lt;section class="tools-section"&gt;
         &lt;h2&gt;전략 도구&lt;/h2&gt;
         &lt;div class="tools-grid"&gt;
-          &lt;Card hoverable&gt;
+          &lt;Card hoverable class="tool-card"&gt;
             &lt;div class="tool-icon"&gt;
               &lt;MapPin :size="24" /&gt;
             &lt;/div&gt;
             &lt;h4&gt;마커&lt;/h4&gt;
             &lt;p&gt;맵에 마커 배치&lt;/p&gt;
           &lt;/Card&gt;
-          &lt;Card hoverable&gt;
+          &lt;Card hoverable class="tool-card"&gt;
             &lt;div class="tool-icon"&gt;
               &lt;Route :size="24" /&gt;
             &lt;/div&gt;
             &lt;h4&gt;경로&lt;/h4&gt;
             &lt;p&gt;이동 경로 그리기&lt;/p&gt;
           &lt;/Card&gt;
-          &lt;Card hoverable&gt;
+          &lt;Card hoverable class="tool-card"&gt;
             &lt;div class="tool-icon"&gt;
               &lt;MessageSquare :size="24" /&gt;
             &lt;/div&gt;
@@ -493,7 +477,7 @@ import {
   MessageSquare,
   Sparkles
 } from 'lucide-vue-next'
-import { Card, Button } from '@/components/common'
+import { Card, Button, PageHeader } from '@/components/common'
 &lt;/script&gt;
 &nbsp;
 &lt;style scoped&gt;
@@ -507,35 +491,18 @@ import { Card, Button } from '@/components/common'
   padding: var(--page-padding);
 }
 &nbsp;
-.page-header {
-  margin-bottom: 2rem;
-}
-&nbsp;
-.header-content h1 {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-&nbsp;
-.header-icon {
-  color: var(--primary-color);
-}
-&nbsp;
-.page-description {
-  color: var(--text-muted);
-}
-&nbsp;
 .map-section {
   margin-bottom: var(--section-gap);
 }
 &nbsp;
 .tactical-map {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
   border-radius: var(--radius-lg);
   overflow: hidden;
   aspect-ratio: 16 / 9;
   max-height: 600px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
 }
 &nbsp;
 .map-placeholder {
@@ -551,7 +518,13 @@ import { Card, Button } from '@/components/common'
 }
 &nbsp;
 .map-icon {
-  opacity: 0.4;
+  opacity: 0.5;
+  animation: pulse 3s ease-in-out infinite;
+}
+&nbsp;
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
 }
 &nbsp;
 .map-placeholder h3 {
@@ -565,33 +538,45 @@ import { Card, Button } from '@/components/common'
 &nbsp;
 .tools-section h2 {
   margin-bottom: 1.5rem;
+  color: var(--text-color);
 }
 &nbsp;
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
 }
 &nbsp;
-.tools-grid .card {
+.tool-card {
   text-align: center;
   padding: 1.5rem;
 }
 &nbsp;
 .tool-icon {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   margin: 0 auto 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(102, 126, 234, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.15) 0%,
+    rgba(118, 75, 162, 0.15) 100%
+  );
   border-radius: 50%;
   color: var(--primary-color);
+  transition: all var(--transition-normal);
+}
+&nbsp;
+.tool-card:hover .tool-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: var(--shadow-glow);
 }
 &nbsp;
 .tools-grid h4 {
   margin-bottom: 0.25rem;
+  color: var(--text-color);
 }
 &nbsp;
 .tools-grid p {
@@ -613,7 +598,7 @@ import { Card, Button } from '@/components/common'
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-01T07:43:55.185Z
+                at 2026-01-04T06:35:52.427Z
             </div>
         <script src="../prettify.js"></script>
         <script>
