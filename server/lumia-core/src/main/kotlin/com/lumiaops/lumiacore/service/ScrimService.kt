@@ -4,9 +4,12 @@ import com.lumiaops.lumiacore.domain.Team
 import com.lumiaops.lumiacore.domain.scrim.MatchResult
 import com.lumiaops.lumiacore.domain.scrim.Scrim
 import com.lumiaops.lumiacore.domain.scrim.ScrimMatch
+import com.lumiaops.lumiacore.domain.scrim.ScrimStatus
+import com.lumiaops.lumiacore.exception.NotFoundException
 import com.lumiaops.lumiacore.repository.ScrimRepository
 import com.lumiaops.lumiacore.repository.MatchResultRepository
 import com.lumiaops.lumiacore.repository.ScrimMatchRepository
+import com.lumiaops.lumiacore.util.ScoreCalculator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -18,20 +21,30 @@ class ScrimService(
     private val scrimMatchRepository: ScrimMatchRepository,
     private val matchResultRepository: MatchResultRepository
 ) {
-    // Scrim 관련 메서드
+    // ==================== Scrim 조회 ====================
+
     fun findScrimById(id: Long): Scrim? = scrimRepository.findById(id).orElse(null)
+
+    fun getScrimById(id: Long): Scrim = scrimRepository.findById(id)
+        .orElseThrow { NotFoundException("스크림을 찾을 수 없습니다: $id") }
 
     fun findAllScrims(): List<Scrim> = scrimRepository.findAll()
 
-    fun findActiveScrims(): List<Scrim> = scrimRepository.findByIsFinished(false)
+    fun findActiveScrims(): List<Scrim> = scrimRepository.findByStatusIn(
+        listOf(ScrimStatus.SCHEDULED, ScrimStatus.IN_PROGRESS)
+    )
 
-    fun findFinishedScrims(): List<Scrim> = scrimRepository.findByIsFinished(true)
+    fun findFinishedScrims(): List<Scrim> = scrimRepository.findByStatus(ScrimStatus.FINISHED)
+
+    fun findScrimsByStatus(status: ScrimStatus): List<Scrim> = scrimRepository.findByStatus(status)
 
     fun findScrimsByDateRange(start: LocalDateTime, end: LocalDateTime): List<Scrim> =
         scrimRepository.findByStartTimeBetween(start, end)
 
     fun searchScrimsByTitle(title: String): List<Scrim> =
         scrimRepository.findByTitleContainingIgnoreCase(title)
+
+    // ==================== Scrim 생성/수정/삭제 ====================
 
     @Transactional
     fun createScrim(title: String, startTime: LocalDateTime): Scrim {
@@ -40,16 +53,8 @@ class ScrimService(
 
     @Transactional
     fun updateScrim(scrimId: Long, title: String?, startTime: LocalDateTime?): Scrim {
-        val scrim = findScrimById(scrimId) ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
-        title?.let { scrim.title = it }
-        startTime?.let { scrim.startTime = it }
-        return scrim
-    }
-
-    @Transactional
-    fun finishScrim(scrimId: Long): Scrim {
-        val scrim = findScrimById(scrimId) ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
-        scrim.isFinished = true
+        val scrim = getScrimById(scrimId)
+        scrim.update(title, startTime)  // 도메인 메서드 호출
         return scrim
     }
 
@@ -58,7 +63,31 @@ class ScrimService(
         scrimRepository.deleteById(scrimId)
     }
 
-    // ScrimMatch 관련 메서드
+    // ==================== Scrim 상태 변경 ====================
+
+    @Transactional
+    fun startScrim(scrimId: Long): Scrim {
+        val scrim = getScrimById(scrimId)
+        scrim.start()  // 도메인 메서드 호출
+        return scrim
+    }
+
+    @Transactional
+    fun finishScrim(scrimId: Long): Scrim {
+        val scrim = getScrimById(scrimId)
+        scrim.finish()  // 도메인 메서드 호출
+        return scrim
+    }
+
+    @Transactional
+    fun cancelScrim(scrimId: Long): Scrim {
+        val scrim = getScrimById(scrimId)
+        scrim.cancel()  // 도메인 메서드 호출
+        return scrim
+    }
+
+    // ==================== ScrimMatch 관리 ====================
+
     fun findMatchById(id: Long): ScrimMatch? = scrimMatchRepository.findById(id).orElse(null)
 
     fun findMatchesByScrim(scrim: Scrim): List<ScrimMatch> =
@@ -67,23 +96,45 @@ class ScrimService(
     fun findMatchByGameId(gameId: String): ScrimMatch? = scrimMatchRepository.findByGameId(gameId)
 
     @Transactional
-    fun addMatch(scrim: Scrim, roundNumber: Int, gameId: String? = null): ScrimMatch {
-        return scrimMatchRepository.save(ScrimMatch(scrim = scrim, roundNumber = roundNumber, gameId = gameId))
+    fun addMatch(scrimId: Long, gameId: String? = null): ScrimMatch {
+        val scrim = getScrimById(scrimId)
+        val match = scrim.addMatch(gameId)  // Aggregate Root를 통해 추가
+        scrimRepository.save(scrim)  // Cascade로 자동 저장
+        return match
     }
 
     @Transactional
     fun updateGameId(matchId: Long, gameId: String): ScrimMatch {
-        val match = findMatchById(matchId) ?: throw IllegalArgumentException("매치를 찾을 수 없습니다: $matchId")
-        match.gameId = gameId
+        val match = findMatchById(matchId) 
+            ?: throw NotFoundException("매치를 찾을 수 없습니다: $matchId")
+        match.updateGameId(gameId)  // 도메인 메서드 호출
         return match
     }
 
-    // MatchResult 관련 메서드
+    // ==================== MatchResult 관리 ====================
+
     fun findResultsByMatch(match: ScrimMatch): List<MatchResult> =
         matchResultRepository.findByMatchOrderByRankAsc(match)
 
     fun findResultsByTeam(team: Team): List<MatchResult> = matchResultRepository.findByTeam(team)
 
+    @Transactional
+    fun addMatchResult(matchId: Long, team: Team, rank: Int, killCount: Int): MatchResult {
+        val match = findMatchById(matchId)
+            ?: throw NotFoundException("매치를 찾을 수 없습니다: $matchId")
+        return match.addResult(team, rank, killCount)  // 도메인 메서드 호출 (점수 자동 계산)
+    }
+
+    @Transactional
+    fun addMatchResultWithScore(matchId: Long, team: Team, rank: Int, killCount: Int, totalScore: Int): MatchResult {
+        val match = findMatchById(matchId)
+            ?: throw NotFoundException("매치를 찾을 수 없습니다: $matchId")
+        return match.addResultWithScore(team, rank, killCount, totalScore)  // 도메인 메서드 호출
+    }
+
+    // ==================== 하위 호환성 유지 (Deprecated) ====================
+
+    @Deprecated("Use addMatchResult(matchId, team, rank, killCount) instead", ReplaceWith("addMatchResult(matchId, team, rank, killCount)"))
     @Transactional
     fun addMatchResult(match: ScrimMatch, team: Team, rank: Int, killCount: Int, totalScore: Int): MatchResult {
         return matchResultRepository.save(
@@ -97,78 +148,31 @@ class ScrimService(
         )
     }
 
+    @Deprecated("Use addMatch(scrimId, gameId) instead")
+    @Transactional
+    fun addMatch(scrim: Scrim, roundNumber: Int, gameId: String? = null): ScrimMatch {
+        return scrimMatchRepository.save(ScrimMatch(scrim = scrim, roundNumber = roundNumber, gameId = gameId))
+    }
+
     @Transactional
     fun updateMatchResult(resultId: Long, rank: Int, killCount: Int, totalScore: Int): MatchResult {
         val result = matchResultRepository.findById(resultId).orElse(null)
-            ?: throw IllegalArgumentException("결과를 찾을 수 없습니다: $resultId")
+            ?: throw NotFoundException("결과를 찾을 수 없습니다: $resultId")
         result.rank = rank
         result.killCount = killCount
         result.totalScore = totalScore
         return result
     }
 
-    // ==================== 점수 자동 계산 메서드 ====================
+    // ==================== 점수 재계산 ====================
 
-    /**
-     * 매치 결과 추가 (점수 자동 계산)
-     * @param match 매치
-     * @param team 팀
-     * @param rank 순위
-     * @param killCount 킬 수
-     * @param killMultiplier 킬 점수 배수 (기본값: 1)
-     * @return 저장된 매치 결과
-     */
     @Transactional
-    fun addMatchResultWithAutoScore(
-        match: ScrimMatch,
-        team: Team,
-        rank: Int,
-        killCount: Int,
-        killMultiplier: Int = com.lumiaops.lumiacore.util.ScoreCalculator.DEFAULT_KILL_MULTIPLIER
-    ): MatchResult {
-        val totalScore = com.lumiaops.lumiacore.util.ScoreCalculator.calculateScore(rank, killCount, killMultiplier)
-        return matchResultRepository.save(
-            MatchResult(
-                match = match,
-                team = team,
-                rank = rank,
-                killCount = killCount,
-                totalScore = totalScore
-            )
-        )
-    }
-
-    /**
-     * 매치 결과 업데이트 (점수 자동 재계산)
-     */
-    @Transactional
-    fun updateMatchResultWithAutoScore(
-        resultId: Long,
-        rank: Int,
-        killCount: Int,
-        killMultiplier: Int = com.lumiaops.lumiacore.util.ScoreCalculator.DEFAULT_KILL_MULTIPLIER
-    ): MatchResult {
-        val result = matchResultRepository.findById(resultId).orElse(null)
-            ?: throw IllegalArgumentException("결과를 찾을 수 없습니다: $resultId")
-        result.rank = rank
-        result.killCount = killCount
-        result.totalScore = com.lumiaops.lumiacore.util.ScoreCalculator.calculateScore(rank, killCount, killMultiplier)
-        return result
-    }
-
-    /**
-     * 스크림의 모든 매치 결과 점수 재계산
-     */
-    @Transactional
-    fun recalculateScrimScores(scrimId: Long, killMultiplier: Int = com.lumiaops.lumiacore.util.ScoreCalculator.DEFAULT_KILL_MULTIPLIER) {
-        val scrim = findScrimById(scrimId)
-            ?: throw IllegalArgumentException("스크림을 찾을 수 없습니다: $scrimId")
+    fun recalculateScrimScores(scrimId: Long, killMultiplier: Int = ScoreCalculator.DEFAULT_KILL_MULTIPLIER) {
+        val scrim = getScrimById(scrimId)
         
-        val matches = findMatchesByScrim(scrim)
-        matches.forEach { match ->
-            val results = findResultsByMatch(match)
-            results.forEach { result ->
-                result.totalScore = com.lumiaops.lumiacore.util.ScoreCalculator.calculateScore(
+        scrim.matches.forEach { match ->
+            match.results.forEach { result ->
+                result.totalScore = ScoreCalculator.calculateScore(
                     result.rank, result.killCount, killMultiplier
                 )
             }

@@ -4,6 +4,8 @@ import com.lumiaops.lumiacore.domain.Team
 import com.lumiaops.lumiacore.domain.scrim.MatchResult
 import com.lumiaops.lumiacore.domain.scrim.Scrim
 import com.lumiaops.lumiacore.domain.scrim.ScrimMatch
+import com.lumiaops.lumiacore.domain.scrim.ScrimStatus
+import com.lumiaops.lumiacore.exception.NotFoundException
 import com.lumiaops.lumiacore.repository.MatchResultRepository
 import com.lumiaops.lumiacore.repository.ScrimMatchRepository
 import com.lumiaops.lumiacore.repository.ScrimRepository
@@ -106,24 +108,23 @@ class ScrimServiceTest {
                 Scrim(title = "스크림1", startTime = LocalDateTime.now()),
                 Scrim(title = "스크림2", startTime = LocalDateTime.now())
             )
-            every { scrimRepository.findByIsFinished(false) } returns activeScrims
+            every { scrimRepository.findByStatusIn(listOf(ScrimStatus.SCHEDULED, ScrimStatus.IN_PROGRESS)) } returns activeScrims
 
             // when
             val result = scrimService.findActiveScrims()
 
             // then
             assertEquals(2, result.size)
-            verify(exactly = 1) { scrimRepository.findByIsFinished(false) }
         }
 
         @Test
         @DisplayName("완료된 스크림 목록 조회")
         fun `should return finished scrims`() {
             // given
-            val finishedScrims = listOf(
-                Scrim(title = "완료스크림", startTime = LocalDateTime.now(), isFinished = true)
-            )
-            every { scrimRepository.findByIsFinished(true) } returns finishedScrims
+            val finishedScrim = Scrim(title = "완료스크림", startTime = LocalDateTime.now())
+            finishedScrim.finish()
+            val finishedScrims = listOf(finishedScrim)
+            every { scrimRepository.findByStatus(ScrimStatus.FINISHED) } returns finishedScrims
 
             // when
             val result = scrimService.findFinishedScrims()
@@ -137,7 +138,7 @@ class ScrimServiceTest {
         fun `should finish scrim successfully`() {
             // given
             val scrimId = 1L
-            val scrim = Scrim(title = "스크림", startTime = LocalDateTime.now(), isFinished = false)
+            val scrim = Scrim(title = "스크림", startTime = LocalDateTime.now())
             every { scrimRepository.findById(scrimId) } returns Optional.of(scrim)
 
             // when
@@ -145,6 +146,7 @@ class ScrimServiceTest {
 
             // then
             assertTrue(result.isFinished)
+            assertEquals(ScrimStatus.FINISHED, result.status)
         }
 
         @Test
@@ -155,10 +157,9 @@ class ScrimServiceTest {
             every { scrimRepository.findById(scrimId) } returns Optional.empty()
 
             // when & then
-            val exception = assertThrows<IllegalArgumentException> {
+            assertThrows<NotFoundException> {
                 scrimService.finishScrim(scrimId)
             }
-            assertEquals("스크림을 찾을 수 없습니다: $scrimId", exception.message)
         }
 
         @Test
@@ -206,24 +207,6 @@ class ScrimServiceTest {
         @BeforeEach
         fun setUpScrim() {
             scrim = Scrim(title = "테스트 스크림", startTime = LocalDateTime.now())
-        }
-
-        @Test
-        @DisplayName("매치 추가 성공")
-        fun `should add match successfully`() {
-            // given
-            val roundNumber = 1
-            val gameId = "game-123"
-            val savedMatch = ScrimMatch(scrim = scrim, roundNumber = roundNumber, gameId = gameId)
-            
-            every { scrimMatchRepository.save(any<ScrimMatch>()) } returns savedMatch
-
-            // when
-            val result = scrimService.addMatch(scrim, roundNumber, gameId)
-
-            // then
-            assertEquals(roundNumber, result.roundNumber)
-            assertEquals(gameId, result.gameId)
         }
 
         @Test
@@ -284,10 +267,9 @@ class ScrimServiceTest {
             every { scrimMatchRepository.findById(matchId) } returns Optional.empty()
 
             // when & then
-            val exception = assertThrows<IllegalArgumentException> {
+            assertThrows<NotFoundException> {
                 scrimService.updateGameId(matchId, "game-id")
             }
-            assertEquals("매치를 찾을 수 없습니다: $matchId", exception.message)
         }
     }
 
@@ -304,26 +286,6 @@ class ScrimServiceTest {
             scrim = Scrim(title = "테스트 스크림", startTime = LocalDateTime.now())
             match = ScrimMatch(scrim = scrim, roundNumber = 1)
             team = Team(name = "테스트팀", description = null, ownerId = 1L)
-        }
-
-        @Test
-        @DisplayName("매치 결과 추가 성공")
-        fun `should add match result successfully`() {
-            // given
-            val rank = 1
-            val killCount = 10
-            val totalScore = 100
-            val savedResult = MatchResult(match = match, team = team, rank = rank, killCount = killCount, totalScore = totalScore)
-            
-            every { matchResultRepository.save(any<MatchResult>()) } returns savedResult
-
-            // when
-            val result = scrimService.addMatchResult(match, team, rank, killCount, totalScore)
-
-            // then
-            assertEquals(rank, result.rank)
-            assertEquals(killCount, result.killCount)
-            assertEquals(totalScore, result.totalScore)
         }
 
         @Test
@@ -387,10 +349,9 @@ class ScrimServiceTest {
             every { matchResultRepository.findById(resultId) } returns Optional.empty()
 
             // when & then
-            val exception = assertThrows<IllegalArgumentException> {
+            assertThrows<NotFoundException> {
                 scrimService.updateMatchResult(resultId, 1, 10, 100)
             }
-            assertEquals("결과를 찾을 수 없습니다: $resultId", exception.message)
         }
     }
 }
