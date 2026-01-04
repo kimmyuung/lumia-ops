@@ -9,7 +9,13 @@ import java.time.LocalDateTime
  * 스크림 일정, 상태, 매치 관리를 담당합니다.
  */
 @Entity
-@Table(name = "scrims")
+@Table(
+    name = "scrims",
+    indexes = [
+        Index(name = "idx_scrim_status", columnList = "status"),
+        Index(name = "idx_scrim_start_time", columnList = "startTime")
+    ]
+)
 class Scrim(
     @Column(nullable = false)
     var title: String,
@@ -21,6 +27,9 @@ class Scrim(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    @Version
+    val version: Long = 0
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

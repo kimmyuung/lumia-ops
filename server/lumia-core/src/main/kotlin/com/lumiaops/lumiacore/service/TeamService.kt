@@ -8,6 +8,7 @@ import com.lumiaops.lumiacore.domain.TeamRole
 import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.repository.TeamMemberRepository
 import com.lumiaops.lumiacore.repository.TeamRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,6 +18,8 @@ class TeamService(
     private val teamRepository: TeamRepository,
     private val teamMemberRepository: TeamMemberRepository
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     fun findById(id: Long): Team? = teamRepository.findById(id).orElse(null)
 
     fun findByName(name: String): Team? = teamRepository.findByName(name)
@@ -28,21 +31,26 @@ class TeamService(
     @LogExecution
     @Transactional
     fun createTeam(name: String, description: String?, ownerId: Long): Team {
-        return teamRepository.save(Team(name = name, description = description, ownerId = ownerId))
+        val team = teamRepository.save(Team(name = name, description = description, ownerId = ownerId))
+        log.info("팀 생성: teamId=${team.id}, name=$name, ownerId=$ownerId")
+        return team
     }
 
 
     @Transactional
     fun updateTeam(teamId: Long, name: String, description: String?): Team {
         val team = findById(teamId) ?: throw IllegalArgumentException("팀을 찾을 수 없습니다: $teamId")
+        val oldName = team.name
         team.name = name
         team.description = description
+        log.info("팀 수정: teamId=$teamId, name: $oldName→$name")
         return team
     }
 
 
     @Transactional
     fun deleteTeam(teamId: Long) {
+        log.warn("팀 삭제: teamId=$teamId")
         teamRepository.deleteById(teamId)
     }
 
@@ -59,7 +67,9 @@ class TeamService(
         if (isMember(team, user)) {
             throw IllegalArgumentException("이미 팀의 멤버입니다")
         }
-        return teamMemberRepository.save(TeamMember(team = team, user = user, role = role))
+        val member = teamMemberRepository.save(TeamMember(team = team, user = user, role = role))
+        log.info("팀 멤버 추가: teamId=${team.id}, userId=${user.id}, role=$role")
+        return member
     }
 
 
@@ -67,6 +77,7 @@ class TeamService(
     fun removeMember(team: Team, user: User) {
         val member = teamMemberRepository.findByTeamAndUser(team, user)
             ?: throw IllegalArgumentException("팀 멤버를 찾을 수 없습니다")
+        log.info("팀 멤버 제거: teamId=${team.id}, userId=${user.id}, role=${member.role}")
         teamMemberRepository.delete(member)
     }
 
@@ -75,7 +86,9 @@ class TeamService(
     fun updateMemberRole(team: Team, user: User, newRole: TeamRole): TeamMember {
         val member = teamMemberRepository.findByTeamAndUser(team, user)
             ?: throw IllegalArgumentException("팀 멤버를 찾을 수 없습니다")
+        val oldRole = member.role
         member.role = newRole
+        log.info("팀 멤버 역할 변경: teamId=${team.id}, userId=${user.id}, role: $oldRole→$newRole")
         return member
     }
 }

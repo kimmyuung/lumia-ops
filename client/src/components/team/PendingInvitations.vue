@@ -3,7 +3,7 @@
     <div class="section-header">
       <h4>
         <Clock :size="18" />
-        <span>대기 중인 초대 ({{ invitations.length }})</span>
+        <span>대기 중인 초대 ({{ invitations?.length ?? 0 }})</span>
       </h4>
       <Button v-if="!isLoading" variant="ghost" size="sm" @click="refresh">
         <RefreshCw :size="16" />
@@ -14,7 +14,7 @@
       <Skeleton class="skeleton-item" v-for="i in 2" :key="i" />
     </template>
 
-    <template v-else-if="invitations.length > 0">
+    <template v-else-if="invitations?.length > 0">
       <div class="invitation-list">
         <div 
           v-for="invitation in invitations" 

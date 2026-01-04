@@ -4,6 +4,7 @@ package com.lumiaops.lumiacore.service
 import com.lumiaops.lumiacore.domain.AccountStatus
 import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.repository.UserRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(
     private val userRepository: UserRepository
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     fun findById(id: Long): User? = userRepository.findById(id).orElse(null)
 
     fun findByEmail(email: String): User? = userRepository.findByEmail(email)
@@ -33,6 +36,7 @@ class UserService(
         }
         
         user.setInitialNickname(nickname)
+        log.info("닉네임 초기 설정: userId=$userId, nickname=$nickname")
         return user
     }
 
@@ -44,7 +48,9 @@ class UserService(
         val user = findById(userId) 
             ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다: $userId")
         
+        val oldNickname = user.nickname
         user.updateNickname(newNickname)
+        log.info("닉네임 변경: userId=$userId, nickname: $oldNickname→$newNickname")
         return user
     }
 
@@ -59,6 +65,7 @@ class UserService(
 
     @Transactional
     fun deleteUser(userId: Long) {
+        log.warn("사용자 삭제: userId=$userId")
         userRepository.deleteById(userId)
     }
 }

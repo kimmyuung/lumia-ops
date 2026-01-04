@@ -10,6 +10,7 @@ import com.lumiaops.lumiacore.repository.ScrimRepository
 import com.lumiaops.lumiacore.repository.MatchResultRepository
 import com.lumiaops.lumiacore.repository.ScrimMatchRepository
 import com.lumiaops.lumiacore.util.ScoreCalculator
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -21,6 +22,8 @@ class ScrimService(
     private val scrimMatchRepository: ScrimMatchRepository,
     private val matchResultRepository: MatchResultRepository
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     // ==================== Scrim 조회 ====================
 
     fun findScrimById(id: Long): Scrim? = scrimRepository.findById(id).orElse(null)
@@ -48,18 +51,24 @@ class ScrimService(
 
     @Transactional
     fun createScrim(title: String, startTime: LocalDateTime): Scrim {
-        return scrimRepository.save(Scrim(title = title, startTime = startTime))
+        val scrim = scrimRepository.save(Scrim(title = title, startTime = startTime))
+        log.info("스크림 생성: scrimId=${scrim.id}, title=$title, startTime=$startTime")
+        return scrim
     }
 
     @Transactional
     fun updateScrim(scrimId: Long, title: String?, startTime: LocalDateTime?): Scrim {
         val scrim = getScrimById(scrimId)
-        scrim.update(title, startTime)  // 도메인 메서드 호출
+        val oldTitle = scrim.title
+        val oldStartTime = scrim.startTime
+        scrim.update(title, startTime)
+        log.info("스크림 수정: scrimId=$scrimId, title: $oldTitle→${scrim.title}, startTime: $oldStartTime→${scrim.startTime}")
         return scrim
     }
 
     @Transactional
     fun deleteScrim(scrimId: Long) {
+        log.info("스크림 삭제: scrimId=$scrimId")
         scrimRepository.deleteById(scrimId)
     }
 
@@ -68,21 +77,24 @@ class ScrimService(
     @Transactional
     fun startScrim(scrimId: Long): Scrim {
         val scrim = getScrimById(scrimId)
-        scrim.start()  // 도메인 메서드 호출
+        scrim.start()
+        log.info("스크림 시작: scrimId=$scrimId, title=${scrim.title}")
         return scrim
     }
 
     @Transactional
     fun finishScrim(scrimId: Long): Scrim {
         val scrim = getScrimById(scrimId)
-        scrim.finish()  // 도메인 메서드 호출
+        scrim.finish()
+        log.info("스크림 종료: scrimId=$scrimId, title=${scrim.title}, matchCount=${scrim.matchCount()}")
         return scrim
     }
 
     @Transactional
     fun cancelScrim(scrimId: Long): Scrim {
         val scrim = getScrimById(scrimId)
-        scrim.cancel()  // 도메인 메서드 호출
+        scrim.cancel()
+        log.warn("스크림 취소: scrimId=$scrimId, title=${scrim.title}")
         return scrim
     }
 
@@ -98,8 +110,9 @@ class ScrimService(
     @Transactional
     fun addMatch(scrimId: Long, gameId: String? = null): ScrimMatch {
         val scrim = getScrimById(scrimId)
-        val match = scrim.addMatch(gameId)  // Aggregate Root를 통해 추가
-        scrimRepository.save(scrim)  // Cascade로 자동 저장
+        val match = scrim.addMatch(gameId)
+        scrimRepository.save(scrim)
+        log.info("매치 추가: scrimId=$scrimId, roundNumber=${match.roundNumber}, gameId=$gameId")
         return match
     }
 
@@ -122,7 +135,9 @@ class ScrimService(
     fun addMatchResult(matchId: Long, team: Team, rank: Int, killCount: Int): MatchResult {
         val match = findMatchById(matchId)
             ?: throw NotFoundException("매치를 찾을 수 없습니다: $matchId")
-        return match.addResult(team, rank, killCount)  // 도메인 메서드 호출 (점수 자동 계산)
+        val result = match.addResult(team, rank, killCount)
+        log.info("매치 결과 등록: matchId=$matchId, teamId=${team.id}, rank=$rank, killCount=$killCount, totalScore=${result.totalScore}")
+        return result
     }
 
     @Transactional
