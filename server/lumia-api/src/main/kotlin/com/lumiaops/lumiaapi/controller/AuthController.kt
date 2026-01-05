@@ -2,17 +2,22 @@ package com.lumiaops.lumiaapi.controller
 
 import com.lumiaops.lumiaapi.dto.*
 import com.lumiaops.lumiacore.domain.AccountStatus
+import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.security.JwtTokenProvider
 import com.lumiaops.lumiacore.service.AuthService
 import com.lumiaops.lumiacore.service.LoginResult
+import com.lumiaops.lumiacore.service.TokenService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
 /**
  * 인증 관련 REST API 컨트롤러
@@ -22,7 +27,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/auth")
 class AuthController(
     private val authService: AuthService,
-    private val jwtTokenProvider: JwtTokenProvider
+    private val jwtTokenProvider: JwtTokenProvider,
+    private val tokenService: TokenService
 ) {
 
     @Operation(summary = "회원가입", description = "이메일과 비밀번호로 회원가입합니다. 인증 이메일이 발송됩니다.")
@@ -87,6 +93,10 @@ class AuthController(
                 val user = result.user
                 val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
                 val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
+                
+                // Refresh Token DB에 저장
+                tokenService.saveRefreshToken(user.id!!, refreshToken)
+                
                 ResponseEntity.ok(LoginResponse(
                     token = token,
                     refreshToken = refreshToken,
@@ -101,6 +111,10 @@ class AuthController(
                 val user = result.user
                 val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
                 val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
+                
+                // Refresh Token DB에 저장
+                tokenService.saveRefreshToken(user.id!!, refreshToken)
+                
                 ResponseEntity.ok(LoginResponse(
                     token = token,
                     refreshToken = refreshToken,
@@ -137,7 +151,7 @@ class AuthController(
         @Valid @RequestBody request: RefreshTokenRequest
     ): ResponseEntity<Any> {
         return try {
-            // Refresh Token 검증
+            // JWT 형식 검증
             if (!jwtTokenProvider.validateToken(request.refreshToken)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(MessageResponse(success = false, message = "유효하지 않은 리프레시 토큰입니다"))
@@ -148,14 +162,25 @@ class AuthController(
                     .body(MessageResponse(success = false, message = "리프레시 토큰이 아닙니다"))
             }
             
-            // 새 토큰 발급
-            val userId = jwtTokenProvider.getUserIdFromToken(request.refreshToken)
-            val user = authService.findUserById(userId)
+            // DB에서 Refresh Token 검증 (서버 저장 확인)
+            val storedToken = tokenService.validateRefreshToken(request.refreshToken)
+                ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(MessageResponse(success = false, message = "리프레시 토큰이 만료되었거나 폐기되었습니다"))
+            
+            // 사용자 조회
+            val user = authService.findUserById(storedToken.userId)
                 ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(MessageResponse(success = false, message = "사용자를 찾을 수 없습니다"))
             
+            // 기존 Refresh Token 폐기 (Token Rotation)
+            tokenService.revokeRefreshToken(request.refreshToken)
+            
+            // 새 토큰 발급
             val newAccessToken = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
             val newRefreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
+            
+            // 새 Refresh Token DB에 저장
+            tokenService.saveRefreshToken(user.id!!, newRefreshToken)
             
             ResponseEntity.ok(TokenResponse(
                 token = newAccessToken,
@@ -201,6 +226,44 @@ class AuthController(
         } catch (e: Exception) {
             ResponseEntity.badRequest()
                 .body(MessageResponse(success = false, message = e.message ?: "이메일 발송에 실패했습니다"))
+        }
+    }
+
+    @Operation(summary = "로그아웃", description = "현재 토큰을 무효화합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+        ApiResponse(responseCode = "401", description = "인증 필요")
+    )
+    @PostMapping("/logout")
+    fun logout(
+        @AuthenticationPrincipal user: User,
+        @RequestBody(required = false) request: LogoutRequest?,
+        httpRequest: HttpServletRequest
+    ): ResponseEntity<MessageResponse> {
+        return try {
+            // Access Token 블랙리스트에 추가
+            val authHeader = httpRequest.getHeader("Authorization")
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                val accessToken = authHeader.substring(7)
+                // Access Token 만료 시간 추출하여 블랙리스트에 추가
+                val expiresAt = LocalDateTime.now().plusHours(1) // 기본 1시간
+                tokenService.blacklistAccessToken(accessToken, expiresAt)
+            }
+            
+            // Refresh Token도 폐기 (전달된 경우)
+            request?.refreshToken?.let { refreshToken ->
+                tokenService.revokeRefreshToken(refreshToken)
+            }
+            
+            ResponseEntity.ok(MessageResponse(
+                success = true,
+                message = "로그아웃되었습니다"
+            ))
+        } catch (e: Exception) {
+            ResponseEntity.ok(MessageResponse(
+                success = true,
+                message = "로그아웃되었습니다"
+            ))
         }
     }
 }

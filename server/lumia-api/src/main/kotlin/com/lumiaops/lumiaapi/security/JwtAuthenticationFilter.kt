@@ -1,6 +1,7 @@
 package com.lumiaops.lumiaapi.security
 
 import com.lumiaops.lumiacore.security.JwtTokenProvider
+import com.lumiaops.lumiacore.service.TokenService
 import com.lumiaops.lumiacore.service.UserService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -16,11 +17,13 @@ import org.springframework.web.filter.OncePerRequestFilter
 /**
  * JWT 인증 필터
  * 모든 요청에서 Authorization 헤더를 검사하여 JWT 토큰 검증
+ * 블랙리스트에 있는 토큰은 거부
  */
 @Component
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider,
-    private val userService: UserService
+    private val userService: UserService,
+    private val tokenService: TokenService
 ) : OncePerRequestFilter() {
 
     private val log = LoggerFactory.getLogger(javaClass)
@@ -39,6 +42,13 @@ class JwtAuthenticationFilter(
             val token = extractTokenFromRequest(request)
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
+                // 블랙리스트 확인
+                if (tokenService.isBlacklisted(token)) {
+                    log.debug("블랙리스트에 있는 토큰 거부")
+                    filterChain.doFilter(request, response)
+                    return
+                }
+                
                 if (jwtTokenProvider.isAccessToken(token)) {
                     val userId = jwtTokenProvider.getUserIdFromToken(token)
                     val user = userService.findById(userId)

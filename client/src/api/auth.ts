@@ -123,9 +123,19 @@ export const authApi = {
 
     /**
      * 로그아웃
+     * 서버에 토큰 무효화 요청 후 로컬 스토리지 정리
      */
     async logout(): Promise<void> {
-        await apiClient.post('/auth/logout')
+        try {
+            const refreshToken = localStorage.getItem('refreshToken')
+            await apiClient.post('/auth/logout', { refreshToken })
+        } catch {
+            // 서버 요청 실패해도 로컬 정리는 진행
+            console.warn('[Auth] Logout API 호출 실패, 로컬 토큰만 삭제')
+        } finally {
+            localStorage.removeItem('token')
+            localStorage.removeItem('refreshToken')
+        }
     },
 
     /**
