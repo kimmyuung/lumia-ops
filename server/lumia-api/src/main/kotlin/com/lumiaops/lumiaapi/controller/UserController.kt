@@ -2,6 +2,10 @@ package com.lumiaops.lumiaapi.controller
 
 import com.lumiaops.lumiaapi.dto.*
 import com.lumiaops.lumiacore.service.UserService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,19 +13,21 @@ import org.springframework.web.bind.annotation.*
 /**
  * 사용자 관련 REST API 컨트롤러
  */
+@Tag(name = "사용자", description = "사용자 정보 관리 API")
 @RestController
 @RequestMapping("/users")
 class UserController(
     private val userService: UserService
 ) {
 
-    /**
-     * 내 정보 조회
-     * GET /api/users/me
-     */
+    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "조회 성공"),
+        ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    )
     @GetMapping("/me")
     fun getMyInfo(
-        @RequestHeader("X-User-Id") userId: Long // TODO: 실제 인증으로 교체
+        @RequestHeader("X-User-Id") userId: Long
     ): ResponseEntity<UserResponse> {
         val user = userService.findById(userId)
             ?: return ResponseEntity.notFound().build()
@@ -39,6 +45,11 @@ class UserController(
      * 닉네임 설정 (첫 설정)
      * POST /api/users/me/nickname
      */
+    @Operation(summary = "닉네임 최초 설정", description = "이메일 인증 후 최초 닉네임을 설정합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "설정 성공"),
+        ApiResponse(responseCode = "400", description = "설정 실패")
+    )
     @PostMapping("/me/nickname")
     fun setInitialNickname(
         @RequestHeader("X-User-Id") userId: Long,
@@ -59,10 +70,11 @@ class UserController(
         }
     }
 
-    /**
-     * 닉네임 변경 (30일 제한)
-     * PUT /api/users/me/nickname
-     */
+    @Operation(summary = "닉네임 변경", description = "닉네임을 변경합니다. (30일 제한)")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "변경 성공"),
+        ApiResponse(responseCode = "400", description = "변경 실패 (30일 제한 등)")
+    )
     @PutMapping("/me/nickname")
     fun updateNickname(
         @RequestHeader("X-User-Id") userId: Long,
@@ -87,10 +99,11 @@ class UserController(
         }
     }
 
-    /**
-     * 닉네임 변경까지 남은 일수 조회
-     * GET /api/users/me/nickname/remaining-days
-     */
+    @Operation(summary = "닉네임 변경 가능 일수 조회", description = "닉네임 변경까지 남은 일수를 조회합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "조회 성공"),
+        ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    )
     @GetMapping("/me/nickname/remaining-days")
     fun getNicknameChangeRemainingDays(
         @RequestHeader("X-User-Id") userId: Long

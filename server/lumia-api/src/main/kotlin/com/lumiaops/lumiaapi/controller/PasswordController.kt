@@ -2,6 +2,10 @@ package com.lumiaops.lumiaapi.controller
 
 import com.lumiaops.lumiaapi.dto.*
 import com.lumiaops.lumiacore.service.PasswordService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,16 +13,15 @@ import org.springframework.web.bind.annotation.*
 /**
  * 비밀번호 관련 REST API 컨트롤러
  */
+@Tag(name = "비밀번호", description = "비밀번호 찾기/재설정/변경 API")
 @RestController
 @RequestMapping("/auth/password")
 class PasswordController(
     private val passwordService: PasswordService
 ) {
 
-    /**
-     * 비밀번호 찾기 요청 (이메일 발송)
-     * POST /api/auth/password/forgot
-     */
+    @Operation(summary = "비밀번호 찾기", description = "비밀번호 재설정 이메일을 발송합니다.")
+    @ApiResponse(responseCode = "200", description = "요청 처리 완료")
     @PostMapping("/forgot")
     fun forgotPassword(
         @Valid @RequestBody request: PasswordResetRequest
@@ -42,10 +45,11 @@ class PasswordController(
         }
     }
 
-    /**
-     * 비밀번호 재설정 (토큰 검증 후)
-     * POST /api/auth/password/reset
-     */
+    @Operation(summary = "비밀번호 재설정", description = "토큰을 검증하고 새 비밀번호를 설정합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "재설정 성공"),
+        ApiResponse(responseCode = "400", description = "재설정 실패")
+    )
     @PostMapping("/reset")
     fun resetPassword(
         @Valid @RequestBody request: ResetPasswordRequest
@@ -62,10 +66,11 @@ class PasswordController(
         }
     }
 
-    /**
-     * 비밀번호 변경 (로그인 상태에서)
-     * PUT /api/auth/password/change
-     */
+    @Operation(summary = "비밀번호 변경", description = "로그인 상태에서 비밀번호를 변경합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "변경 성공"),
+        ApiResponse(responseCode = "400", description = "변경 실패")
+    )
     @PutMapping("/change")
     fun changePassword(
         @RequestHeader("X-User-Id") userId: Long, // TODO: 실제 인증으로 교체

@@ -5,6 +5,10 @@ import com.lumiaops.lumiacore.domain.AccountStatus
 import com.lumiaops.lumiacore.security.JwtTokenProvider
 import com.lumiaops.lumiacore.service.AuthService
 import com.lumiaops.lumiacore.service.LoginResult
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*
 /**
  * 인증 관련 REST API 컨트롤러
  */
+@Tag(name = "인증", description = "회원가입, 로그인, 토큰 관리 API")
 @RestController
 @RequestMapping("/auth")
 class AuthController(
@@ -20,10 +25,11 @@ class AuthController(
     private val jwtTokenProvider: JwtTokenProvider
 ) {
 
-    /**
-     * 회원가입
-     * POST /api/auth/register
-     */
+    @Operation(summary = "회원가입", description = "이메일과 비밀번호로 회원가입합니다. 인증 이메일이 발송됩니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "201", description = "회원가입 성공"),
+        ApiResponse(responseCode = "400", description = "잘못된 요청 (이메일 중복 등)")
+    )
     @PostMapping("/register")
     fun register(
         @Valid @RequestBody request: RegisterRequest
@@ -45,10 +51,11 @@ class AuthController(
         }
     }
 
-    /**
-     * 이메일 인증
-     * POST /api/auth/verify-email
-     */
+    @Operation(summary = "이메일 인증", description = "이메일로 받은 토큰으로 이메일 인증을 완료합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "인증 성공"),
+        ApiResponse(responseCode = "400", description = "유효하지 않은 토큰")
+    )
     @PostMapping("/verify-email")
     fun verifyEmail(
         @Valid @RequestBody request: VerifyEmailRequest
@@ -65,10 +72,12 @@ class AuthController(
         }
     }
 
-    /**
-     * 로그인
-     * POST /api/auth/login
-     */
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다. JWT 토큰을 반환합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "로그인 성공"),
+        ApiResponse(responseCode = "401", description = "인증 실패"),
+        ApiResponse(responseCode = "403", description = "계정 잠금 또는 휴면")
+    )
     @PostMapping("/login")
     fun login(
         @Valid @RequestBody request: LoginRequest
@@ -118,10 +127,11 @@ class AuthController(
         }
     }
 
-    /**
-     * 토큰 갱신
-     * POST /api/auth/refresh
-     */
+    @Operation(summary = "토큰 갱신", description = "Refresh Token으로 새로운 Access Token을 발급받습니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "토큰 갱신 성공"),
+        ApiResponse(responseCode = "401", description = "유효하지 않은 토큰")
+    )
     @PostMapping("/refresh")
     fun refreshToken(
         @Valid @RequestBody request: RefreshTokenRequest
@@ -157,10 +167,8 @@ class AuthController(
         }
     }
 
-    /**
-     * 아이디 찾기 (인증 없이)
-     * POST /api/auth/find-username
-     */
+    @Operation(summary = "아이디 찾기", description = "이메일로 가입된 계정이 있는지 확인합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
     @PostMapping("/find-username")
     fun findUsername(
         @Valid @RequestBody request: FindUsernameRequest
@@ -172,10 +180,11 @@ class AuthController(
         ))
     }
 
-    /**
-     * 인증 이메일 재발송
-     * POST /api/auth/resend-verification
-     */
+    @Operation(summary = "인증 이메일 재발송", description = "인증 이메일을 다시 발송합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "발송 성공"),
+        ApiResponse(responseCode = "400", description = "발송 실패")
+    )
     @PostMapping("/resend-verification")
     fun resendVerification(
         @Valid @RequestBody request: FindUsernameRequest

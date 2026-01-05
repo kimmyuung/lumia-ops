@@ -2,6 +2,7 @@ package com.lumiaops.lumiaapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lumiaops.lumiaapi.security.JwtAuthenticationFilter
+import com.lumiaops.lumiaapi.security.RateLimitFilter
 import com.lumiaops.lumiacore.config.JwtProperties
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -20,6 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.filter.CorsFilter
 
 /**
  * Spring Security 설정
@@ -30,9 +32,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableConfigurationProperties(JwtProperties::class, CorsProperties::class)
 class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val rateLimitFilter: RateLimitFilter,
     private val objectMapper: ObjectMapper,
     private val corsProperties: CorsProperties
 ) {
+
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -66,6 +70,8 @@ class SecurityConfig(
             .headers { headers ->
                 headers.frameOptions { it.sameOrigin() }
             }
+            // Rate Limit 필터 추가 (가장 먼저 실행)
+            .addFilterBefore(rateLimitFilter, CorsFilter::class.java)
             // JWT 필터 추가
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
