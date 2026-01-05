@@ -63,7 +63,7 @@ export function useStompClient(options: UseStompClientOptions = {}) {
         onDisconnect,
         onError,
         autoConnect = false,
-        reconnectDelay = 5000,
+        reconnectDelay = 1000,  // 초기 재연결 딜레이 (1초)
         heartbeatIncoming = 10000,
         heartbeatOutgoing = 10000
     } = options
@@ -71,6 +71,11 @@ export function useStompClient(options: UseStompClientOptions = {}) {
     const isConnected = ref(false)
     const error = ref<string | null>(null)
     const subscriptions = ref<Map<string, StompSubscription>>(new Map())
+    const reconnectAttempts = ref(0)
+
+    // 지수 백오프 설정
+    const MAX_RECONNECT_DELAY = 30000  // 최대 30초
+    const MAX_RECONNECT_ATTEMPTS = 10  // 최대 10회 시도
 
     let client: Client | null = null
 
@@ -85,6 +90,19 @@ export function useStompClient(options: UseStompClientOptions = {}) {
     }
 
     /**
+     * 지수 백오프 딜레이 계산
+     * @param attempt 현재 재연결 시도 횟수
+     * @returns 딜레이 (ms)
+     */
+    const calculateBackoffDelay = (attempt: number): number => {
+        // 지수 백오프: delay * 2^attempt (최대 MAX_RECONNECT_DELAY)
+        const delay = Math.min(reconnectDelay * Math.pow(2, attempt), MAX_RECONNECT_DELAY)
+        // 약간의 지터(jitter) 추가 (±10%)
+        const jitter = delay * 0.1 * (Math.random() * 2 - 1)
+        return Math.floor(delay + jitter)
+    }
+
+    /**
      * STOMP 클라이언트 연결
      */
     const connect = () => {
@@ -93,13 +111,17 @@ export function useStompClient(options: UseStompClientOptions = {}) {
         client = new Client({
             webSocketFactory: () => new SockJS(url),
             connectHeaders: getToken() ? { Authorization: `Bearer ${getToken()}` } : {},
-            reconnectDelay,
+
+            // 지수 백오프로 재연결 딜레이 계산
+            reconnectDelay: calculateBackoffDelay(reconnectAttempts.value),
+
             heartbeatIncoming,
             heartbeatOutgoing,
 
             onConnect: () => {
                 isConnected.value = true
                 error.value = null
+                reconnectAttempts.value = 0  // 성공 시 재연결 시도 횟수 초기화
                 console.log('[STOMP] Connected')
                 onConnect?.()
             },
@@ -117,10 +139,26 @@ export function useStompClient(options: UseStompClientOptions = {}) {
                 onError?.(errorMessage)
             },
 
-            onWebSocketError: (event) => {
+            onWebSocketError: (_event) => {
                 error.value = 'WebSocket connection error'
-                console.error('[STOMP] WebSocket error:', event)
+                reconnectAttempts.value++
+
+                if (reconnectAttempts.value >= MAX_RECONNECT_ATTEMPTS) {
+                    console.error('[STOMP] Max reconnection attempts reached')
+                    client?.deactivate()
+                } else {
+                    const nextDelay = calculateBackoffDelay(reconnectAttempts.value)
+                    console.log(`[STOMP] WebSocket error. Reconnecting in ${nextDelay}ms (attempt ${reconnectAttempts.value}/${MAX_RECONNECT_ATTEMPTS})`)
+                }
+
                 onError?.('WebSocket connection error')
+            },
+
+            // 재연결 시도 전 콜백
+            beforeConnect: () => {
+                if (reconnectAttempts.value > 0) {
+                    console.log(`[STOMP] Reconnection attempt ${reconnectAttempts.value}/${MAX_RECONNECT_ATTEMPTS}`)
+                }
             }
         })
 
