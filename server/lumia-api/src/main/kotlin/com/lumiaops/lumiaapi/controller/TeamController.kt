@@ -8,6 +8,11 @@ import com.lumiaops.lumiacore.domain.Team
 import com.lumiaops.lumiacore.domain.TeamMember
 import com.lumiaops.lumiacore.service.TeamService
 import com.lumiaops.lumiacore.service.UserService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
+@Tag(name = "팀", description = "팀 생성, 관리, 멤버 관리 API")
 @RestController
 @RequestMapping("/api/teams")
 class TeamController(
@@ -23,11 +29,18 @@ class TeamController(
     private val userService: UserService
 ) {
 
+    @Operation(summary = "전체 팀 목록 조회", description = "등록된 모든 팀 목록을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping
     fun getTeams(): List<Team> {
         return teamService.findAll()
     }
 
+    @Operation(summary = "내 팀 조회", description = "현재 로그인한 사용자의 팀을 조회합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "조회 성공"),
+        ApiResponse(responseCode = "404", description = "사용자 또는 팀을 찾을 수 없음")
+    )
     @GetMapping("/me")
     fun getMyTeam(@AuthenticationPrincipal userDetails: UserDetails): Team? {
         val user = userService.findByEmail(userDetails.username)
@@ -38,12 +51,22 @@ class TeamController(
         return memberships.firstOrNull()?.team
     }
 
+    @Operation(summary = "팀 상세 조회", description = "ID로 특정 팀의 상세 정보를 조회합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "조회 성공"),
+        ApiResponse(responseCode = "404", description = "팀을 찾을 수 없음")
+    )
     @GetMapping("/{id}")
-    fun getTeam(@PathVariable id: Long): Team {
+    fun getTeam(@Parameter(description = "팀 ID") @PathVariable id: Long): Team {
         return teamService.findById(id)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Team not found")
     }
 
+    @Operation(summary = "팀 생성", description = "새로운 팀을 생성하고 생성자를 OWNER로 등록합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "생성 성공"),
+        ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    )
     @PostMapping
     fun createTeam(
         @RequestBody @Valid request: CreateTeamRequest,
@@ -60,9 +83,14 @@ class TeamController(
         return team
     }
 
+    @Operation(summary = "팀 정보 수정", description = "팀의 이름, 설명 등을 수정합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "수정 성공"),
+        ApiResponse(responseCode = "404", description = "팀을 찾을 수 없음")
+    )
     @PatchMapping("/{id}")
     fun updateTeam(
-        @PathVariable id: Long,
+        @Parameter(description = "팀 ID") @PathVariable id: Long,
         @RequestBody @Valid request: UpdateTeamRequest,
         @AuthenticationPrincipal userDetails: UserDetails
     ): Team {
@@ -77,18 +105,28 @@ class TeamController(
         )
     }
 
+    @Operation(summary = "팀 삭제", description = "팀을 삭제합니다. OWNER만 가능합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "삭제 성공"),
+        ApiResponse(responseCode = "404", description = "팀을 찾을 수 없음")
+    )
     @DeleteMapping("/{id}")
     fun deleteTeam(
-        @PathVariable id: Long,
+        @Parameter(description = "팀 ID") @PathVariable id: Long,
         @AuthenticationPrincipal userDetails: UserDetails
     ) {
         // 권한 체크 로직 필요
         teamService.deleteTeam(id)
     }
 
+    @Operation(summary = "멤버 초대", description = "이메일로 사용자를 팀에 초대합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "초대 성공"),
+        ApiResponse(responseCode = "404", description = "팀 또는 사용자를 찾을 수 없음")
+    )
     @PostMapping("/{id}/members")
     fun inviteMember(
-        @PathVariable id: Long,
+        @Parameter(description = "팀 ID") @PathVariable id: Long,
         @RequestBody @Valid request: InviteMemberRequest,
         @AuthenticationPrincipal userDetails: UserDetails
     ): TeamMember {
@@ -101,10 +139,15 @@ class TeamController(
         return teamService.addMember(team, targetUser, request.role)
     }
 
+    @Operation(summary = "멤버 제거", description = "팀에서 멤버를 제거합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "제거 성공"),
+        ApiResponse(responseCode = "404", description = "팀 또는 멤버를 찾을 수 없음")
+    )
     @DeleteMapping("/{id}/members/{memberId}")
     fun removeMember(
-        @PathVariable id: Long,
-        @PathVariable memberId: Long, // TeamMember ID가 아니라 User ID인지 확인 필요. 클라이언트는 memberId라고 보냄.
+        @Parameter(description = "팀 ID") @PathVariable id: Long,
+        @Parameter(description = "사용자 ID") @PathVariable memberId: Long,
         @AuthenticationPrincipal userDetails: UserDetails
     ) {
          // 클라이언트가 보내는 memberId가 User ID인지 TeamMember ID인지 확인 필요.
@@ -120,10 +163,15 @@ class TeamController(
          teamService.removeMember(team, targetUser)
     }
 
+    @Operation(summary = "멤버 역할 변경", description = "팀 멤버의 역할을 변경합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "변경 성공"),
+        ApiResponse(responseCode = "404", description = "팀 또는 멤버를 찾을 수 없음")
+    )
     @PatchMapping("/{id}/members/{memberId}")
     fun updateMemberRole(
-        @PathVariable id: Long,
-        @PathVariable memberId: Long,
+        @Parameter(description = "팀 ID") @PathVariable id: Long,
+        @Parameter(description = "사용자 ID") @PathVariable memberId: Long,
         @RequestBody @Valid request: UpdateMemberRoleRequest,
         @AuthenticationPrincipal userDetails: UserDetails
     ): TeamMember {
@@ -136,9 +184,14 @@ class TeamController(
         return teamService.updateMemberRole(team, targetUser, request.role)
     }
     
+    @Operation(summary = "팀 탈퇴", description = "현재 사용자가 팀에서 탈퇴합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "탈퇴 성공"),
+        ApiResponse(responseCode = "404", description = "팀 또는 사용자를 찾을 수 없음")
+    )
     @PostMapping("/{id}/leave")
     fun leaveTeam(
-        @PathVariable id: Long,
+        @Parameter(description = "팀 ID") @PathVariable id: Long,
         @AuthenticationPrincipal userDetails: UserDetails
     ) {
         val team = teamService.findById(id)

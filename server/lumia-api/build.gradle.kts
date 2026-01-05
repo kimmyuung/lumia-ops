@@ -14,6 +14,12 @@ dependencies {
     // Mail
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
+    // [API Documentation] SpringDoc OpenAPI (Swagger UI)
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
+    // [Rate Limiting] simple token bucket
+    // Built with Kotlin, no external library needed
+
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

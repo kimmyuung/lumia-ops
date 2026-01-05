@@ -7,44 +7,56 @@
         :icon="Target"
       />
 
-      <section class="map-section">
-        <div class="tactical-map">
-          <div class="map-placeholder">
-            <Map :size="64" class="map-icon" />
-            <h3>택티컬 맵</h3>
-            <p>루미아 섬 지도에서 전략을 수립하세요</p>
-            <Button variant="primary" disabled>
-              <Sparkles :size="20" />
-              <span>곧 출시 예정</span>
-            </Button>
-          </div>
+      <!-- Strategy Controls -->
+      <section class="controls-section">
+        <div class="controls-left">
+          <input
+            v-model="strategyTitle"
+            type="text"
+            class="title-input"
+            placeholder="전략 제목을 입력하세요..."
+          />
+        </div>
+        <div class="controls-right">
+          <Button variant="secondary" @click="handleLoad" :disabled="loading">
+            <FolderOpen :size="18" />
+            <span>불러오기</span>
+          </Button>
+          <Button variant="primary" @click="handleSave" :disabled="loading || !strategyTitle">
+            <Save :size="18" />
+            <span>저장</span>
+          </Button>
         </div>
       </section>
 
-      <section class="tools-section">
-        <h2>전략 도구</h2>
-        <div class="tools-grid">
-          <Card hoverable class="tool-card">
-            <div class="tool-icon">
-              <MapPin :size="24" />
-            </div>
-            <h4>마커</h4>
-            <p>맵에 마커 배치</p>
+      <!-- Tactical Map -->
+      <section class="map-section">
+        <TacticalMap
+          v-model="mapData"
+          @change="handleMapChange"
+        />
+      </section>
+
+      <!-- Saved Strategies List -->
+      <section class="strategies-section">
+        <h2>
+          <FileText :size="20" />
+          저장된 전략
+        </h2>
+        <div v-if="strategies.length > 0" class="strategies-grid">
+          <Card
+            v-for="strategy in strategies"
+            :key="strategy.id"
+            hoverable
+            class="strategy-card"
+            @click="loadStrategy(strategy)"
+          >
+            <h4>{{ strategy.title }}</h4>
+            <p class="strategy-date">{{ formatDate(strategy.updatedAt) }}</p>
           </Card>
-          <Card hoverable class="tool-card">
-            <div class="tool-icon">
-              <Route :size="24" />
-            </div>
-            <h4>경로</h4>
-            <p>이동 경로 그리기</p>
-          </Card>
-          <Card hoverable class="tool-card">
-            <div class="tool-icon">
-              <MessageSquare :size="24" />
-            </div>
-            <h4>메모</h4>
-            <p>전략 메모 추가</p>
-          </Card>
+        </div>
+        <div v-else class="empty-state">
+          <p>저장된 전략이 없습니다.</p>
         </div>
       </section>
     </div>
@@ -52,15 +64,134 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import {
   Target,
-  Map,
-  MapPin,
-  Route,
-  MessageSquare,
-  Sparkles
+  Save,
+  FolderOpen,
+  FileText
 } from 'lucide-vue-next'
 import { Card, Button, PageHeader } from '@/components/common'
+import TacticalMap from '@/components/strategy/TacticalMap.vue'
+import { useToast } from '@/composables/useToast'
+
+interface MapData {
+  markers: any[]
+  paths: any[]
+  notes: any[]
+}
+
+interface Strategy {
+  id: number
+  title: string
+  mapData: string
+  createdAt: string
+  updatedAt: string
+}
+
+const { show } = useToast()
+
+const strategyTitle = ref('')
+const mapData = ref<MapData>({ markers: [], paths: [], notes: [] })
+const strategies = ref<Strategy[]>([])
+const loading = ref(false)
+const currentStrategyId = ref<number | null>(null)
+
+onMounted(() => {
+  fetchStrategies()
+})
+
+const fetchStrategies = async () => {
+  try {
+    // API 호출 (현재는 localStorage 사용)
+    const saved = localStorage.getItem('lumia-strategies')
+    if (saved) {
+      strategies.value = JSON.parse(saved)
+    }
+  } catch (error) {
+    console.error('Failed to fetch strategies:', error)
+  }
+}
+
+const handleMapChange = (data: MapData) => {
+  mapData.value = data
+}
+
+const handleSave = async () => {
+  if (!strategyTitle.value.trim()) {
+    show('제목을 입력하세요', 'warning')
+    return
+  }
+
+  loading.value = true
+  try {
+    const now = new Date().toISOString()
+    
+    if (currentStrategyId.value) {
+      // Update existing
+      const index = strategies.value.findIndex(s => s.id === currentStrategyId.value)
+      if (index >= 0) {
+        const existing = strategies.value[index]
+        if (existing) {
+          strategies.value[index] = {
+            id: existing.id,
+            title: strategyTitle.value,
+            mapData: JSON.stringify(mapData.value),
+            createdAt: existing.createdAt,
+            updatedAt: now
+          }
+        }
+      }
+    } else {
+      // Create new
+      const newStrategy: Strategy = {
+        id: Date.now(),
+        title: strategyTitle.value,
+        mapData: JSON.stringify(mapData.value),
+        createdAt: now,
+        updatedAt: now
+      }
+      strategies.value.unshift(newStrategy)
+      currentStrategyId.value = newStrategy.id
+    }
+    
+    // Save to localStorage (later: API call)
+    localStorage.setItem('lumia-strategies', JSON.stringify(strategies.value))
+    show('저장되었습니다', 'success')
+  } catch (error) {
+    show('저장에 실패했습니다', 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleLoad = () => {
+  // Show strategies list (scroll to it)
+  document.querySelector('.strategies-section')?.scrollIntoView({ behavior: 'smooth' })
+}
+
+const loadStrategy = (strategy: Strategy) => {
+  currentStrategyId.value = strategy.id
+  strategyTitle.value = strategy.title
+  try {
+    mapData.value = JSON.parse(strategy.mapData)
+  } catch {
+    mapData.value = { markers: [], paths: [], notes: [] }
+  }
+  show(`"${strategy.title}" 전략을 불러왔습니다`, 'success')
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr)
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 </script>
 
 <style scoped>
@@ -74,103 +205,107 @@ import { Card, Button, PageHeader } from '@/components/common'
   padding: var(--page-padding);
 }
 
-.map-section {
-  margin-bottom: var(--section-gap);
+.controls-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-.tactical-map {
-  background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
-  border-radius: var(--radius-lg);
+.controls-left {
+  flex: 1;
+  min-width: 200px;
+}
+
+.title-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.title-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.controls-right {
+  display: flex;
+  gap: 8px;
+}
+
+.map-section {
+  margin-bottom: var(--section-gap);
+  height: 600px;
+  border-radius: 12px;
   overflow: hidden;
-  aspect-ratio: 16 / 9;
-  max-height: 600px;
-  border: 1px solid var(--border-color);
   box-shadow: var(--shadow-lg);
 }
 
-.map-placeholder {
-  height: 100%;
+.strategies-section {
+  margin-top: 48px;
+}
+
+.strategies-section h2 {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
-  padding: 2rem;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: var(--color-text);
 }
 
-.map-icon {
-  opacity: 0.5;
-  animation: pulse 3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
-}
-
-.map-placeholder h3 {
-  color: white;
-  font-size: 1.5rem;
-}
-
-.map-placeholder p {
-  max-width: 300px;
-}
-
-.tools-section h2 {
-  margin-bottom: 1.5rem;
-  color: var(--text-color);
-}
-
-.tools-grid {
+.strategies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 16px;
 }
 
-.tool-card {
-  text-align: center;
-  padding: 1.5rem;
+.strategy-card {
+  cursor: pointer;
+  padding: 20px;
+  transition: all 0.2s;
 }
 
-.tool-icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.15) 0%,
-    rgba(118, 75, 162, 0.15) 100%
-  );
-  border-radius: 50%;
-  color: var(--primary-color);
-  transition: all var(--transition-normal);
+.strategy-card:hover {
+  transform: translateY(-2px);
 }
 
-.tool-card:hover .tool-icon {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: var(--shadow-glow);
+.strategy-card h4 {
+  margin-bottom: 8px;
+  color: var(--color-text);
 }
 
-.tools-grid h4 {
-  margin-bottom: 0.25rem;
-  color: var(--text-color);
-}
-
-.tools-grid p {
+.strategy-date {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--color-text-mute);
 }
 
-/* 반응형 */
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--color-text-mute);
+  background: var(--color-background-soft);
+  border-radius: 12px;
+}
+
 @media (max-width: 768px) {
-  .tactical-map {
-    aspect-ratio: 4 / 3;
+  .map-section {
+    height: 450px;
+  }
+  
+  .controls-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .controls-right {
+    justify-content: flex-end;
   }
 }
 </style>

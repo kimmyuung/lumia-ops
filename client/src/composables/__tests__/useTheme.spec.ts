@@ -96,8 +96,7 @@ describe('useTheme', () => {
             const { useTheme } = await import('../useTheme')
             const theme = useTheme()
 
-            // 현재 상태 저장 후 loadTheme 호출
-            const prevTheme = theme.currentTheme.value
+            // loadTheme 호출
             theme.loadTheme()
 
             // 유효하지 않으면 변경되지 않아야 함
