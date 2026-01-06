@@ -14,4 +14,7 @@ dependencies {
     
     // [Logging]
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+
+    // [Test]
+    testImplementation("io.mockk:mockk:1.13.8")
 }

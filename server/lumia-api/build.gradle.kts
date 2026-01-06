@@ -17,6 +17,9 @@ dependencies {
     // [API Documentation] SpringDoc OpenAPI (Swagger UI)
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
+    // [Actuator] 헬스체크, 메트릭, 정보 엔드포인트
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
     // [Rate Limiting] simple token bucket
     // Built with Kotlin, no external library needed
 

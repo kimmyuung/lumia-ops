@@ -61,8 +61,10 @@ class SecurityConfig(
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/invitations/{token}").permitAll()
                     // H2 콘솔 (개발용)
                     .requestMatchers("/h2-console/**").permitAll()
-                    // Swagger UI (추후 추가 시)
+                    // Swagger UI
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    // Actuator 엔드포인트 (health, info)
+                    .requestMatchers("/actuator/health", "/actuator/health/**", "/actuator/info").permitAll()
                     // 나머지는 인증 필요
                     .anyRequest().authenticated()
             }

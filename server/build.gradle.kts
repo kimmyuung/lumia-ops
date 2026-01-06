@@ -57,10 +57,10 @@ subprojects {
 		implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 	}
 
-	tasks.withType<KotlinCompile> {
-		kotlinOptions {
-			freeCompilerArgs += "-Xjsr305=strict" // Spring의 Null-Safety 어노테이션을 엄격하게 준수
-			jvmTarget = "21"
+	tasks.withType<KotlinCompile>().configureEach {
+		compilerOptions {
+			freeCompilerArgs.add("-Xjsr305=strict") // Spring의 Null-Safety 어노테이션을 엄격하게 준수
+			jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
 		}
 	}
 

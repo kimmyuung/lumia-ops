@@ -144,3 +144,10 @@ data class TokenResponse(
     val token: String,
     val refreshToken: String
 )
+
+/**
+ * 로그아웃 요청 DTO
+ */
+data class LogoutRequest(
+    val refreshToken: String? = null  // optional - 리프레시 토큰도 함께 무효화
+)

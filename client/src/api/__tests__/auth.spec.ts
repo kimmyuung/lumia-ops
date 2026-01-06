@@ -140,12 +140,15 @@ describe('authApi', () => {
     })
 
     describe('logout', () => {
-        it('should call POST /auth/logout', async () => {
+        it('should call POST /auth/logout with refreshToken', async () => {
             mockPost.mockResolvedValue({})
+            const mockRefreshToken = 'test-refresh-token'
+            vi.spyOn(Storage.prototype, 'getItem').mockReturnValue(mockRefreshToken)
+            vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => { })
 
             await authApi.logout()
 
-            expect(mockPost).toHaveBeenCalledWith('/auth/logout')
+            expect(mockPost).toHaveBeenCalledWith('/auth/logout', { refreshToken: mockRefreshToken })
         })
     })
 

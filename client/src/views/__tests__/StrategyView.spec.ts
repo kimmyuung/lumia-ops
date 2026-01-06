@@ -1,7 +1,14 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createRouter, createWebHistory } from 'vue-router'
 import StrategyView from '../StrategyView.vue'
+
+// Mock useToast
+vi.mock('@/composables/useToast', () => ({
+    useToast: () => ({
+        show: vi.fn()
+    })
+}))
 
 const router = createRouter({
     history: createWebHistory(),
@@ -14,6 +21,10 @@ describe('StrategyView', () => {
             global: {
                 plugins: [router],
                 stubs: {
+                    PageHeader: {
+                        template: '<div class="page-header"><slot /></div>',
+                        props: ['title', 'description', 'icon']
+                    },
                     Card: {
                         template: '<div class="card"><slot /></div>',
                         props: ['hoverable']
@@ -21,6 +32,9 @@ describe('StrategyView', () => {
                     Button: {
                         template: '<button class="btn"><slot /></button>',
                         props: ['variant', 'disabled']
+                    },
+                    TacticalMap: {
+                        template: '<div class="tactical-map"><div class="map-placeholder">택티컬 맵</div></div>'
                     }
                 }
             }
@@ -34,17 +48,16 @@ describe('StrategyView', () => {
             expect(wrapper.find('.page-header').exists()).toBe(true)
         })
 
-        it('should display page title', () => {
+        it('should display strategy view container', () => {
             const wrapper = mountComponent()
 
-            expect(wrapper.find('h1').exists()).toBe(true)
-            expect(wrapper.text()).toContain('전략 수립 보드')
+            expect(wrapper.find('.strategy-view').exists()).toBe(true)
         })
 
-        it('should display page description', () => {
+        it('should have controls section', () => {
             const wrapper = mountComponent()
 
-            expect(wrapper.find('.page-description').exists()).toBe(true)
+            expect(wrapper.find('.controls-section').exists()).toBe(true)
         })
     })
 
@@ -55,7 +68,7 @@ describe('StrategyView', () => {
             expect(wrapper.find('.map-section').exists()).toBe(true)
         })
 
-        it('should render tactical map container', () => {
+        it('should render tactical map component', () => {
             const wrapper = mountComponent()
 
             expect(wrapper.find('.tactical-map').exists()).toBe(true)
@@ -69,35 +82,44 @@ describe('StrategyView', () => {
         })
     })
 
-    describe('tools section', () => {
-        it('should render tools section', () => {
+    describe('controls section', () => {
+        it('should render title input', () => {
             const wrapper = mountComponent()
 
-            expect(wrapper.find('.tools-section').exists()).toBe(true)
+            expect(wrapper.find('.title-input').exists()).toBe(true)
         })
 
-        it('should display strategy tools', () => {
+        it('should render save button', () => {
             const wrapper = mountComponent()
 
-            expect(wrapper.text()).toContain('전략 도구')
+            expect(wrapper.text()).toContain('저장')
         })
 
-        it('should have marker tool', () => {
+        it('should render load button', () => {
             const wrapper = mountComponent()
 
-            expect(wrapper.text()).toContain('마커')
+            expect(wrapper.text()).toContain('불러오기')
+        })
+    })
+
+    describe('strategies section', () => {
+        it('should render strategies section', () => {
+            const wrapper = mountComponent()
+
+            expect(wrapper.find('.strategies-section').exists()).toBe(true)
         })
 
-        it('should have route tool', () => {
+        it('should display saved strategies header', () => {
             const wrapper = mountComponent()
 
-            expect(wrapper.text()).toContain('경로')
+            expect(wrapper.text()).toContain('저장된 전략')
         })
 
-        it('should have memo tool', () => {
+        it('should show empty state when no strategies', () => {
             const wrapper = mountComponent()
 
-            expect(wrapper.text()).toContain('메모')
+            expect(wrapper.find('.empty-state').exists()).toBe(true)
+            expect(wrapper.text()).toContain('저장된 전략이 없습니다')
         })
     })
 })
