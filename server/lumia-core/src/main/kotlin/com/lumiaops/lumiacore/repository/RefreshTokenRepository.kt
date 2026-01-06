@@ -48,4 +48,15 @@ interface RefreshTokenRepository : JpaRepository<RefreshToken, Long> {
     @Modifying
     @Query("UPDATE RefreshToken rt SET rt.revoked = true WHERE rt.userId = :userId")
     fun revokeAllByUserId(userId: Long): Int
+
+    /**
+     * 사용자의 유효한 세션 수 카운트
+     */
+    fun countByUserIdAndRevokedFalseAndExpiresAtAfter(userId: Long, now: LocalDateTime): Long
+
+    /**
+     * 사용자의 가장 오래된 활성 세션 조회 (세션 제한 시 폐기 대상)
+     */
+    @Query("SELECT rt FROM RefreshToken rt WHERE rt.userId = :userId AND rt.revoked = false AND rt.expiresAt > :now ORDER BY rt.createdAt ASC")
+    fun findOldestActiveByUserId(userId: Long, now: LocalDateTime): List<RefreshToken>
 }

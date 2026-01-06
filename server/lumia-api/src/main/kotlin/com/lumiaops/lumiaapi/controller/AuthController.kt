@@ -94,6 +94,9 @@ class AuthController(
                 val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
                 val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
                 
+                // 세션 제한 적용 (기존 세션이 최대치면 가장 오래된 것 폐기)
+                tokenService.enforceSessionLimit(user.id!!)
+                
                 // Refresh Token DB에 저장
                 tokenService.saveRefreshToken(user.id!!, refreshToken)
                 
@@ -111,6 +114,9 @@ class AuthController(
                 val user = result.user
                 val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
                 val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
+                
+                // 세션 제한 적용 (기존 세션이 최대치면 가장 오래된 것 폐기)
+                tokenService.enforceSessionLimit(user.id!!)
                 
                 // Refresh Token DB에 저장
                 tokenService.saveRefreshToken(user.id!!, refreshToken)

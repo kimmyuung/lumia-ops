@@ -81,6 +81,26 @@ class TokenService(
         return count
     }
 
+    /**
+     * 동시 세션 제한 적용
+     * 최대 세션 수 초과 시 가장 오래된 세션을 폐기
+     */
+    @Transactional
+    fun enforceSessionLimit(userId: Long) {
+        val now = LocalDateTime.now()
+        val activeSessionCount = refreshTokenRepository.countByUserIdAndRevokedFalseAndExpiresAtAfter(userId, now)
+        
+        if (activeSessionCount >= jwtProperties.maxSessions) {
+            val sessionsToRevoke = (activeSessionCount - jwtProperties.maxSessions + 1).toInt()
+            val oldestSessions = refreshTokenRepository.findOldestActiveByUserId(userId, now)
+            
+            oldestSessions.take(sessionsToRevoke).forEach { session ->
+                session.revoke()
+                log.info("세션 제한으로 기존 세션 폐기: userId=$userId, tokenId=${session.id}")
+            }
+        }
+    }
+
     // ==================== Access Token 블랙리스트 관리 ====================
 
     /**

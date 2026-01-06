@@ -24,5 +24,11 @@ data class JwtProperties(
      * 리프레시 토큰 만료 시간 (밀리초)
      * 기본값: 7일 (604800000ms)
      */
-    val refreshExpirationMs: Long = 604800000
+    val refreshExpirationMs: Long = 604800000,
+
+    /**
+     * 최대 동시 세션 수
+     * 기본값: 3 (PC, 모바일, 태블릿 등 다중 디바이스 고려)
+     */
+    val maxSessions: Int = 3
 )
