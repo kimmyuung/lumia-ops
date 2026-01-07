@@ -53,8 +53,8 @@
       <!-- 필터 탭 -->
       <section class="filter-section">
         <div class="filter-tabs">
-          <button 
-            v-for="filter in filters" 
+          <button
+            v-for="filter in filters"
             :key="filter.value"
             class="filter-tab"
             :class="{ active: statusFilter === filter.value }"
@@ -71,10 +71,10 @@
           <SkeletonCard v-for="i in 3" :key="i" />
         </template>
         <template v-else-if="filteredScrims.length > 0">
-          <Card 
-            v-for="scrim in filteredScrims" 
-            :key="scrim.id" 
-            hoverable 
+          <Card
+            v-for="scrim in filteredScrims"
+            :key="scrim.id"
+            hoverable
             class="scrim-card"
             @click="selectScrim(scrim)"
           >
@@ -99,7 +99,9 @@
               <span class="results-label">결과:</span>
               <div class="results-summary">
                 <span v-for="(result, idx) in scrim.results.slice(0, 3)" :key="result.id">
-                  {{ result.placement }}위 ({{ result.kills }}킬){{ idx < Math.min(scrim.results.length, 3) - 1 ? ', ' : '' }}
+                  {{ result.placement }}위 ({{ result.kills }}킬){{
+                    idx < Math.min(scrim.results.length, 3) - 1 ? ', ' : ''
+                  }}
                 </span>
                 <span v-if="scrim.results.length > 3">... +{{ scrim.results.length - 3 }}</span>
               </div>
@@ -154,14 +156,8 @@ import { formatDateTime } from '@/utils/formatters'
 const scrimStore = useScrimStore()
 const { confirm } = useConfirm()
 
-const { 
-  scrims, 
-  filteredScrims, 
-  scheduledScrims, 
-  scrimStats, 
-  isLoading, 
-  statusFilter 
-} = storeToRefs(scrimStore)
+const { scrims, filteredScrims, scheduledScrims, scrimStats, isLoading, statusFilter } =
+  storeToRefs(scrimStore)
 
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
@@ -171,7 +167,7 @@ const filters = [
   { label: '전체', value: 'ALL' as const },
   { label: '예정됨', value: 'SCHEDULED' as ScrimStatus },
   { label: '진행 중', value: 'IN_PROGRESS' as ScrimStatus },
-  { label: '완료', value: 'COMPLETED' as ScrimStatus },
+  { label: '완료', value: 'COMPLETED' as ScrimStatus }
 ]
 
 onMounted(() => {
@@ -184,11 +180,16 @@ function formatDate(dateString: string): string {
 
 function getStatusLabel(status: ScrimStatus): string {
   switch (status) {
-    case 'SCHEDULED': return '예정됨'
-    case 'IN_PROGRESS': return '진행 중'
-    case 'COMPLETED': return '완료'
-    case 'CANCELLED': return '취소됨'
-    default: return status
+    case 'SCHEDULED':
+      return '예정됨'
+    case 'IN_PROGRESS':
+      return '진행 중'
+    case 'COMPLETED':
+      return '완료'
+    case 'CANCELLED':
+      return '취소됨'
+    default:
+      return status
   }
 }
 
@@ -223,7 +224,7 @@ async function confirmDelete(scrim: Scrim) {
     cancelText: '취소',
     variant: 'danger'
   })
-  
+
   if (confirmed) {
     await scrimStore.deleteScrim(scrim.id)
   }
@@ -455,7 +456,7 @@ async function confirmDelete(scrim: Scrim) {
   .stats-section {
     grid-template-columns: 1fr;
   }
-  
+
   .scrim-actions {
     opacity: 1;
   }

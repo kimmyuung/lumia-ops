@@ -1,11 +1,7 @@
 <template>
   <div class="team-view">
     <div class="container">
-      <PageHeader
-        title="팀 관리"
-        description="팀원 초대, 역할 배정, 일정 관리"
-        :icon="Users"
-      >
+      <PageHeader title="팀 관리" description="팀원 초대, 역할 배정, 일정 관리" :icon="Users">
         <template #actions>
           <Button v-if="!hasTeam" variant="primary" @click="showCreateModal = true">
             <Plus :size="20" />
@@ -60,7 +56,7 @@
               <span>초대</span>
             </Button>
           </div>
-          
+
           <div class="members-grid">
             <Card v-for="member in currentTeam.members" :key="member.id" class="member-card">
               <div class="member-info">
@@ -130,11 +126,7 @@
     />
 
     <!-- 팀 참여 모달 -->
-    <TeamJoinModal
-      v-if="showJoinModal"
-      @close="showJoinModal = false"
-      @joined="handleJoinedTeam"
-    />
+    <TeamJoinModal v-if="showJoinModal" @close="showJoinModal = false" @joined="handleJoinedTeam" />
   </div>
 </template>
 
@@ -169,10 +161,14 @@ onMounted(() => {
 
 function getRoleLabel(role: TeamRole): string {
   switch (role) {
-    case 'OWNER': return '팀장'
-    case 'ADMIN': return '관리자'
-    case 'MEMBER': return '멤버'
-    default: return role
+    case 'OWNER':
+      return '팀장'
+    case 'ADMIN':
+      return '관리자'
+    case 'MEMBER':
+      return '멤버'
+    default:
+      return role
   }
 }
 
@@ -198,7 +194,7 @@ function handleInvited() {
 
 async function confirmDelete() {
   if (!currentTeam.value) return
-  
+
   const confirmed = await confirm({
     title: '팀 삭제',
     message: '정말 팀을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
@@ -206,7 +202,7 @@ async function confirmDelete() {
     cancelText: '취소',
     variant: 'danger'
   })
-  
+
   if (confirmed) {
     await teamStore.deleteTeam(currentTeam.value.id)
   }
@@ -220,7 +216,7 @@ async function confirmLeave() {
     cancelText: '취소',
     variant: 'warning'
   })
-  
+
   if (confirmed) {
     await teamStore.leaveTeam()
   }
@@ -416,7 +412,7 @@ function handleJoinedTeam(_teamId: string) {
   .team-header {
     flex-wrap: wrap;
   }
-  
+
   .empty-actions {
     flex-direction: column;
   }

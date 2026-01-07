@@ -1,10 +1,10 @@
 <template>
-  <div 
-    class="spinner" 
-    :style="{ 
-      width: `${size}px`, 
-      height: `${size}px`, 
-      borderTopColor: color 
+  <div
+    class="spinner"
+    :style="{
+      width: `${size}px`,
+      height: `${size}px`,
+      borderTopColor: color
     }"
   ></div>
 </template>

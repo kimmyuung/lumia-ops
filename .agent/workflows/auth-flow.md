@@ -23,8 +23,10 @@ sequenceDiagram
     F->>B: POST /auth/register
     B->>E: 인증 메일 발송
     B-->>F: 성공 (이메일 확인 필요)
-    E-->>U: 인증 링크 클릭
-    U->>B: GET /auth/verify?token=xxx
+    B-->>F: 성공 (이메일 확인 필요)
+    E-->>U: 인증 토큰 확인
+    U->>F: 인증 토큰 입력/클릭
+    F->>B: POST /auth/verify-email { token }
     B-->>F: 이메일 인증 완료
     U->>F: 닉네임 설정
     F->>B: POST /auth/set-nickname
@@ -57,6 +59,31 @@ sequenceDiagram
     B-->>F: JWT 토큰 + 사용자 정보
     F->>F: localStorage에 토큰 저장
     F-->>U: 홈 화면으로 이동
+```
+
+### 🔄 토큰 갱신 (Silent Refresh)
+```mermaid
+sequenceDiagram
+    participant F as Frontend
+    participant B as Backend
+
+    F->>B: POST /auth/refresh { refreshToken }
+    B-->>F: 새 Access Token + 새 Refresh Token
+    F->>F: 토큰 교체
+```
+
+### 🚪 로그아웃
+```mermaid
+sequenceDiagram
+    participant U as 사용자
+    participant F as Frontend
+    participant B as Backend
+
+    U->>F: 로그아웃 클릭
+    F->>B: POST /auth/logout { refreshToken }
+    B-->>F: 성공
+    F->>F: 로컬 토큰 삭제
+    F-->>U: 로그인 화면으로 이동
 ```
 
 ### 로그인 실패 시 처리
@@ -99,7 +126,8 @@ POST /auth/register
 
 ### 인증 확인
 ```bash
-GET /auth/verify?token=<verification_token>
+POST /auth/verify-email
+Body: { "token": "<verification_token>" }
 ```
 
 ### 인증 메일 재발송

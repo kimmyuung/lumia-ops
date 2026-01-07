@@ -66,7 +66,7 @@ import { ToastContainer, ConfirmProvider } from '@/components/common'
 }
 
 /* 다크 모드 - data-theme 속성 기반 */
-[data-theme="dark"] {
+[data-theme='dark'] {
   --bg-color: #0f0f1a;
   --bg-color-alt: #1a1a2e;
   --card-bg: rgba(30, 30, 50, 0.8);
@@ -123,13 +123,22 @@ import { ToastContainer, ConfirmProvider } from '@/components/common'
 }
 
 body {
-  font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Pretendard',
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--transition-slow), color var(--transition-slow);
+  transition:
+    background-color var(--transition-slow),
+    color var(--transition-slow);
 }
 
 #app {
@@ -146,7 +155,9 @@ body {
 /* 페이지 전환 애니메이션 */
 .page-enter-active,
 .page-leave-active {
-  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transition:
+    opacity var(--transition-normal),
+    transform var(--transition-normal);
 }
 
 .page-enter-from {

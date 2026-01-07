@@ -1,11 +1,7 @@
 <template>
   <div class="invitations-view">
     <div class="container">
-      <PageHeader
-        title="받은 초대"
-        description="팀 초대 목록"
-        :icon="Mail"
-      />
+      <PageHeader title="받은 초대" description="팀 초대 목록" :icon="Mail" />
 
       <template v-if="isLoading">
         <div class="invitation-grid">
@@ -37,23 +33,26 @@
               </div>
               <div class="detail-item">
                 <span class="label">만료일</span>
-                <span class="value" :class="{ 'expiring-soon': isExpiringSoon(invitation.expiresAt) }">
+                <span
+                  class="value"
+                  :class="{ 'expiring-soon': isExpiringSoon(invitation.expiresAt) }"
+                >
                   {{ formatDate(invitation.expiresAt) }}
                 </span>
               </div>
             </div>
 
             <div class="invitation-actions">
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 @click="accept(invitation)"
                 :loading="processingId === invitation.id"
               >
                 <Check :size="18" />
                 <span>수락</span>
               </Button>
-              <Button 
-                variant="secondary" 
+              <Button
+                variant="secondary"
                 @click="decline(invitation)"
                 :disabled="processingId === invitation.id"
               >

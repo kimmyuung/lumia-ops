@@ -1,9 +1,5 @@
 <template>
-  <Modal
-    v-model="isOpen"
-    title="팀원 초대"
-    max-width="480px"
-  >
+  <Modal v-model="isOpen" title="팀원 초대" max-width="480px">
     <form class="invite-form" @submit.prevent="handleSubmit">
       <div class="form-field">
         <label for="email">이메일 주소 *</label>
@@ -19,12 +15,7 @@
 
       <div class="form-field">
         <label for="role">역할</label>
-        <select
-          id="role"
-          v-model="form.role"
-          class="select-input"
-          :disabled="isLoading"
-        >
+        <select id="role" v-model="form.role" class="select-input" :disabled="isLoading">
           <option value="MEMBER">멤버</option>
           <option value="ADMIN">관리자</option>
         </select>
@@ -49,9 +40,7 @@
     </form>
 
     <template #footer>
-      <Button variant="secondary" @click="close" :disabled="isLoading">
-        취소
-      </Button>
+      <Button variant="secondary" @click="close" :disabled="isLoading"> 취소 </Button>
       <Button variant="primary" @click="handleSubmit" :loading="isLoading">
         <Send :size="18" />
         <span>초대 발송</span>

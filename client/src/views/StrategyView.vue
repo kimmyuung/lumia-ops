@@ -31,10 +31,7 @@
 
       <!-- Tactical Map -->
       <section class="map-section">
-        <TacticalMap
-          v-model="mapData"
-          @change="handleMapChange"
-        />
+        <TacticalMap v-model="mapData" @change="handleMapChange" />
       </section>
 
       <!-- Saved Strategies List -->
@@ -65,20 +62,43 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import {
-  Target,
-  Save,
-  FolderOpen,
-  FileText
-} from 'lucide-vue-next'
+import { Target, Save, FolderOpen, FileText } from 'lucide-vue-next'
 import { Card, Button, PageHeader } from '@/components/common'
 import TacticalMap from '@/components/strategy/TacticalMap.vue'
 import { useToast } from '@/composables/useToast'
 
+interface Marker {
+  id: string
+  x: number
+  y: number
+  icon: 'player' | 'enemy' | 'objective' | 'danger' | 'item'
+  label: string
+  color: string
+}
+
+interface PathPoint {
+  x: number
+  y: number
+}
+
+interface Path {
+  id: string
+  points: PathPoint[]
+  color: string
+  width: number
+}
+
+interface Note {
+  id: string
+  x: number
+  y: number
+  text: string
+}
+
 interface MapData {
-  markers: any[]
-  paths: any[]
-  notes: any[]
+  markers: Marker[]
+  paths: Path[]
+  notes: Note[]
 }
 
 interface Strategy {
@@ -126,7 +146,7 @@ const handleSave = async () => {
   loading.value = true
   try {
     const now = new Date().toISOString()
-    
+
     if (currentStrategyId.value) {
       // Update existing
       const index = strategies.value.findIndex(s => s.id === currentStrategyId.value)
@@ -154,7 +174,7 @@ const handleSave = async () => {
       strategies.value.unshift(newStrategy)
       currentStrategyId.value = newStrategy.id
     }
-    
+
     // Save to localStorage (later: API call)
     localStorage.setItem('lumia-strategies', JSON.stringify(strategies.value))
     show('저장되었습니다', 'success')
@@ -298,12 +318,12 @@ const formatDate = (dateStr: string) => {
   .map-section {
     height: 450px;
   }
-  
+
   .controls-section {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .controls-right {
     justify-content: flex-end;
   }

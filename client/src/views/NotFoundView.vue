@@ -8,10 +8,10 @@
         </div>
         <span class="digit">4</span>
       </div>
-      
+
       <h1>페이지를 찾을 수 없습니다</h1>
       <p>요청하신 페이지가 존재하지 않거나 이동되었을 수 있습니다.</p>
-      
+
       <div class="actions">
         <router-link to="/" class="btn btn-primary">
           <Home :size="20" />
@@ -48,11 +48,7 @@ function goBack() {
   align-items: center;
   justify-content: center;
   padding: var(--page-padding);
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .not-found-content {
@@ -71,11 +67,7 @@ function goBack() {
 .digit {
   font-size: clamp(4rem, 15vw, 8rem);
   font-weight: 800;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -88,19 +80,20 @@ function goBack() {
   justify-content: center;
   width: 100px;
   height: 100px;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.15) 0%,
-    rgba(118, 75, 162, 0.15) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
   border-radius: 50%;
   color: var(--primary-color);
   animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .not-found h1 {
@@ -137,17 +130,17 @@ function goBack() {
 }
 
 .btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
-  box-shadow: var(--shadow-md), 0 0 20px rgba(102, 126, 234, 0.3);
+  box-shadow:
+    var(--shadow-md),
+    0 0 20px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary:hover {
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(102, 126, 234, 0.4);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 30px rgba(102, 126, 234, 0.4);
 }
 
 .btn-secondary {

@@ -22,6 +22,22 @@ erDiagram
     Team ||--o{ Strategy : "has"
     Scrim ||--o{ ScrimMatch : "contains"
     ScrimMatch ||--o{ MatchResult : "has"
+    User ||--o{ RefreshToken : "has"
+
+    RefreshToken {
+        Long id PK
+        Long userId FK
+        String token UK
+        Boolean revoked
+        LocalDateTime expiresAt
+        LocalDateTime createdAt
+    }
+
+    TokenBlacklist {
+        Long id PK
+        String tokenHash UK
+        LocalDateTime expiresAt
+    }
 
     User {
         Long id PK
@@ -181,7 +197,10 @@ erDiagram
 - `TeamMember.teamId` - 팀의 멤버 목록
 - `TeamInvitation.token` - 초대 수락/거절
 - `Scrim.teamId` - 팀의 스크림 목록
+- `Scrim.teamId` - 팀의 스크림 목록
 - `Strategy.teamId` - 팀의 전략 목록
+- `RefreshToken.token` - 토큰 갱신 시 조회
+- `TokenBlacklist.tokenHash` - 토큰 검증 시 조회
 
 ---
 
@@ -198,7 +217,9 @@ lumia-core/src/main/kotlin/com/lumiaops/lumiacore/domain/
 ├── ScrimMatch.kt
 ├── MatchResult.kt
 ├── Strategy.kt
-└── EmailVerification.kt
+├── EmailVerification.kt
+├── RefreshToken.kt
+└── TokenBlacklist.kt
 ```
 
 ### 리포지토리

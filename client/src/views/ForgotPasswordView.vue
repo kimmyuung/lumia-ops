@@ -16,7 +16,7 @@
         <h2>이메일을 확인하세요</h2>
         <p>{{ form.email }}로 비밀번호 재설정 링크를 발송했습니다.</p>
         <p class="hint">이메일의 링크를 클릭하여 새 비밀번호를 설정해주세요.</p>
-        
+
         <router-link to="/login" class="auth-link">
           <LogIn :size="18" />
           <span>로그인 페이지로 이동</span>
@@ -107,11 +107,7 @@ async function handleSubmit() {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .auth-container {

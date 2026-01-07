@@ -108,8 +108,9 @@ async function handleSubmit() {
     searchComplete.value = true
     foundEmail.value = response.exists ? response.email : null
   } catch (err: unknown) {
-    const apiError = err as { response?: { data?: { message?: string } }, message?: string }
-    error.value = apiError.response?.data?.message || apiError.message || '아이디 찾기에 실패했습니다.'
+    const apiError = err as { response?: { data?: { message?: string } }; message?: string }
+    error.value =
+      apiError.response?.data?.message || apiError.message || '아이디 찾기에 실패했습니다.'
     toast.error(error.value)
   } finally {
     isLoading.value = false
@@ -130,11 +131,7 @@ function resetSearch() {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .auth-container {

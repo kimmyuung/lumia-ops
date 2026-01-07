@@ -63,7 +63,7 @@ const errorMessage = ref('')
 
 onMounted(async () => {
   const token = route.query.token as string
-  
+
   if (!token) {
     isLoading.value = false
     errorMessage.value = '인증 토큰이 없습니다.'
@@ -73,7 +73,7 @@ onMounted(async () => {
   const success = await verifyEmail(token)
   isLoading.value = false
   isSuccess.value = success
-  
+
   if (!success) {
     errorMessage.value = '유효하지 않거나 만료된 인증 토큰입니다.'
   }
@@ -87,11 +87,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .auth-container {
@@ -165,8 +161,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .action-btn {
