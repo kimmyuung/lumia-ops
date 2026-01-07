@@ -53,6 +53,11 @@ class User(
     var emailVerifiedAt: LocalDateTime? = null
         protected set
 
+    // 이터널 리턴 인게임 닉네임
+    @Column(nullable = true)
+    var gameNickname: String? = null
+        protected set
+
     // ==================== 비즈니스 메서드 ====================
 
     /**
@@ -173,6 +178,13 @@ class User(
             nicknameChangedAt, LocalDateTime.now()
         )
         return maxOf(0, 30 - daysSince)
+    }
+
+    /**
+     * 이터널 리턴 인게임 닉네임 업데이트
+     */
+    fun updateGameNickname(newGameNickname: String?) {
+        gameNickname = newGameNickname?.takeIf { it.isNotBlank() }
     }
 }
 

@@ -65,20 +65,11 @@
           </div>
 
           <div class="action-buttons">
-            <Button 
-              variant="primary" 
-              @click="accept" 
-              :loading="isProcessing"
-              class="accept-btn"
-            >
+            <Button variant="primary" @click="accept" :loading="isProcessing" class="accept-btn">
               <Check :size="20" />
               <span>초대 수락하기</span>
             </Button>
-            <Button 
-              variant="secondary" 
-              @click="decline"
-              :disabled="isProcessing"
-            >
+            <Button variant="secondary" @click="decline" :disabled="isProcessing">
               <X :size="20" />
               <span>거절</span>
             </Button>
@@ -119,7 +110,7 @@ async function fetchInvitation() {
   isLoading.value = true
   try {
     invitation.value = await invitationApi.getInvitationByToken(token)
-    
+
     if (invitation.value.status !== 'PENDING') {
       error.value = '이미 처리된 초대입니다.'
     }
@@ -180,11 +171,7 @@ function goToTeam() {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .container {

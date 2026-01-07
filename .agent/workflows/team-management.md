@@ -57,6 +57,17 @@ sequenceDiagram
     B-->>U: 팀 가입 완료
 ```
 
+
+
+### 멤버 직접 추가 (Admin only)
+```bash
+POST /teams/{teamId}/members
+Body: { 
+  "email": "user@example.com",
+  "role": "MEMBER" 
+}
+```
+
 ### 초대 생성
 ```bash
 POST /teams/{teamId}/invitations
@@ -112,7 +123,7 @@ Body: { "role": "ADMIN" }
 
 ### 일반 멤버 탈퇴
 ```bash
-DELETE /teams/{teamId}/members/me
+POST /teams/{teamId}/leave
 ```
 
 ### OWNER 탈퇴 제한

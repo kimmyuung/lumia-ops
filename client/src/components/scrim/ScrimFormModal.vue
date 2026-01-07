@@ -1,9 +1,5 @@
 <template>
-  <Modal
-    v-model="isOpen"
-    :title="isEdit ? '스크림 수정' : '스크림 생성'"
-    max-width="520px"
-  >
+  <Modal v-model="isOpen" :title="isEdit ? '스크림 수정' : '스크림 생성'" max-width="520px">
     <form class="scrim-form" @submit.prevent="handleSubmit">
       <div class="form-field">
         <label for="scrimTitle">제목 *</label>
@@ -64,9 +60,7 @@
     </form>
 
     <template #footer>
-      <Button variant="secondary" @click="close" :disabled="isLoading">
-        취소
-      </Button>
+      <Button variant="secondary" @click="close" :disabled="isLoading"> 취소 </Button>
       <Button variant="primary" @click="handleSubmit" :loading="isLoading">
         <Save :size="18" />
         <span>{{ isEdit ? '수정' : '생성' }}</span>
@@ -115,23 +109,27 @@ const errors = reactive({
 })
 
 // 편집 모드 감지
-watch(() => props.scrim, (scrim) => {
-  if (scrim) {
-    isEdit.value = true
-    form.title = scrim.title
-    form.scheduledAt = scrim.scheduledAt.slice(0, 16) // datetime-local 형식
-    form.opponentTeamName = scrim.opponentTeamName || ''
-    form.mapName = scrim.mapName || ''
-    form.notes = scrim.notes || ''
-  } else {
-    isEdit.value = false
-    form.title = ''
-    form.scheduledAt = ''
-    form.opponentTeamName = ''
-    form.mapName = ''
-    form.notes = ''
-  }
-}, { immediate: true })
+watch(
+  () => props.scrim,
+  scrim => {
+    if (scrim) {
+      isEdit.value = true
+      form.title = scrim.title
+      form.scheduledAt = scrim.scheduledAt.slice(0, 16) // datetime-local 형식
+      form.opponentTeamName = scrim.opponentTeamName || ''
+      form.mapName = scrim.mapName || ''
+      form.notes = scrim.notes || ''
+    } else {
+      isEdit.value = false
+      form.title = ''
+      form.scheduledAt = ''
+      form.opponentTeamName = ''
+      form.mapName = ''
+      form.notes = ''
+    }
+  },
+  { immediate: true }
+)
 
 function validate(): boolean {
   errors.title = ''

@@ -29,9 +29,12 @@ Authorization: Bearer <access_token>
 |--------|----------|------|------|
 | POST | `/auth/register` | 회원가입 | ❌ |
 | POST | `/auth/login` | 로그인 | ❌ |
-| GET | `/auth/verify` | 이메일 인증 | ❌ |
+| POST | `/auth/verify-email` | 이메일 인증 (토큰) | ❌ |
 | POST | `/auth/resend-verification` | 인증 메일 재발송 | ❌ |
 | POST | `/auth/set-nickname` | 닉네임 설정 | ✅ |
+| POST | `/auth/refresh` | 토큰 갱신 | ❌ |
+| POST | `/auth/logout` | 로그아웃 | ✅ |
+| POST | `/auth/find-username` | 아이디 찾기 | ❌ |
 
 ### 🔒 비밀번호 (Password)
 
@@ -59,9 +62,10 @@ Authorization: Bearer <access_token>
 | GET | `/teams/{id}` | 팀 상세 조회 | ✅ |
 | PATCH | `/teams/{id}` | 팀 수정 | ✅ |
 | DELETE | `/teams/{id}` | 팀 삭제 | ✅ |
-| DELETE | `/teams/{id}/members/me` | 팀 탈퇴 | ✅ |
 | DELETE | `/teams/{id}/members/{memberId}` | 멤버 제거 | ✅ |
+| POST | `/teams/{id}/members` | 멤버 직접 추가 | ✅ |
 | PATCH | `/teams/{id}/members/{memberId}/role` | 역할 변경 | ✅ |
+| POST | `/teams/{id}/leave` | 팀 탈퇴 | ✅ |
 
 ### 📨 초대 (Invitation)
 

@@ -16,14 +16,10 @@
         <h2>이메일을 확인해주세요!</h2>
         <p>{{ form.email }}로 인증 메일을 발송했습니다.</p>
         <p class="hint">이메일의 인증 링크를 클릭하여 가입을 완료해주세요.</p>
-        
+
         <div class="resend-section">
           <p>이메일을 받지 못하셨나요?</p>
-          <Button 
-            variant="secondary" 
-            :loading="isResending"
-            @click="handleResend"
-          >
+          <Button variant="secondary" :loading="isResending" @click="handleResend">
             <Mail :size="18" />
             <span>인증 이메일 재발송</span>
           </Button>
@@ -131,9 +127,7 @@ const errors = reactive({
 
 const isFormValid = computed(() => {
   return (
-    form.email.trim() !== '' &&
-    form.password.trim() !== '' &&
-    form.confirmPassword.trim() !== ''
+    form.email.trim() !== '' && form.password.trim() !== '' && form.confirmPassword.trim() !== ''
   )
 })
 
@@ -178,7 +172,7 @@ function validateForm(): boolean {
 
 async function handleSubmit() {
   if (!validateForm()) return
-  
+
   const success = await register({
     email: form.email,
     password: form.password
@@ -203,11 +197,7 @@ async function handleResend() {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .auth-container {

@@ -60,11 +60,11 @@ onErrorCaptured((err: Error, instance, info: string) => {
   hasError.value = true
   error.value = err
   errorInfo.value = info
-  
+
   console.error('[ErrorBoundary] Captured error:', err)
   console.error('[ErrorBoundary] Component:', instance)
   console.error('[ErrorBoundary] Info:', info)
-  
+
   // 에러를 상위로 전파하지 않음
   return false
 })
@@ -105,11 +105,7 @@ defineExpose({ reset, hasError })
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    rgba(239, 68, 68, 0.1) 0%,
-    rgba(239, 68, 68, 0.2) 100%
-  );
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.2) 100%);
   border-radius: 50%;
   color: var(--error-color);
 }

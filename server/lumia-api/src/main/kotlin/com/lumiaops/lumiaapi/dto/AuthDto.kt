@@ -118,7 +118,8 @@ data class UserResponse(
     val email: String,
     val nickname: String?,
     val status: String,
-    val daysUntilNicknameChange: Long
+    val daysUntilNicknameChange: Long,
+    val gameNickname: String? = null
 )
 
 /**

@@ -50,9 +50,12 @@ const componentType = computed(() => {
 
 const spinnerSize = computed(() => {
   switch (props.size) {
-    case 'sm': return 14
-    case 'lg': return 22
-    default: return 18
+    case 'sm':
+      return 14
+    case 'lg':
+      return 22
+    default:
+      return 18
   }
 })
 
@@ -85,7 +88,7 @@ const handleClick = (event: MouseEvent) => {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
@@ -131,7 +134,9 @@ const handleClick = (event: MouseEvent) => {
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: var(--shadow-md), 0 0 20px rgba(102, 126, 234, 0.4);
+  box-shadow:
+    var(--shadow-md),
+    0 0 20px rgba(102, 126, 234, 0.4);
 }
 
 .btn-secondary {

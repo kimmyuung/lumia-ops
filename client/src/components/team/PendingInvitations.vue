@@ -16,11 +16,7 @@
 
     <template v-else-if="invitations?.length > 0">
       <div class="invitation-list">
-        <div 
-          v-for="invitation in invitations" 
-          :key="invitation.id" 
-          class="invitation-item"
-        >
+        <div v-for="invitation in invitations" :key="invitation.id" class="invitation-item">
           <div class="invitation-info">
             <div class="invitation-email">
               <Mail :size="16" />
@@ -32,21 +28,16 @@
             </div>
           </div>
           <div class="invitation-actions">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               :loading="resendingId === invitation.id"
               @click="resend(invitation)"
               title="재발송"
             >
               <Send :size="14" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              @click="cancel(invitation)"
-              title="취소"
-            >
+            <Button variant="ghost" size="sm" @click="cancel(invitation)" title="취소">
               <X :size="14" />
             </Button>
           </div>

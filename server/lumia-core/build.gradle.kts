@@ -13,6 +13,9 @@ dependencies {
 	// [JPA]
 	api("org.springframework.boot:spring-boot-starter-data-jpa")
 
+	// [Web - RestTemplate, HttpHeaders 등]
+	api("org.springframework.boot:spring-boot-starter-web")
+
 	// [Mail]
 	api("org.springframework.boot:spring-boot-starter-mail")
 

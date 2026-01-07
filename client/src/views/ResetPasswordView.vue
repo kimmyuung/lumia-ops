@@ -151,8 +151,10 @@ async function handleSubmit() {
       toast.error(response.message)
     }
   } catch (err: unknown) {
-    const apiError = err as { response?: { data?: { message?: string } }, message?: string }
-    toast.error(apiError.response?.data?.message || apiError.message || '비밀번호 재설정에 실패했습니다.')
+    const apiError = err as { response?: { data?: { message?: string } }; message?: string }
+    toast.error(
+      apiError.response?.data?.message || apiError.message || '비밀번호 재설정에 실패했습니다.'
+    )
   } finally {
     isLoading.value = false
   }
@@ -166,11 +168,7 @@ async function handleSubmit() {
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(118, 75, 162, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .auth-container {

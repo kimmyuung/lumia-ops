@@ -9,22 +9,18 @@
             <Info v-if="variant === 'info'" :size="32" />
             <CheckCircle v-if="variant === 'success'" :size="32" />
           </div>
-          
+
           <div class="confirm-content">
             <h3 class="confirm-title">{{ title }}</h3>
             <p class="confirm-message">{{ message }}</p>
           </div>
-          
+
           <div class="confirm-actions">
-            <button 
-              class="confirm-btn cancel" 
-              @click="handleCancel"
-              :disabled="isLoading"
-            >
+            <button class="confirm-btn cancel" @click="handleCancel" :disabled="isLoading">
               {{ cancelText }}
             </button>
-            <button 
-              class="confirm-btn confirm" 
+            <button
+              class="confirm-btn confirm"
               :class="variant"
               @click="handleConfirm"
               :disabled="isLoading"
@@ -244,7 +240,7 @@ function handleCancel() {
   .confirm-modal {
     padding: 1.5rem;
   }
-  
+
   .confirm-actions {
     flex-direction: column-reverse;
   }

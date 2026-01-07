@@ -1,9 +1,5 @@
 <template>
-  <Modal
-    v-model="isOpen"
-    :title="isEdit ? '팀 수정' : '팀 생성'"
-    max-width="480px"
-  >
+  <Modal v-model="isOpen" :title="isEdit ? '팀 수정' : '팀 생성'" max-width="480px">
     <form class="team-form" @submit.prevent="handleSubmit">
       <div class="form-field">
         <label for="teamName">팀 이름 *</label>
@@ -30,9 +26,7 @@
     </form>
 
     <template #footer>
-      <Button variant="secondary" @click="close" :disabled="isLoading">
-        취소
-      </Button>
+      <Button variant="secondary" @click="close" :disabled="isLoading"> 취소 </Button>
       <Button variant="primary" @click="handleSubmit" :loading="isLoading">
         <Save :size="18" />
         <span>{{ isEdit ? '수정' : '생성' }}</span>
@@ -77,26 +71,30 @@ const errors = reactive({
 })
 
 // 편집 모드 감지
-watch(() => props.team, (team) => {
-  if (team) {
-    isEdit.value = true
-    form.name = team.name
-    form.description = team.description || ''
-  } else {
-    isEdit.value = false
-    form.name = ''
-    form.description = ''
-  }
-}, { immediate: true })
+watch(
+  () => props.team,
+  team => {
+    if (team) {
+      isEdit.value = true
+      form.name = team.name
+      form.description = team.description || ''
+    } else {
+      isEdit.value = false
+      form.name = ''
+      form.description = ''
+    }
+  },
+  { immediate: true }
+)
 
 function validate(): boolean {
   errors.name = ''
-  
+
   if (!form.name.trim()) {
     errors.name = '팀 이름을 입력해 주세요.'
     return false
   }
-  
+
   if (form.name.length < 2) {
     errors.name = '팀 이름은 2자 이상이어야 합니다.'
     return false
@@ -109,10 +107,10 @@ async function handleSubmit() {
   if (!validate()) return
 
   isLoading.value = true
-  
+
   try {
     let result: Team | null
-    
+
     if (isEdit.value && props.team) {
       result = await teamStore.updateTeam(props.team.id, {
         name: form.name,

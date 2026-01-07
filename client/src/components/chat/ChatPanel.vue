@@ -16,29 +16,19 @@ const emit = defineEmits<{
 const messageInput = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
 
-const {
-  isConnected,
-  messages,
-  error,
-  connect,
-  disconnect,
-  joinRoom,
-  leaveRoom,
-  sendMessage
-} = useWebSocket({
-  url: 'ws://localhost:8081/ws',
-  onConnect: () => {
-    joinRoom(props.roomId, props.username)
-  },
-  onMessage: () => {
-    scrollToBottom()
-  }
-})
+const { isConnected, messages, error, connect, disconnect, joinRoom, leaveRoom, sendMessage } =
+  useWebSocket({
+    url: 'ws://localhost:8081/ws',
+    onConnect: () => {
+      joinRoom(props.roomId, props.username)
+    },
+    onMessage: () => {
+      scrollToBottom()
+    }
+  })
 
 // 채팅방 메시지만 필터링
-const roomMessages = computed(() => 
-  messages.value.filter(m => m.roomId === props.roomId)
-)
+const roomMessages = computed(() => messages.value.filter(m => m.roomId === props.roomId))
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -50,7 +40,7 @@ const scrollToBottom = async () => {
 const handleSend = () => {
   const content = messageInput.value.trim()
   if (!content) return
-  
+
   sendMessage(props.roomId, props.username, content)
   messageInput.value = ''
 }
@@ -137,11 +127,7 @@ connect()
         :disabled="!isConnected"
         @keydown="handleKeydown"
       ></textarea>
-      <button
-        class="send-btn"
-        :disabled="!isConnected || !messageInput.trim()"
-        @click="handleSend"
-      >
+      <button class="send-btn" :disabled="!isConnected || !messageInput.trim()" @click="handleSend">
         전송
       </button>
     </div>

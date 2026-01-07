@@ -115,4 +115,41 @@ class UserController(
             ResponseEntity.notFound().build()
         }
     }
+
+    @Operation(summary = "게임 닉네임 업데이트", description = "이터널 리턴 인게임 닉네임을 설정합니다.")
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "업데이트 성공"),
+        ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    )
+    @PutMapping("/me/game-nickname")
+    fun updateGameNickname(
+        @RequestHeader("X-User-Id") userId: Long,
+        @RequestBody request: UpdateGameNicknameRequest
+    ): ResponseEntity<Any> {
+        return try {
+            val user = userService.updateGameNickname(userId, request.gameNickname)
+            ResponseEntity.ok(UserResponse(
+                id = user.id!!,
+                email = user.email,
+                nickname = user.nickname,
+                status = user.status.name,
+                daysUntilNicknameChange = user.daysUntilNicknameChange(),
+                gameNickname = user.gameNickname
+            ))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @Operation(summary = "게임 닉네임 조회", description = "현재 설정된 이터널 리턴 인게임 닉네임을 조회합니다.")
+    @GetMapping("/me/game-nickname")
+    fun getGameNickname(
+        @RequestHeader("X-User-Id") userId: Long
+    ): ResponseEntity<Map<String, String?>> {
+        val user = userService.findById(userId)
+            ?: return ResponseEntity.notFound().build()
+        
+        return ResponseEntity.ok(mapOf("gameNickname" to user.gameNickname))
+    }
 }
+

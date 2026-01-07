@@ -65,11 +65,7 @@ import { Card, Button } from '@/components/common'
 .hero {
   text-align: center;
   padding: var(--section-gap) var(--page-padding);
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.08) 0%,
-    rgba(118, 75, 162, 0.08) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -81,17 +77,18 @@ import { Card, Button } from '@/components/common'
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(
-    circle at 30% 50%,
-    rgba(102, 126, 234, 0.1) 0%,
-    transparent 50%
-  );
+  background: radial-gradient(circle at 30% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
   animation: float 20s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(2%, 2%) rotate(5deg); }
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(2%, 2%) rotate(5deg);
+  }
 }
 
 .hero-content {
@@ -122,11 +119,7 @@ import { Card, Button } from '@/components/common'
   gap: 0.75rem;
   font-size: clamp(2.5rem, 6vw, 4rem);
   margin-bottom: 1rem;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color) 0%,
-    var(--secondary-color) 100%
-  );
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -139,8 +132,13 @@ import { Card, Button } from '@/components/common'
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .tagline {
@@ -158,8 +156,6 @@ import { Card, Button } from '@/components/common'
   justify-content: center;
   flex-wrap: wrap;
 }
-
-
 
 .features {
   display: grid;
@@ -182,11 +178,7 @@ import { Card, Button } from '@/components/common'
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.15) 0%,
-    rgba(118, 75, 162, 0.15) 100%
-  );
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
   border-radius: 50%;
   color: var(--primary-color);
   transition: all var(--transition-normal);
@@ -213,7 +205,7 @@ import { Card, Button } from '@/components/common'
   .cta-buttons {
     flex-direction: column;
   }
-  
+
   .cta-buttons :deep(.btn) {
     width: 100%;
     justify-content: center;

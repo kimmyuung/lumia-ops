@@ -68,4 +68,17 @@ class UserService(
         log.warn("사용자 삭제: userId=$userId")
         userRepository.deleteById(userId)
     }
+
+    /**
+     * 이터널 리턴 인게임 닉네임 업데이트
+     */
+    @Transactional
+    fun updateGameNickname(userId: Long, gameNickname: String?): User {
+        val user = findById(userId)
+            ?: throw IllegalArgumentException("사용자를 찾을 수 없습니다: $userId")
+        
+        user.updateGameNickname(gameNickname)
+        log.info("게임 닉네임 업데이트: userId=$userId, gameNickname=$gameNickname")
+        return user
+    }
 }
