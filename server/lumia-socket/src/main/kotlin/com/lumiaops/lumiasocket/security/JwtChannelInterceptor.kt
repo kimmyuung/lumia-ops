@@ -53,14 +53,15 @@ class JwtChannelInterceptor(
                             listOf(SimpleGrantedAuthority("ROLE_USER"))
                         )
                         
-                        // 세션에 인증 정보 저장
-                        accessor.user = authentication
-                        
-                        log.info { "[WebSocket] 사용자 인증 성공: userId=$userId, email=$email" }
+                        // 세션에 인증 정보 저장 (mutable인 경우에만)
+                        if (accessor.isMutable) {
+                            accessor.user = authentication
+                            log.info { "[WebSocket] 사용자 인증 성공: userId=$userId, email=$email" }
+                        } else {
+                            log.warn { "[WebSocket] Accessor가 mutable이 아니어서 인증 정보 설정 불가" }
+                        }
                     } else {
                         log.warn { "[WebSocket] 유효하지 않은 JWT 토큰" }
-                        // 토큰이 유효하지 않으면 연결 거부하지 않고 익명으로 처리
-                        // 필요시 여기서 예외를 던져 연결을 거부할 수 있음
                     }
                 } catch (e: Exception) {
                     log.error(e) { "[WebSocket] JWT 토큰 검증 중 오류 발생" }
