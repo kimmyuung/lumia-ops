@@ -12,6 +12,7 @@ import org.springframework.messaging.MessageChannel
 import org.springframework.messaging.simp.stomp.StompCommand
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.messaging.support.GenericMessage
+import org.springframework.messaging.support.MessageBuilder
 import org.springframework.messaging.support.MessageHeaderAccessor
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -45,7 +46,8 @@ class JwtChannelInterceptorTest {
 
             val accessor = StompHeaderAccessor.create(StompCommand.CONNECT)
             accessor.setNativeHeader("Authorization", "Bearer $token")
-            val message = createMessage(accessor)
+            accessor.setLeaveMutable(true)  // mutable로 설정해야 user 수정이 가능
+            val message = MessageBuilder.createMessage(ByteArray(0), accessor.messageHeaders)
 
             every { jwtTokenProvider.validateToken(token) } returns true
             every { jwtTokenProvider.getUserIdFromToken(token) } returns userId
@@ -56,6 +58,7 @@ class JwtChannelInterceptorTest {
 
             // then
             assertNotNull(result)
+            // accessor가 mutable이고 user가 설정됨
             val resultAccessor = MessageHeaderAccessor.getAccessor(result, StompHeaderAccessor::class.java)
             assertNotNull(resultAccessor?.user)
             
@@ -171,6 +174,10 @@ class JwtChannelInterceptorTest {
     }
 
     private fun createMessage(accessor: StompHeaderAccessor): Message<ByteArray> {
+        return GenericMessage(ByteArray(0), accessor.messageHeaders)
+    }
+
+    private fun createMutableMessage(accessor: StompHeaderAccessor): Message<ByteArray> {
         return GenericMessage(ByteArray(0), accessor.messageHeaders)
     }
 }

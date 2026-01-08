@@ -40,8 +40,7 @@ graph LR
 client/src/composables/
 ├── useStompClient.ts   # 핵심 STOMP 클라이언트
 ├── useChat.ts          # 채팅 기능
-├── useStrategySync.ts  # 전략 동기화
-└── useWebSocket.ts     # 레거시 호환 래퍼
+└── useStrategySync.ts  # 전략 동기화
 ```
 
 ### Backend (lumia-socket 모듈)
