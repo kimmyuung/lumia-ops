@@ -36,7 +36,7 @@ data class LoginResponse(
     val token: String,  // JWT 액세스 토큰
     val refreshToken: String,  // JWT 리프레시 토큰
     val userId: Long,
-    val email: String,
+    val email: String?,  // OAuth 사용자는 이메일이 없을 수 있음
     val nickname: String?,
     val status: String,
     val needsNickname: Boolean,
@@ -115,7 +115,7 @@ data class UpdateNicknameRequest(
  */
 data class UserResponse(
     val id: Long,
-    val email: String,
+    val email: String?,  // OAuth 사용자는 이메일이 없을 수 있음
     val nickname: String?,
     val status: String,
     val daysUntilNicknameChange: Long,

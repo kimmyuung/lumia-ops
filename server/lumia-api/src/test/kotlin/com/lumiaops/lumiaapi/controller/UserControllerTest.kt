@@ -58,7 +58,7 @@ class UserControllerTest {
         testUser = userRepository.save(testUser)
 
         // JWT 토큰 생성
-        authToken = jwtTokenProvider.generateAccessToken(testUser.id!!, testUser.email)
+        authToken = jwtTokenProvider.generateAccessToken(testUser.id!!, testUser.email ?: "")
     }
 
     @Nested
@@ -100,7 +100,7 @@ class UserControllerTest {
             )
             newUser.verifyEmail()
             val savedUser = userRepository.save(newUser)
-            val token = jwtTokenProvider.generateAccessToken(savedUser.id!!, savedUser.email)
+            val token = jwtTokenProvider.generateAccessToken(savedUser.id!!, savedUser.email ?: "")
 
             val request = UpdateNicknameRequest(nickname = "NewNickname")
 

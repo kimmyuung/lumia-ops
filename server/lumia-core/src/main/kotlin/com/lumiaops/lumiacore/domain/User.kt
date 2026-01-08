@@ -13,27 +13,42 @@ import java.time.LocalDateTime
     name = "users",
     indexes = [
         Index(name = "idx_user_email", columnList = "email", unique = true),
-        Index(name = "idx_user_status", columnList = "status")
+        Index(name = "idx_user_status", columnList = "status"),
+        Index(name = "idx_user_steam_id", columnList = "steamId", unique = true),
+        Index(name = "idx_user_kakao_id", columnList = "kakaoId", unique = true)
     ]
 )
 class User(
-    @Column(nullable = false, unique = true)
-    val email: String, // 이메일 = 아이디
+    @Column(nullable = true, unique = true)
+    var email: String? = null, // 이메일 (OAuth 사용자는 없을 수 있음)
 
-    @Column(nullable = false)
-    var password: String, // BCrypt 암호화된 비밀번호
+    @Column(nullable = true)
+    var password: String? = null, // BCrypt 암호화된 비밀번호 (OAuth 사용자는 null)
 
     @Column(nullable = true)
     var nickname: String? = null, // 첫 로그인 시 설정
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val role: UserRole = UserRole.USER
+    val role: UserRole = UserRole.USER,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val authProvider: AuthProvider = AuthProvider.EMAIL // 인증 제공자
 ) : BaseTimeEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    // OAuth 관련 필드
+    @Column(nullable = true, unique = true)
+    var steamId: String? = null  // Steam 64비트 ID
+        protected set
+
+    @Column(nullable = true, unique = true)
+    var kakaoId: Long? = null  // Kakao 사용자 ID
+        protected set
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -57,6 +72,7 @@ class User(
     @Column(nullable = true)
     var gameNickname: String? = null
         protected set
+
 
     // ==================== 비즈니스 메서드 ====================
 
@@ -185,6 +201,83 @@ class User(
      */
     fun updateGameNickname(newGameNickname: String?) {
         gameNickname = newGameNickname?.takeIf { it.isNotBlank() }
+    }
+
+    // ==================== OAuth 관련 메서드 ====================
+
+    /**
+     * Steam ID 설정 (OAuth 로그인 시)
+     */
+    fun assignSteamId(id: String) {
+        require(authProvider == AuthProvider.STEAM) { "Steam 인증 사용자만 Steam ID를 설정할 수 있습니다" }
+        steamId = id
+    }
+
+    /**
+     * Kakao ID 설정 (OAuth 로그인 시)
+     */
+    fun assignKakaoId(id: Long) {
+        require(authProvider == AuthProvider.KAKAO) { "Kakao 인증 사용자만 Kakao ID를 설정할 수 있습니다" }
+        kakaoId = id
+    }
+
+    /**
+     * OAuth 첫 로그인 완료 처리 (이메일 인증 불필요)
+     */
+    fun completeOAuthRegistration(userNickname: String, userEmail: String?) {
+        require(authProvider != AuthProvider.EMAIL) { "OAuth 사용자만 이 메서드를 사용할 수 있습니다" }
+        nickname = userNickname
+        email = userEmail
+        nicknameChangedAt = LocalDateTime.now()
+        status = AccountStatus.ACTIVE
+        lastLoginAt = LocalDateTime.now()
+    }
+
+    /**
+     * OAuth 로그인 성공 처리
+     */
+    fun loginOAuth() {
+        require(authProvider != AuthProvider.EMAIL) { "OAuth 사용자만 이 메서드를 사용할 수 있습니다" }
+        lastLoginAt = LocalDateTime.now()
+    }
+
+    /**
+     * 이메일 업데이트 (OAuth 사용자)
+     */
+    fun updateEmail(newEmail: String?) {
+        email = newEmail?.takeIf { it.isNotBlank() }
+    }
+
+    companion object {
+        /**
+         * Steam OAuth 사용자 생성
+         */
+        fun createSteamUser(steamId: String, nickname: String, email: String? = null): User {
+            return User(
+                email = email,
+                password = null,
+                nickname = nickname,
+                authProvider = AuthProvider.STEAM
+            ).apply {
+                this.steamId = steamId
+                this.status = AccountStatus.PENDING_NICKNAME
+            }
+        }
+
+        /**
+         * Kakao OAuth 사용자 생성
+         */
+        fun createKakaoUser(kakaoId: Long, nickname: String, email: String? = null): User {
+            return User(
+                email = email,
+                password = null,
+                nickname = nickname,
+                authProvider = AuthProvider.KAKAO
+            ).apply {
+                this.kakaoId = kakaoId
+                this.status = AccountStatus.PENDING_NICKNAME
+            }
+        }
     }
 }
 
