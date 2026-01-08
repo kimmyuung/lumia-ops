@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { scrimApi, type UpdateScrimRequest, type AddResultRequest } from '@/api/scrim'
 import type { Scrim, CreateScrimRequest, ScrimStatus } from '@/types/scrim'
 import { useToast } from '@/composables/useToast'
+import { getErrorMessage } from '@/utils/error'
 
 export const useScrimStore = defineStore('scrim', () => {
   const toast = useToast()
@@ -53,9 +54,8 @@ export const useScrimStore = defineStore('scrim', () => {
     error.value = null
     try {
       scrims.value = await scrimApi.getScrims(teamId)
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '스크림 목록을 불러오지 못했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '스크림 목록을 불러오지 못했습니다.')
     } finally {
       isLoading.value = false
     }
@@ -67,9 +67,8 @@ export const useScrimStore = defineStore('scrim', () => {
     try {
       currentScrim.value = await scrimApi.getScrim(id)
       return currentScrim.value
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '스크림 정보를 불러오지 못했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '스크림 정보를 불러오지 못했습니다.')
       return null
     } finally {
       isLoading.value = false
@@ -84,9 +83,8 @@ export const useScrimStore = defineStore('scrim', () => {
       scrims.value.unshift(newScrim)
       toast.success('스크림이 생성되었습니다.')
       return newScrim
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '스크림 생성에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '스크림 생성에 실패했습니다.')
       toast.error(error.value)
       return null
     } finally {
@@ -108,9 +106,8 @@ export const useScrimStore = defineStore('scrim', () => {
       }
       toast.success('스크림이 수정되었습니다.')
       return updatedScrim
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '스크림 수정에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '스크림 수정에 실패했습니다.')
       toast.error(error.value)
       return null
     } finally {
@@ -129,9 +126,8 @@ export const useScrimStore = defineStore('scrim', () => {
       }
       toast.success('스크림이 삭제되었습니다.')
       return true
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '스크림 삭제에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '스크림 삭제에 실패했습니다.')
       toast.error(error.value)
       return false
     } finally {
@@ -153,9 +149,8 @@ export const useScrimStore = defineStore('scrim', () => {
       }
       toast.success('상태가 변경되었습니다.')
       return updatedScrim
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '상태 변경에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '상태 변경에 실패했습니다.')
       toast.error(error.value)
       return null
     } finally {
@@ -177,9 +172,8 @@ export const useScrimStore = defineStore('scrim', () => {
       }
       toast.success('결과가 추가되었습니다.')
       return result
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '결과 추가에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '결과 추가에 실패했습니다.')
       toast.error(error.value)
       return null
     } finally {
@@ -201,9 +195,8 @@ export const useScrimStore = defineStore('scrim', () => {
       }
       toast.success('결과가 삭제되었습니다.')
       return true
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '결과 삭제에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '결과 삭제에 실패했습니다.')
       toast.error(error.value)
       return false
     } finally {

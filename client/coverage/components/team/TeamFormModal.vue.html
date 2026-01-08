@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">53.33% </span>
+                <span class="strong">55.55% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>24/45</span>
+                <span class='fraction'>25/45</span>
             </div>
         
             
@@ -245,14 +245,8 @@
 <a name='L180'></a><a href='#L180'>180</a>
 <a name='L181'></a><a href='#L181'>181</a>
 <a name='L182'></a><a href='#L182'>182</a>
-<a name='L183'></a><a href='#L183'>183</a>
-<a name='L184'></a><a href='#L184'>184</a>
-<a name='L185'></a><a href='#L185'>185</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L183'></a><a href='#L183'>183</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -279,8 +273,6 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
@@ -328,6 +320,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -335,6 +329,8 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -432,11 +428,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
-  &lt;Modal
-    v-model="<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >isOpen"</span></span>
-    :title="isEdit ? '팀 수정' : '팀 생성'"
-    max-width="480px"
-  &gt;
+  &lt;Modal v-model="<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >isOpen"</span> :t</span>itle="isEdit ? '팀 수정' : '팀 생성'" max-width="480px"&gt;
     &lt;form class="team-form" @submit.prevent="handleSubmit"&gt;
       &lt;div class="form-field"&gt;
         &lt;label for="teamName"&gt;팀 이름 *&lt;/label&gt;
@@ -463,9 +455,7 @@
     &lt;/form&gt;
 &nbsp;
     &lt;template #footer&gt;
-      &lt;Button variant="secondary" @click="close" :disabled="isLoading"&gt;
-        취소
-      &lt;/Button&gt;
+      &lt;Button variant="secondary" @click="close" :disabled="isLoading"&gt; 취소 &lt;/Button&gt;
       &lt;Button variant="primary" @click="handleSubmit" :loading="isLoading"&gt;
         &lt;Save :size="18" /&gt;
         &lt;span&gt;{{ isEdit ? '수정' : '생성' }}&lt;/span&gt;
@@ -510,26 +500,30 @@ const errors = reactive({
 })
 &nbsp;
 // 편집 모드 감지
-watch(() =&gt; props.team, (team) =&gt; {
-  if (team) {
-    isEdit.value = true
-    form.name = team.name
-    form.description = team.description || <span class="branch-1 cbranch-no" title="branch not covered" >''</span>
-  } else {
-    isEdit.value = false
-    form.name = ''
-    form.description = ''
-  }
-}, { immediate: true })
+watch(
+  () =&gt; props.team,
+  team =&gt; {
+    if (team) {
+      isEdit.value = true
+      form.name = team.name
+      form.description = team.description || <span class="branch-1 cbranch-no" title="branch not covered" >''</span>
+    } else {
+      isEdit.value = false
+      form.name = ''
+      form.description = ''
+    }
+  },
+  { immediate: true }
+)
 &nbsp;
 function <span class="fstat-no" title="function not covered" >validate(): boolean {</span>
 <span class="cstat-no" title="statement not covered" >  errors.name = ''</span>
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  if (!form.name.trim()) {</span>
 <span class="cstat-no" title="statement not covered" >    errors.name = '팀 이름을 입력해 주세요.'</span>
 <span class="cstat-no" title="statement not covered" >    return false</span>
   }
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  if (form.name.length &lt; 2) {</span>
 <span class="cstat-no" title="statement not covered" >    errors.name = '팀 이름은 2자 이상이어야 합니다.'</span>
 <span class="cstat-no" title="statement not covered" >    return false</span>
@@ -542,10 +536,10 @@ async function <span class="fstat-no" title="function not covered" >handleSubmit
 <span class="cstat-no" title="statement not covered" >  if (!validate()) <span class="cstat-no" title="statement not covered" >return</span></span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  isLoading.value = true</span>
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  try {</span>
     let result: Team | null
-    
+&nbsp;
 <span class="cstat-no" title="statement not covered" >    if (isEdit.value &amp;&amp; props.team) {</span>
 <span class="cstat-no" title="statement not covered" >      result = await teamStore.updateTeam(props.team.id, {</span>
         name: form.name,
@@ -622,7 +616,7 @@ function close() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

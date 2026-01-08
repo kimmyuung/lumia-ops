@@ -49,3 +49,24 @@ data class ScrimResponse(
     val createdAt: LocalDateTime?,
     val updatedAt: LocalDateTime?
 )
+
+/**
+ * 스크림 매치 응답 DTO
+ */
+data class ScrimMatchResponse(
+    val id: Long,
+    val roundNumber: Int,
+    val gameId: String?
+)
+
+/**
+ * 매치 결과 응답 DTO
+ */
+data class MatchResultResponse(
+    val id: Long,
+    val teamId: Long,
+    val teamName: String,
+    val rank: Int,
+    val killCount: Int,
+    val totalScore: Int
+)

@@ -483,17 +483,9 @@
 <a name='L418'></a><a href='#L418'>418</a>
 <a name='L419'></a><a href='#L419'>419</a>
 <a name='L420'></a><a href='#L420'>420</a>
-<a name='L421'></a><a href='#L421'>421</a>
-<a name='L422'></a><a href='#L422'>422</a>
-<a name='L423'></a><a href='#L423'>423</a>
-<a name='L424'></a><a href='#L424'>424</a>
-<a name='L425'></a><a href='#L425'>425</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L421'></a><a href='#L421'>421</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -619,11 +611,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -658,9 +646,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -914,11 +906,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
   &lt;div class="team-view"&gt;
     &lt;div class="container"&gt;
-      &lt;PageHeader
-        title="팀 관리"
-        description="팀원 초대, 역할 배정, 일정 관리"
-        :icon="Users"
-      &gt;
+      &lt;PageHeader title="팀 관리" description="팀원 초대, 역할 배정, 일정 관리" :icon="Users"&gt;
         &lt;template #actions&gt;
           &lt;Button v-if="!hasTeam" variant="primary" @click<span class="fstat-no" title="function not covered" >="<span class="cstat-no" title="statement not covered" >s</span>howCreateModal = true"&gt;</span>
             &lt;Plus :size="20" /&gt;
@@ -973,7 +961,7 @@
               &lt;span&gt;초대&lt;/span&gt;
             &lt;/Button&gt;
           &lt;/div&gt;
-          
+&nbsp;
           &lt;div class="members-grid"&gt;
 <span class="cstat-no" title="statement not covered" >            &lt;Card v-for="member in currentTeam.members<span class="fstat-no" title="function not covered" >" :k</span>ey="member.id" class="member-card"&gt;</span>
 <span class="fstat-no" title="function not covered" >              &lt;div c</span>lass="member-info"&gt;
@@ -1043,11 +1031,7 @@
     /&gt;
 &nbsp;
     &lt;!-- 팀 참여 모달 --&gt;
-    &lt;TeamJoinModal
-      v-if="<span class="branch-0 cbranch-no" title="branch not covered" >showJoinModal"</span>
-      @close<span class="fstat-no" title="function not covered" >="<span class="cstat-no" title="statement not covered" >s</span>howJoinModal = false"</span>
-      @joined="handleJoinedTeam"
-    /&gt;
+    &lt;TeamJoinModal v-if="<span class="branch-0 cbranch-no" title="branch not covered" >showJoinModal" @close<span class="fstat-no" title="function not covered" >="<span class="cstat-no" title="statement not covered" >s</span>howJoinModal = false" @j</span>oined="handleJoinedTeam" /&gt;</span>
   &lt;/div&gt;
 &lt;/template&gt;
 &nbsp;
@@ -1082,10 +1066,14 @@ onMounted(() =&gt; {
 &nbsp;
 function <span class="fstat-no" title="function not covered" >getRoleLabel(r</span>ole: TeamRole): string {
 <span class="cstat-no" title="statement not covered" >  switch (role) {</span>
-    case 'OWNER': <span class="cstat-no" title="statement not covered" >return '팀장'</span>
-    case 'ADMIN': <span class="cstat-no" title="statement not covered" >return '관리자'</span>
-    case 'MEMBER': <span class="cstat-no" title="statement not covered" >return '멤버'</span>
-    default: <span class="cstat-no" title="statement not covered" >return role</span>
+    case 'OWNER':
+<span class="cstat-no" title="statement not covered" >      return '팀장'</span>
+    case 'ADMIN':
+<span class="cstat-no" title="statement not covered" >      return '관리자'</span>
+    case 'MEMBER':
+<span class="cstat-no" title="statement not covered" >      return '멤버'</span>
+    default:
+<span class="cstat-no" title="statement not covered" >      return role</span>
   }
 }
 &nbsp;
@@ -1111,7 +1099,7 @@ function <span class="fstat-no" title="function not covered" >handleInvited() {<
 &nbsp;
 async function <span class="fstat-no" title="function not covered" >confirmDelete() {</span>
 <span class="cstat-no" title="statement not covered" >  if (!currentTeam.value) <span class="cstat-no" title="statement not covered" >return</span></span>
-  
+&nbsp;
   const confirmed = <span class="cstat-no" title="statement not covered" >await confirm({</span>
     title: '팀 삭제',
     message: '정말 팀을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
@@ -1119,7 +1107,7 @@ async function <span class="fstat-no" title="function not covered" >confirmDelet
     cancelText: '취소',
     variant: 'danger'
   })
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  if (confirmed) {</span>
 <span class="cstat-no" title="statement not covered" >    await teamStore.deleteTeam(currentTeam.value.id)</span>
   }
@@ -1133,7 +1121,7 @@ async function <span class="fstat-no" title="function not covered" >confirmLeave
     cancelText: '취소',
     variant: 'warning'
   })
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  if (confirmed) {</span>
 <span class="cstat-no" title="statement not covered" >    await teamStore.leaveTeam()</span>
   }
@@ -1329,7 +1317,7 @@ function <span class="fstat-no" title="function not covered" >handleJoinedTeam(_
   .team-header {
     flex-wrap: wrap;
   }
-  
+&nbsp;
   .empty-actions {
     flex-direction: column;
   }
@@ -1342,7 +1330,7 @@ function <span class="fstat-no" title="function not covered" >handleJoinedTeam(_
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../prettify.js"></script>
         <script>

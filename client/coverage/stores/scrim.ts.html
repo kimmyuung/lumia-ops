@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">21.48% </span>
+                <span class="strong">20.3% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>29/135</span>
+                <span class='fraction'>27/133</span>
             </div>
         
             
@@ -309,11 +309,7 @@
 <a name='L244'></a><a href='#L244'>244</a>
 <a name='L245'></a><a href='#L245'>245</a>
 <a name='L246'></a><a href='#L246'>246</a>
-<a name='L247'></a><a href='#L247'>247</a>
-<a name='L248'></a><a href='#L248'>248</a>
-<a name='L249'></a><a href='#L249'>249</a>
-<a name='L250'></a><a href='#L250'>250</a>
-<a name='L251'></a><a href='#L251'>251</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L247'></a><a href='#L247'>247</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -336,12 +332,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -570,248 +562,244 @@ import type { Scrim, CreateScrimRequest, ScrimStatus } from '@/types/scrim'
 import { useToast } from '@/composables/useToast'
 &nbsp;
 export const useScrimStore = defineStore('scrim', () =&gt; {
-    const toast = useToast()
+  const toast = useToast()
 &nbsp;
-    // 상태
-    const scrims = ref&lt;Scrim[]&gt;([])
-    const currentScrim = ref&lt;Scrim | null&gt;(null)
-    const isLoading = ref(false)
-    const error = ref&lt;string | null&gt;(null)
-    const statusFilter = ref&lt;ScrimStatus | 'ALL'&gt;('ALL')
+  // 상태
+  const scrims = ref&lt;Scrim[]&gt;([])
+  const currentScrim = ref&lt;Scrim | null&gt;(null)
+  const isLoading = ref(false)
+  const error = ref&lt;string | null&gt;(null)
+  const statusFilter = ref&lt;ScrimStatus | 'ALL'&gt;('ALL')
 &nbsp;
-    // 게터
-    const filteredScrims = computed(() =&gt; {
-        if (statusFilter.value === 'ALL') return scrims.value
-        return scrims.value.filter(s =&gt; s.status === statusFilter.value)
+  // 게터
+  const filteredScrims = computed(() =&gt; {
+    if (statusFilter.value === 'ALL') return scrims.value
+    return scrims.value.filter(s =&gt; s.status === statusFilter.value)
+  })
+&nbsp;
+  const scheduledScrims = computed(() =&gt; scrims.value.filter(s =&gt; s.status === 'SCHEDULED'))
+&nbsp;
+  const completedScrims = computed(() =&gt; scrims.value.filter(s =&gt; s.status === 'COMPLETED'))
+&nbsp;
+  const scrimStats = computed(() =&gt; {
+    const completed = completedScrims.value
+    if (completed.length === 0) return { count: 0, avgPlacement: 0, totalKills: 0 }
+&nbsp;
+    let totalPlacement = 0
+    let totalKills = 0
+    let resultCount = 0
+&nbsp;
+    completed.forEach(scrim =&gt; {
+      scrim.results.forEach(result =&gt; {
+        totalPlacement += result.placement
+        totalKills += result.kills
+        resultCount++
+      })
     })
-&nbsp;
-    const scheduledScrims = computed(() =&gt;
-        scrims.value.filter(s =&gt; s.status === 'SCHEDULED')
-    )
-&nbsp;
-    const completedScrims = computed(() =&gt;
-        scrims.value.filter(s =&gt; s.status === 'COMPLETED')
-    )
-&nbsp;
-    const scrimStats = computed(() =&gt; {
-        const completed = completedScrims.value
-        if (completed.length === 0) return { count: 0, avgPlacement: 0, totalKills: 0 }
-&nbsp;
-        let totalPlacement = 0
-        let totalKills = 0
-        let resultCount = 0
-&nbsp;
-        completed.forEach(scrim =&gt; {
-            scrim.results.forEach(result =&gt; {
-                totalPlacement += result.placement
-                totalKills += result.kills
-                resultCount++
-            })
-        })
-&nbsp;
-        return {
-            count: completed.length,
-            avgPlacement: resultCount &gt; 0 ? (totalPlacement / resultCount).toFixed(1) : <span class="branch-1 cbranch-no" title="branch not covered" >'-',</span>
-            totalKills
-        }
-    })
-&nbsp;
-    // 액션
-    async function <span class="fstat-no" title="function not covered" >fetchScrims(t</span>eamId?: string) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            scrims.value = await scrimApi.getScrims(teamId)</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '스크림 목록을 불러오지 못했습니다.'</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >fetchScrim(i</span>d: string) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            currentScrim.value = await scrimApi.getScrim(id)</span>
-<span class="cstat-no" title="statement not covered" >            return currentScrim.value</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '스크림 정보를 불러오지 못했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >createScrim(d</span>ata: CreateScrimRequest) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const newScrim = <span class="cstat-no" title="statement not covered" >await scrimApi.createScrim(data)</span>
-<span class="cstat-no" title="statement not covered" >            scrims.value.unshift(newScrim)</span>
-<span class="cstat-no" title="statement not covered" >            toast.success('스크림이 생성되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return newScrim</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '스크림 생성에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >updateScrim(i</span>d: string, data: UpdateScrimRequest) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const updatedScrim = <span class="cstat-no" title="statement not covered" >await scrimApi.updateScrim(id, data)</span>
-            const index = <span class="cstat-no" title="statement not covered" >scrims.value.findIndex(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === id)</span></span>
-<span class="cstat-no" title="statement not covered" >            if (index !== -1) {</span>
-<span class="cstat-no" title="statement not covered" >                scrims.value[index] = updatedScrim</span>
-            }
-<span class="cstat-no" title="statement not covered" >            if (currentScrim.value?.id === id) {</span>
-<span class="cstat-no" title="statement not covered" >                currentScrim.value = updatedScrim</span>
-            }
-<span class="cstat-no" title="statement not covered" >            toast.success('스크림이 수정되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return updatedScrim</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '스크림 수정에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >deleteScrim(i</span>d: string) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            await scrimApi.deleteScrim(id)</span>
-<span class="cstat-no" title="statement not covered" >            scrims.value = scrims.value.filter(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id !== id)</span></span>
-<span class="cstat-no" title="statement not covered" >            if (currentScrim.value?.id === id) {</span>
-<span class="cstat-no" title="statement not covered" >                currentScrim.value = null</span>
-            }
-<span class="cstat-no" title="statement not covered" >            toast.success('스크림이 삭제되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return true</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '스크림 삭제에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >updateStatus(i</span>d: string, status: ScrimStatus) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const updatedScrim = <span class="cstat-no" title="statement not covered" >await scrimApi.updateStatus(id, status)</span>
-            const index = <span class="cstat-no" title="statement not covered" >scrims.value.findIndex(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === id)</span></span>
-<span class="cstat-no" title="statement not covered" >            if (index !== -1) {</span>
-<span class="cstat-no" title="statement not covered" >                scrims.value[index] = updatedScrim</span>
-            }
-<span class="cstat-no" title="statement not covered" >            if (currentScrim.value?.id === id) {</span>
-<span class="cstat-no" title="statement not covered" >                currentScrim.value = updatedScrim</span>
-            }
-<span class="cstat-no" title="statement not covered" >            toast.success('상태가 변경되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return updatedScrim</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '상태 변경에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >addResult(s</span>crimId: string, data: AddResultRequest) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const result = <span class="cstat-no" title="statement not covered" >await scrimApi.addResult(scrimId, data)</span>
-            const scrim = <span class="cstat-no" title="statement not covered" >scrims.value.find(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === scrimId)</span></span>
-<span class="cstat-no" title="statement not covered" >            if (scrim) {</span>
-<span class="cstat-no" title="statement not covered" >                scrim.results.push(result)</span>
-            }
-<span class="cstat-no" title="statement not covered" >            if (currentScrim.value?.id === scrimId) {</span>
-<span class="cstat-no" title="statement not covered" >                currentScrim.value.results.push(result)</span>
-            }
-<span class="cstat-no" title="statement not covered" >            toast.success('결과가 추가되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return result</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '결과 추가에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >deleteResult(s</span>crimId: string, resultId: string) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            await scrimApi.deleteResult(scrimId, resultId)</span>
-            const scrim = <span class="cstat-no" title="statement not covered" >scrims.value.find(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === scrimId)</span></span>
-<span class="cstat-no" title="statement not covered" >            if (scrim) {</span>
-<span class="cstat-no" title="statement not covered" >                scrim.results = scrim.results.filter(<span class="fstat-no" title="function not covered" >r =&gt; <span class="cstat-no" title="statement not covered" >r</span>.id !== resultId)</span></span>
-            }
-<span class="cstat-no" title="statement not covered" >            if (currentScrim.value?.id === scrimId) {</span>
-<span class="cstat-no" title="statement not covered" >                currentScrim.value.results = currentScrim.value.results.filter(<span class="fstat-no" title="function not covered" >r =&gt; <span class="cstat-no" title="statement not covered" >r</span>.id !== resultId)</span></span>
-            }
-<span class="cstat-no" title="statement not covered" >            toast.success('결과가 삭제되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return true</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '결과 삭제에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    function setStatusFilter(status: ScrimStatus | 'ALL') {
-        statusFilter.value = status
-    }
-&nbsp;
-    function clearError() {
-        error.value = null
-    }
 &nbsp;
     return {
-        // 상태
-        scrims,
-        currentScrim,
-        isLoading,
-        error,
-        statusFilter,
-        // 게터
-        filteredScrims,
-        scheduledScrims,
-        completedScrims,
-        scrimStats,
-        // 액션
-        fetchScrims,
-        fetchScrim,
-        createScrim,
-        updateScrim,
-        deleteScrim,
-        updateStatus,
-        addResult,
-        deleteResult,
-        setStatusFilter,
-        clearError
+      count: completed.length,
+      avgPlacement: resultCount &gt; 0 ? (totalPlacement / resultCount).toFixed(1) : <span class="branch-1 cbranch-no" title="branch not covered" >'-',</span>
+      totalKills
     }
+  })
+&nbsp;
+  // 액션
+  async function <span class="fstat-no" title="function not covered" >fetchScrims(t</span>eamId?: string) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      scrims.value = await scrimApi.getScrims(teamId)</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '스크림 목록을 불러오지 못했습니다.'</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >fetchScrim(i</span>d: string) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      currentScrim.value = await scrimApi.getScrim(id)</span>
+<span class="cstat-no" title="statement not covered" >      return currentScrim.value</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '스크림 정보를 불러오지 못했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >createScrim(d</span>ata: CreateScrimRequest) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const newScrim = <span class="cstat-no" title="statement not covered" >await scrimApi.createScrim(data)</span>
+<span class="cstat-no" title="statement not covered" >      scrims.value.unshift(newScrim)</span>
+<span class="cstat-no" title="statement not covered" >      toast.success('스크림이 생성되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return newScrim</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '스크림 생성에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >updateScrim(i</span>d: string, data: UpdateScrimRequest) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const updatedScrim = <span class="cstat-no" title="statement not covered" >await scrimApi.updateScrim(id, data)</span>
+      const index = <span class="cstat-no" title="statement not covered" >scrims.value.findIndex(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === id)</span></span>
+<span class="cstat-no" title="statement not covered" >      if (index !== -1) {</span>
+<span class="cstat-no" title="statement not covered" >        scrims.value[index] = updatedScrim</span>
+      }
+<span class="cstat-no" title="statement not covered" >      if (currentScrim.value?.id === id) {</span>
+<span class="cstat-no" title="statement not covered" >        currentScrim.value = updatedScrim</span>
+      }
+<span class="cstat-no" title="statement not covered" >      toast.success('스크림이 수정되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return updatedScrim</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '스크림 수정에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >deleteScrim(i</span>d: string) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      await scrimApi.deleteScrim(id)</span>
+<span class="cstat-no" title="statement not covered" >      scrims.value = scrims.value.filter(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id !== id)</span></span>
+<span class="cstat-no" title="statement not covered" >      if (currentScrim.value?.id === id) {</span>
+<span class="cstat-no" title="statement not covered" >        currentScrim.value = null</span>
+      }
+<span class="cstat-no" title="statement not covered" >      toast.success('스크림이 삭제되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return true</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '스크림 삭제에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >updateStatus(i</span>d: string, status: ScrimStatus) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const updatedScrim = <span class="cstat-no" title="statement not covered" >await scrimApi.updateStatus(id, status)</span>
+      const index = <span class="cstat-no" title="statement not covered" >scrims.value.findIndex(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === id)</span></span>
+<span class="cstat-no" title="statement not covered" >      if (index !== -1) {</span>
+<span class="cstat-no" title="statement not covered" >        scrims.value[index] = updatedScrim</span>
+      }
+<span class="cstat-no" title="statement not covered" >      if (currentScrim.value?.id === id) {</span>
+<span class="cstat-no" title="statement not covered" >        currentScrim.value = updatedScrim</span>
+      }
+<span class="cstat-no" title="statement not covered" >      toast.success('상태가 변경되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return updatedScrim</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '상태 변경에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >addResult(s</span>crimId: string, data: AddResultRequest) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const result = <span class="cstat-no" title="statement not covered" >await scrimApi.addResult(scrimId, data)</span>
+      const scrim = <span class="cstat-no" title="statement not covered" >scrims.value.find(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === scrimId)</span></span>
+<span class="cstat-no" title="statement not covered" >      if (scrim) {</span>
+<span class="cstat-no" title="statement not covered" >        scrim.results.push(result)</span>
+      }
+<span class="cstat-no" title="statement not covered" >      if (currentScrim.value?.id === scrimId) {</span>
+<span class="cstat-no" title="statement not covered" >        currentScrim.value.results.push(result)</span>
+      }
+<span class="cstat-no" title="statement not covered" >      toast.success('결과가 추가되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return result</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '결과 추가에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >deleteResult(s</span>crimId: string, resultId: string) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      await scrimApi.deleteResult(scrimId, resultId)</span>
+      const scrim = <span class="cstat-no" title="statement not covered" >scrims.value.find(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.id === scrimId)</span></span>
+<span class="cstat-no" title="statement not covered" >      if (scrim) {</span>
+<span class="cstat-no" title="statement not covered" >        scrim.results = scrim.results.filter(<span class="fstat-no" title="function not covered" >r =&gt; <span class="cstat-no" title="statement not covered" >r</span>.id !== resultId)</span></span>
+      }
+<span class="cstat-no" title="statement not covered" >      if (currentScrim.value?.id === scrimId) {</span>
+<span class="cstat-no" title="statement not covered" >        currentScrim.value.results = currentScrim.value.results.filter(<span class="fstat-no" title="function not covered" >r =&gt; <span class="cstat-no" title="statement not covered" >r</span>.id !== resultId)</span></span>
+      }
+<span class="cstat-no" title="statement not covered" >      toast.success('결과가 삭제되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return true</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '결과 삭제에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  function setStatusFilter(status: ScrimStatus | 'ALL') {
+    statusFilter.value = status
+  }
+&nbsp;
+  function clearError() {
+    error.value = null
+  }
+&nbsp;
+  return {
+    // 상태
+    scrims,
+    currentScrim,
+    isLoading,
+    error,
+    statusFilter,
+    // 게터
+    filteredScrims,
+    scheduledScrims,
+    completedScrims,
+    scrimStats,
+    // 액션
+    fetchScrims,
+    fetchScrim,
+    createScrim,
+    updateScrim,
+    deleteScrim,
+    updateStatus,
+    addResult,
+    deleteResult,
+    setStatusFilter,
+    clearError
+  }
 })
 &nbsp;</pre></td></tr></table></pre>
 
@@ -820,7 +808,7 @@ export const useScrimStore = defineStore('scrim', () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../prettify.js"></script>
         <script>

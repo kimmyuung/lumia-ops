@@ -299,34 +299,34 @@
 import type { ConfirmVariant } from '@/components/common/ConfirmModal.vue'
 &nbsp;
 export interface ConfirmOptions {
-    title: string
-    message: string
-    confirmText?: string
-    cancelText?: string
-    variant?: ConfirmVariant
+  title: string
+  message: string
+  confirmText?: string
+  cancelText?: string
+  variant?: ConfirmVariant
 }
 &nbsp;
 interface ConfirmState {
-    isOpen: boolean
-    title: string
-    message: string
-    confirmText: string
-    cancelText: string
-    variant: ConfirmVariant
-    isLoading: boolean
-    resolve: ((value: boolean) =&gt; void) | null
+  isOpen: boolean
+  title: string
+  message: string
+  confirmText: string
+  cancelText: string
+  variant: ConfirmVariant
+  isLoading: boolean
+  resolve: ((value: boolean) =&gt; void) | null
 }
 &nbsp;
 // 전역 상태 (싱글톤)
 const state = ref&lt;ConfirmState&gt;({
-    isOpen: false,
-    title: '',
-    message: '',
-    confirmText: '확인',
-    cancelText: '취소',
-    variant: 'danger',
-    isLoading: false,
-    resolve: null
+  isOpen: false,
+  title: '',
+  message: '',
+  confirmText: '확인',
+  cancelText: '취소',
+  variant: 'danger',
+  isLoading: false,
+  resolve: null
 })
 &nbsp;
 /**
@@ -334,82 +334,82 @@ const state = ref&lt;ConfirmState&gt;({
  * confirm() 대신 사용할 수 있는 Promise 기반 확인 다이얼로그
  */
 export function useConfirm() {
-    /**
-     * 확인 모달을 표시하고 사용자 응답을 Promise로 반환합니다.
-     * @param options 모달 옵션
-     * @returns 확인 시 true, 취소 시 false
-     */
-    function confirm(options: ConfirmOptions): Promise&lt;boolean&gt; {
-        return new Promise((resolve) =&gt; {
-            state.value = {
-                isOpen: true,
-                title: options.title,
-                message: options.message,
-                confirmText: options.confirmText || '확인',
-                cancelText: options.cancelText || '취소',
-                variant: options.variant || 'danger',
-                isLoading: false,
-                resolve
-            }
-        })
+  /**
+   * 확인 모달을 표시하고 사용자 응답을 Promise로 반환합니다.
+   * @param options 모달 옵션
+   * @returns 확인 시 true, 취소 시 false
+   */
+  function confirm(options: ConfirmOptions): Promise&lt;boolean&gt; {
+    return new Promise(resolve =&gt; {
+      state.value = {
+        isOpen: true,
+        title: options.title,
+        message: options.message,
+        confirmText: options.confirmText || '확인',
+        cancelText: options.cancelText || '취소',
+        variant: options.variant || 'danger',
+        isLoading: false,
+        resolve
+      }
+    })
+  }
+&nbsp;
+  /**
+   * 확인 버튼 클릭 핸들러
+   */
+  function handleConfirm() {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (state.value.resolve) {
+      state.value.resolve(true)
     }
+    closeModal()
+  }
 &nbsp;
-    /**
-     * 확인 버튼 클릭 핸들러
-     */
-    function handleConfirm() {
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (state.value.resolve) {
-            state.value.resolve(true)
-        }
-        closeModal()
+  /**
+   * 취소 버튼 클릭 핸들러
+   */
+  function handleCancel() {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (state.value.resolve) {
+      state.value.resolve(false)
     }
+    closeModal()
+  }
 &nbsp;
-    /**
-     * 취소 버튼 클릭 핸들러
-     */
-    function handleCancel() {
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (state.value.resolve) {
-            state.value.resolve(false)
-        }
-        closeModal()
-    }
+  /**
+   * 로딩 상태 설정
+   */
+  function setLoading(loading: boolean) {
+    state.value.isLoading = loading
+  }
 &nbsp;
-    /**
-     * 로딩 상태 설정
-     */
-    function setLoading(loading: boolean) {
-        state.value.isLoading = loading
-    }
+  /**
+   * 모달 닫기
+   */
+  function closeModal() {
+    state.value.isOpen = false
+    state.value.resolve = null
+    state.value.isLoading = false
+  }
 &nbsp;
-    /**
-     * 모달 닫기
-     */
-    function closeModal() {
-        state.value.isOpen = false
-        state.value.resolve = null
-        state.value.isLoading = false
-    }
+  return {
+    // 상태 (읽기 전용)
+    isOpen: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.isOpen)</span>),
+    title: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.title)</span>),
+    message: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.message)</span>),
+    confirmText: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.confirmText)</span>),
+    cancelText: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.cancelText)</span>),
+    variant: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.variant)</span>),
+    isLoading: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.isLoading)</span>),
 &nbsp;
-    return {
-        // 상태 (읽기 전용)
-        isOpen: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.isOpen)</span>),
-        title: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.title)</span>),
-        message: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.message)</span>),
-        confirmText: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.confirmText)</span>),
-        cancelText: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.cancelText)</span>),
-        variant: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.variant)</span>),
-        isLoading: readonly(ref(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >s</span>tate.value.isLoading)</span>),
+    // 내부 상태 (ConfirmProvider용)
+    state,
 &nbsp;
-        // 내부 상태 (ConfirmProvider용)
-        state,
-&nbsp;
-        // 메서드
-        confirm,
-        handleConfirm,
-        handleCancel,
-        setLoading,
-        closeModal
-    }
+    // 메서드
+    confirm,
+    handleConfirm,
+    handleCancel,
+    setLoading,
+    closeModal
+  }
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -418,7 +418,7 @@ export function useConfirm() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../prettify.js"></script>
         <script>

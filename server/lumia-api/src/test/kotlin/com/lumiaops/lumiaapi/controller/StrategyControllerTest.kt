@@ -149,7 +149,7 @@ class StrategyControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
             )
-                .andExpect(status().isOk)
+                .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.title").value("New Strategy"))
                 .andExpect(jsonPath("$.mapData").value("{\"markers\": []}"))
         }
@@ -228,7 +228,7 @@ class StrategyControllerTest {
                 delete("/api/strategies/${strategy.id}")
                     .header("Authorization", "Bearer $authToken")
             )
-                .andExpect(status().isOk)
+                .andExpect(status().isNoContent)
 
             // verify deletion
             mockMvc.perform(

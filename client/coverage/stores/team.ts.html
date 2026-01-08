@@ -517,220 +517,220 @@ import { useUserStore } from './user'
 import { useToast } from '@/composables/useToast'
 &nbsp;
 export const useTeamStore = defineStore('team', () =&gt; {
-    const userStore = useUserStore()
-    const toast = useToast()
+  const userStore = useUserStore()
+  const toast = useToast()
 &nbsp;
+  // 상태
+  const teams = ref&lt;Team[]&gt;([])
+  const currentTeam = ref&lt;Team | null&gt;(null)
+  const isLoading = ref(false)
+  const error = ref&lt;string | null&gt;(null)
+&nbsp;
+  // 게터
+  const hasTeam = computed(() =&gt; currentTeam.value !== null)
+&nbsp;
+  const isOwner = computed(() =&gt; {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (!currentTeam.value || <span class="branch-1 cbranch-no" title="branch not covered" >!userStore.user) r</span>eturn false
+    const member = <span class="cstat-no" title="statement not covered" >currentTeam.value.members.find(<span class="fstat-no" title="function not covered" >m =&gt; <span class="cstat-no" title="statement not covered" >m</span>.userId === userStore.user?.id)</span></span>
+<span class="cstat-no" title="statement not covered" >    return member?.role === 'OWNER'</span>
+  })
+&nbsp;
+  const isAdmin = computed(() =&gt; {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (!currentTeam.value || <span class="branch-1 cbranch-no" title="branch not covered" >!userStore.user) r</span>eturn false
+    const member = <span class="cstat-no" title="statement not covered" >currentTeam.value.members.find(<span class="fstat-no" title="function not covered" >m =&gt; <span class="cstat-no" title="statement not covered" >m</span>.userId === userStore.user?.id)</span></span>
+<span class="cstat-no" title="statement not covered" >    return member?.role === 'OWNER' || member?.role === 'ADMIN'</span>
+  })
+&nbsp;
+  const memberCount = computed(() =&gt; currentTeam.value?.members.length ?? 0)
+&nbsp;
+  // 액션
+  async function <span class="fstat-no" title="function not covered" >fetchTeams() {</span>
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      teams.value = await teamApi.getTeams()</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '팀 목록을 불러오지 못했습니다.'</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >fetchMyTeam() {</span>
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      currentTeam.value = await teamApi.getMyTeam()</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '팀 정보를 불러오지 못했습니다.'</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >fetchTeam(i</span>d: string) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      currentTeam.value = await teamApi.getTeam(id)</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '팀 정보를 불러오지 못했습니다.'</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >createTeam(d</span>ata: CreateTeamRequest) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const newTeam = <span class="cstat-no" title="statement not covered" >await teamApi.createTeam(data)</span>
+<span class="cstat-no" title="statement not covered" >      teams.value.push(newTeam)</span>
+<span class="cstat-no" title="statement not covered" >      currentTeam.value = newTeam</span>
+<span class="cstat-no" title="statement not covered" >      toast.success('팀이 생성되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return newTeam</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '팀 생성에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >updateTeam(i</span>d: string, data: UpdateTeamRequest) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const updatedTeam = <span class="cstat-no" title="statement not covered" >await teamApi.updateTeam(id, data)</span>
+      const index = <span class="cstat-no" title="statement not covered" >teams.value.findIndex(<span class="fstat-no" title="function not covered" >t =&gt; <span class="cstat-no" title="statement not covered" >t</span>.id === id)</span></span>
+<span class="cstat-no" title="statement not covered" >      if (index !== -1) {</span>
+<span class="cstat-no" title="statement not covered" >        teams.value[index] = updatedTeam</span>
+      }
+<span class="cstat-no" title="statement not covered" >      if (currentTeam.value?.id === id) {</span>
+<span class="cstat-no" title="statement not covered" >        currentTeam.value = updatedTeam</span>
+      }
+<span class="cstat-no" title="statement not covered" >      toast.success('팀 정보가 수정되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return updatedTeam</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '팀 수정에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >deleteTeam(i</span>d: string) {
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      await teamApi.deleteTeam(id)</span>
+<span class="cstat-no" title="statement not covered" >      teams.value = teams.value.filter(<span class="fstat-no" title="function not covered" >t =&gt; <span class="cstat-no" title="statement not covered" >t</span>.id !== id)</span></span>
+<span class="cstat-no" title="statement not covered" >      if (currentTeam.value?.id === id) {</span>
+<span class="cstat-no" title="statement not covered" >        currentTeam.value = null</span>
+      }
+<span class="cstat-no" title="statement not covered" >      toast.success('팀이 삭제되었습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return true</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '팀 삭제에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >inviteMember(d</span>ata: InviteMemberRequest) {
+<span class="cstat-no" title="statement not covered" >    if (!currentTeam.value) <span class="cstat-no" title="statement not covered" >return null</span></span>
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const member = <span class="cstat-no" title="statement not covered" >await teamApi.inviteMember(currentTeam.value.id, data)</span>
+<span class="cstat-no" title="statement not covered" >      currentTeam.value.members.push(member)</span>
+<span class="cstat-no" title="statement not covered" >      toast.success('멤버를 초대했습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return member</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '멤버 초대에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return null</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >removeMember(m</span>emberId: string) {
+<span class="cstat-no" title="statement not covered" >    if (!currentTeam.value) <span class="cstat-no" title="statement not covered" >return false</span></span>
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      await teamApi.removeMember(currentTeam.value.id, memberId)</span>
+<span class="cstat-no" title="statement not covered" >      currentTeam.value.members = currentTeam.value.members.filter(<span class="fstat-no" title="function not covered" >m =&gt; <span class="cstat-no" title="statement not covered" >m</span>.id !== memberId)</span></span>
+<span class="cstat-no" title="statement not covered" >      toast.success('멤버를 제거했습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return true</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '멤버 제거에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  async function <span class="fstat-no" title="function not covered" >leaveTeam() {</span>
+<span class="cstat-no" title="statement not covered" >    if (!currentTeam.value) <span class="cstat-no" title="statement not covered" >return false</span></span>
+<span class="cstat-no" title="statement not covered" >    isLoading.value = true</span>
+<span class="cstat-no" title="statement not covered" >    error.value = null</span>
+<span class="cstat-no" title="statement not covered" >    try {</span>
+<span class="cstat-no" title="statement not covered" >      await teamApi.leaveTeam(currentTeam.value.id)</span>
+<span class="cstat-no" title="statement not covered" >      currentTeam.value = null</span>
+<span class="cstat-no" title="statement not covered" >      toast.info('팀에서 탈퇴했습니다.')</span>
+<span class="cstat-no" title="statement not covered" >      return true</span>
+    } catch (err: unknown) {
+      const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value = e.message || '팀 탈퇴에 실패했습니다.'</span>
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+<span class="cstat-no" title="statement not covered" >      isLoading.value = false</span>
+    }
+  }
+&nbsp;
+  function clearError() {
+    error.value = null
+  }
+&nbsp;
+  return {
     // 상태
-    const teams = ref&lt;Team[]&gt;([])
-    const currentTeam = ref&lt;Team | null&gt;(null)
-    const isLoading = ref(false)
-    const error = ref&lt;string | null&gt;(null)
-&nbsp;
+    teams,
+    currentTeam,
+    isLoading,
+    error,
     // 게터
-    const hasTeam = computed(() =&gt; currentTeam.value !== null)
-&nbsp;
-    const isOwner = computed(() =&gt; {
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (!currentTeam.value || <span class="branch-1 cbranch-no" title="branch not covered" >!userStore.user) r</span>eturn false
-        const member = <span class="cstat-no" title="statement not covered" >currentTeam.value.members.find(<span class="fstat-no" title="function not covered" >m =&gt; <span class="cstat-no" title="statement not covered" >m</span>.userId === userStore.user?.id)</span></span>
-<span class="cstat-no" title="statement not covered" >        return member?.role === 'OWNER'</span>
-    })
-&nbsp;
-    const isAdmin = computed(() =&gt; {
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (!currentTeam.value || <span class="branch-1 cbranch-no" title="branch not covered" >!userStore.user) r</span>eturn false
-        const member = <span class="cstat-no" title="statement not covered" >currentTeam.value.members.find(<span class="fstat-no" title="function not covered" >m =&gt; <span class="cstat-no" title="statement not covered" >m</span>.userId === userStore.user?.id)</span></span>
-<span class="cstat-no" title="statement not covered" >        return member?.role === 'OWNER' || member?.role === 'ADMIN'</span>
-    })
-&nbsp;
-    const memberCount = computed(() =&gt; currentTeam.value?.members.length ?? 0)
-&nbsp;
+    hasTeam,
+    isOwner,
+    isAdmin,
+    memberCount,
     // 액션
-    async function <span class="fstat-no" title="function not covered" >fetchTeams() {</span>
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            teams.value = await teamApi.getTeams()</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '팀 목록을 불러오지 못했습니다.'</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >fetchMyTeam() {</span>
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            currentTeam.value = await teamApi.getMyTeam()</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '팀 정보를 불러오지 못했습니다.'</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >fetchTeam(i</span>d: string) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            currentTeam.value = await teamApi.getTeam(id)</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '팀 정보를 불러오지 못했습니다.'</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >createTeam(d</span>ata: CreateTeamRequest) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const newTeam = <span class="cstat-no" title="statement not covered" >await teamApi.createTeam(data)</span>
-<span class="cstat-no" title="statement not covered" >            teams.value.push(newTeam)</span>
-<span class="cstat-no" title="statement not covered" >            currentTeam.value = newTeam</span>
-<span class="cstat-no" title="statement not covered" >            toast.success('팀이 생성되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return newTeam</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '팀 생성에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >updateTeam(i</span>d: string, data: UpdateTeamRequest) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const updatedTeam = <span class="cstat-no" title="statement not covered" >await teamApi.updateTeam(id, data)</span>
-            const index = <span class="cstat-no" title="statement not covered" >teams.value.findIndex(<span class="fstat-no" title="function not covered" >t =&gt; <span class="cstat-no" title="statement not covered" >t</span>.id === id)</span></span>
-<span class="cstat-no" title="statement not covered" >            if (index !== -1) {</span>
-<span class="cstat-no" title="statement not covered" >                teams.value[index] = updatedTeam</span>
-            }
-<span class="cstat-no" title="statement not covered" >            if (currentTeam.value?.id === id) {</span>
-<span class="cstat-no" title="statement not covered" >                currentTeam.value = updatedTeam</span>
-            }
-<span class="cstat-no" title="statement not covered" >            toast.success('팀 정보가 수정되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return updatedTeam</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '팀 수정에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >deleteTeam(i</span>d: string) {
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            await teamApi.deleteTeam(id)</span>
-<span class="cstat-no" title="statement not covered" >            teams.value = teams.value.filter(<span class="fstat-no" title="function not covered" >t =&gt; <span class="cstat-no" title="statement not covered" >t</span>.id !== id)</span></span>
-<span class="cstat-no" title="statement not covered" >            if (currentTeam.value?.id === id) {</span>
-<span class="cstat-no" title="statement not covered" >                currentTeam.value = null</span>
-            }
-<span class="cstat-no" title="statement not covered" >            toast.success('팀이 삭제되었습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return true</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '팀 삭제에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >inviteMember(d</span>ata: InviteMemberRequest) {
-<span class="cstat-no" title="statement not covered" >        if (!currentTeam.value) <span class="cstat-no" title="statement not covered" >return null</span></span>
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const member = <span class="cstat-no" title="statement not covered" >await teamApi.inviteMember(currentTeam.value.id, data)</span>
-<span class="cstat-no" title="statement not covered" >            currentTeam.value.members.push(member)</span>
-<span class="cstat-no" title="statement not covered" >            toast.success('멤버를 초대했습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return member</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '멤버 초대에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return null</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >removeMember(m</span>emberId: string) {
-<span class="cstat-no" title="statement not covered" >        if (!currentTeam.value) <span class="cstat-no" title="statement not covered" >return false</span></span>
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            await teamApi.removeMember(currentTeam.value.id, memberId)</span>
-<span class="cstat-no" title="statement not covered" >            currentTeam.value.members = currentTeam.value.members.filter(<span class="fstat-no" title="function not covered" >m =&gt; <span class="cstat-no" title="statement not covered" >m</span>.id !== memberId)</span></span>
-<span class="cstat-no" title="statement not covered" >            toast.success('멤버를 제거했습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return true</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '멤버 제거에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    async function <span class="fstat-no" title="function not covered" >leaveTeam() {</span>
-<span class="cstat-no" title="statement not covered" >        if (!currentTeam.value) <span class="cstat-no" title="statement not covered" >return false</span></span>
-<span class="cstat-no" title="statement not covered" >        isLoading.value = true</span>
-<span class="cstat-no" title="statement not covered" >        error.value = null</span>
-<span class="cstat-no" title="statement not covered" >        try {</span>
-<span class="cstat-no" title="statement not covered" >            await teamApi.leaveTeam(currentTeam.value.id)</span>
-<span class="cstat-no" title="statement not covered" >            currentTeam.value = null</span>
-<span class="cstat-no" title="statement not covered" >            toast.info('팀에서 탈퇴했습니다.')</span>
-<span class="cstat-no" title="statement not covered" >            return true</span>
-        } catch (err: unknown) {
-            const e = <span class="cstat-no" title="statement not covered" >err as { message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = e.message || '팀 탈퇴에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-<span class="cstat-no" title="statement not covered" >            isLoading.value = false</span>
-        }
-    }
-&nbsp;
-    function clearError() {
-        error.value = null
-    }
-&nbsp;
-    return {
-        // 상태
-        teams,
-        currentTeam,
-        isLoading,
-        error,
-        // 게터
-        hasTeam,
-        isOwner,
-        isAdmin,
-        memberCount,
-        // 액션
-        fetchTeams,
-        fetchMyTeam,
-        fetchTeam,
-        createTeam,
-        updateTeam,
-        deleteTeam,
-        inviteMember,
-        removeMember,
-        leaveTeam,
-        clearError
-    }
+    fetchTeams,
+    fetchMyTeam,
+    fetchTeam,
+    createTeam,
+    updateTeam,
+    deleteTeam,
+    inviteMember,
+    removeMember,
+    leaveTeam,
+    clearError
+  }
 })
 &nbsp;</pre></td></tr></table></pre>
 
@@ -739,7 +739,7 @@ export const useTeamStore = defineStore('team', () =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../prettify.js"></script>
         <script>

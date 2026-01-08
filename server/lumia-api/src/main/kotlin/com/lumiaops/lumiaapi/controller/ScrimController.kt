@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
@@ -55,11 +56,11 @@ class ScrimController(
     }
 
     @Operation(summary = "스크림 생성", description = "새로운 스크림을 생성합니다.")
-    @ApiResponse(responseCode = "200", description = "생성 성공")
+    @ApiResponse(responseCode = "201", description = "생성 성공")
     @PostMapping
-    fun createScrim(@RequestBody @Valid request: CreateScrimRequest): ScrimResponse {
+    fun createScrim(@RequestBody @Valid request: CreateScrimRequest): ResponseEntity<ScrimResponse> {
         val scrim = scrimService.createScrim(request.title, request.startTime)
-        return scrim.toResponse()
+        return ResponseEntity.status(HttpStatus.CREATED).body(scrim.toResponse())
     }
 
     @Operation(summary = "스크림 수정", description = "스크림 정보를 수정합니다.")
@@ -104,18 +105,19 @@ class ScrimController(
     }
 
     @Operation(summary = "매치 추가", description = "스크림에 새로운 매치를 추가합니다.")
-    @ApiResponse(responseCode = "200", description = "추가 성공")
+    @ApiResponse(responseCode = "201", description = "추가 성공")
     @PostMapping("/{id}/matches")
     fun addMatch(
         @PathVariable id: Long,
         @RequestParam(required = false) gameId: String?
-    ): ScrimMatch {
-        return scrimService.addMatch(id, gameId)
+    ): ResponseEntity<ScrimMatchResponse> {
+        val match = scrimService.addMatch(id, gameId)
+        return ResponseEntity.status(HttpStatus.CREATED).body(match.toResponse())
     }
 
     @Operation(summary = "매치 결과 입력", description = "매치의 결과(placement, kills)를 입력합니다.")
     @ApiResponses(
-        ApiResponse(responseCode = "200", description = "입력 성공"),
+        ApiResponse(responseCode = "201", description = "입력 성공"),
         ApiResponse(responseCode = "404", description = "스크림/사용자/팀을 찾을 수 없음")
     )
     @PostMapping("/{id}/results")
@@ -123,7 +125,7 @@ class ScrimController(
         @PathVariable id: Long,
         @RequestBody @Valid request: AddMatchResultRequest,
         @AuthenticationPrincipal userDetails: UserDetails
-    ): MatchResult {
+    ): ResponseEntity<MatchResultResponse> {
         val scrim = scrimService.findScrimById(id)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found")
 
@@ -140,7 +142,8 @@ class ScrimController(
         }
 
         // 결과 추가 (도메인 메서드 사용)
-        return match.addResult(team, request.placement, request.kills)
+        val result = match.addResult(team, request.placement, request.kills)
+        return ResponseEntity.status(HttpStatus.CREATED).body(result.toResponse())
     }
 
     // ==================== Helper Extensions ====================
@@ -153,5 +156,20 @@ class ScrimController(
         matchCount = this.matchCount(),
         createdAt = this.createdAt,
         updatedAt = this.updatedAt
+    )
+
+    private fun ScrimMatch.toResponse() = ScrimMatchResponse(
+        id = this.id!!,
+        roundNumber = this.roundNumber,
+        gameId = this.gameId
+    )
+
+    private fun MatchResult.toResponse() = MatchResultResponse(
+        id = this.id!!,
+        teamId = this.team.id!!,
+        teamName = this.team.name,
+        rank = this.rank,
+        killCount = this.killCount,
+        totalScore = this.totalScore
     )
 }

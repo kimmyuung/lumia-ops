@@ -4,10 +4,16 @@ import { isTokenExpired } from '@/utils/token'
 import router from '@/router'
 
 // 에러 타입 정의
+export interface FieldErrorItem {
+  field: string
+  message: string
+}
+
 export interface ApiError {
   status: number
   message: string
   code?: string
+  details?: FieldErrorItem[]
 }
 
 const apiClient: AxiosInstance = axios.create({
@@ -161,7 +167,8 @@ apiClient.interceptors.response.use(
     return Promise.reject({
       status: status || 0,
       message: (data?.message as string) || getDefaultErrorMessage(status),
-      code: (data?.code as string) || `HTTP_${status}`
+      code: (data?.code as string) || `HTTP_${status}`,
+      details: (data?.details as FieldErrorItem[]) || undefined
     } as ApiError)
   }
 )

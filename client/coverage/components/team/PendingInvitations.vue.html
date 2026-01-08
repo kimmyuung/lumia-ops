@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">37.5% </span>
+                <span class="strong">44.44% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/16</span>
+                <span class='fraction'>8/18</span>
             </div>
         
             
@@ -276,16 +276,7 @@
 <a name='L211'></a><a href='#L211'>211</a>
 <a name='L212'></a><a href='#L212'>212</a>
 <a name='L213'></a><a href='#L213'>213</a>
-<a name='L214'></a><a href='#L214'>214</a>
-<a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a>
-<a name='L219'></a><a href='#L219'>219</a>
-<a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a>
-<a name='L222'></a><a href='#L222'>222</a>
-<a name='L223'></a><a href='#L223'>223</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L214'></a><a href='#L214'>214</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -293,7 +284,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -304,10 +295,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -328,12 +315,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -512,7 +494,7 @@
     &lt;div class="section-header"&gt;
       &lt;h4&gt;
         &lt;Clock :size="18" /&gt;
-        &lt;span&gt;대기 중인 초대 ({{ invitations.length }})&lt;/span&gt;
+        &lt;span&gt;대기 중인 초대 ({{ invitations?.length ?? 0 }})&lt;/span&gt;
       &lt;/h4&gt;
       &lt;Button v-if="!isLoading" variant="ghost" size="sm" @click="refresh"&gt;
         &lt;RefreshCw :size="16" /&gt;
@@ -523,13 +505,9 @@
       &lt;Skeleton class="skeleton-item" v-for="i in 2" :key="i" /&gt;
     &lt;/template&gt;
 &nbsp;
-    &lt;template v-else-if="invitations.length<span class="branch-0 cbranch-no" title="branch not covered" > &gt; 0"&gt;</span>
+    &lt;template v-else-if="invitations?.length<span class="branch-0 cbranch-no" title="branch not covered" > &gt; 0"&gt;</span>
       &lt;div class="invitation-list"&gt;
-<span class="cstat-no" title="statement not covered" >        &lt;div </span>
-          v-for="invitation in invitations<span class="fstat-no" title="function not covered" >" </span>
-          :key="invitation.id" 
-          class="invitation-item"
-        &gt;
+<span class="cstat-no" title="statement not covered" >        &lt;div v-for="invitation in invitations<span class="fstat-no" title="function not covered" >" :k</span>ey="invitation.id" class="invitation-item"&gt;</span>
           &lt;div class="invitation-info"&gt;
             &lt;div class="invitation-email"&gt;
               &lt;Mail :size="16" /&gt;
@@ -541,21 +519,16 @@
             &lt;/div&gt;
           &lt;/div&gt;
           &lt;div class="invitation-actions"&gt;
-            &lt;Button 
-              variant="ghost" 
-              size="sm" 
+            &lt;Button
+              variant="ghost"
+              size="sm"
               :loading="resendingId === invitation.id"
               @click<span class="fstat-no" title="function not covered" >="<span class="cstat-no" title="statement not covered" >r</span>esend(invitation)"</span>
               title="재발송"
             &gt;
 <span class="fstat-no" title="function not covered" >              &lt;Send :s</span>ize="14" /&gt;<span class="cstat-no" title="statement not covered" ></span>
             &lt;/Button&gt;
-            &lt;Button 
-              variant="ghost" 
-              size="sm" 
-              @click<span class="fstat-no" title="function not covered" >="<span class="cstat-no" title="statement not covered" >c</span>ancel(invitation)"</span>
-              title="취소"
-            &gt;
+            &lt;Button variant="ghost" size="sm" @click<span class="fstat-no" title="function not covered" >="<span class="cstat-no" title="statement not covered" >c</span>ancel(invitation)" t</span>itle="취소"&gt;
 <span class="fstat-no" title="function not covered" >              &lt;X :s</span>ize="14" /&gt;<span class="cstat-no" title="statement not covered" ></span>
             &lt;/Button&gt;
           &lt;/div&gt;
@@ -736,7 +709,7 @@ defineExpose({ refresh })
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

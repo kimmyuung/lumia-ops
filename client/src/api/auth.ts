@@ -199,6 +199,14 @@ export const oauth2Api = {
   },
 
   /**
+   * Kakao 인가 코드 콜백 (백엔드에서 토큰 교환)
+   */
+  async kakaoCodeCallback(code: string): Promise<OAuth2LoginResponse> {
+    const response = await apiClient.post<OAuth2LoginResponse>('/auth/oauth2/kakao/code', { code })
+    return response.data
+  },
+
+  /**
    * 이터널 리턴 닉네임 설정
    */
   async setupGameNickname(gameNickname: string): Promise<MessageResponse> {

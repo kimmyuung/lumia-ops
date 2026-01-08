@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">55.73% </span>
+                <span class="strong">57.37% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>34/61</span>
+                <span class='fraction'>35/61</span>
             </div>
         
             
@@ -322,14 +322,8 @@
 <a name='L257'></a><a href='#L257'>257</a>
 <a name='L258'></a><a href='#L258'>258</a>
 <a name='L259'></a><a href='#L259'>259</a>
-<a name='L260'></a><a href='#L260'>260</a>
-<a name='L261'></a><a href='#L261'>261</a>
-<a name='L262'></a><a href='#L262'>262</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L260'></a><a href='#L260'>260</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -390,8 +384,6 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
@@ -443,6 +435,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -456,6 +450,8 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -586,11 +582,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">&lt;template&gt;
-  &lt;Modal
-    v-model="<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >isOpen"</span></span>
-    :title="isEdit ? '스크림 수정' : '스크림 생성'"
-    max-width="520px"
-  &gt;
+  &lt;Modal v-model="<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >isOpen"</span> :t</span>itle="isEdit ? '스크림 수정' : '스크림 생성'" max-width="520px"&gt;
     &lt;form class="scrim-form" @submit.prevent="handleSubmit"&gt;
       &lt;div class="form-field"&gt;
         &lt;label for="scrimTitle"&gt;제목 *&lt;/label&gt;
@@ -651,9 +643,7 @@
     &lt;/form&gt;
 &nbsp;
     &lt;template #footer&gt;
-      &lt;Button variant="secondary" @click="close" :disabled="isLoading"&gt;
-        취소
-      &lt;/Button&gt;
+      &lt;Button variant="secondary" @click="close" :disabled="isLoading"&gt; 취소 &lt;/Button&gt;
       &lt;Button variant="primary" @click="handleSubmit" :loading="isLoading"&gt;
         &lt;Save :size="18" /&gt;
         &lt;span&gt;{{ isEdit ? '수정' : '생성' }}&lt;/span&gt;
@@ -702,23 +692,27 @@ const errors = reactive({
 })
 &nbsp;
 // 편집 모드 감지
-watch(() =&gt; props.scrim, (scrim) =&gt; {
-  if (scrim) {
-    isEdit.value = true
-    form.title = scrim.title
-    form.scheduledAt = scrim.scheduledAt.slice(0, 16) // datetime-local 형식
-    form.opponentTeamName = scrim.opponentTeamName || ''
-    form.mapName = scrim.mapName || ''
-    form.notes = scrim.notes || ''
-  } else {
-    isEdit.value = false
-    form.title = ''
-    form.scheduledAt = ''
-    form.opponentTeamName = ''
-    form.mapName = ''
-    form.notes = ''
-  }
-}, { immediate: true })
+watch(
+  () =&gt; props.scrim,
+  scrim =&gt; {
+    if (scrim) {
+      isEdit.value = true
+      form.title = scrim.title
+      form.scheduledAt = scrim.scheduledAt.slice(0, 16) // datetime-local 형식
+      form.opponentTeamName = scrim.opponentTeamName || ''
+      form.mapName = scrim.mapName || ''
+      form.notes = scrim.notes || ''
+    } else {
+      isEdit.value = false
+      form.title = ''
+      form.scheduledAt = ''
+      form.opponentTeamName = ''
+      form.mapName = ''
+      form.notes = ''
+    }
+  },
+  { immediate: true }
+)
 &nbsp;
 function <span class="fstat-no" title="function not covered" >validate(): boolean {</span>
 <span class="cstat-no" title="statement not covered" >  errors.title = ''</span>
@@ -853,7 +847,7 @@ function close() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

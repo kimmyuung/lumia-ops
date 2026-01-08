@@ -526,7 +526,8 @@
 <a name='L461'></a><a href='#L461'>461</a>
 <a name='L462'></a><a href='#L462'>462</a>
 <a name='L463'></a><a href='#L463'>463</a>
-<a name='L464'></a><a href='#L464'>464</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -632,19 +633,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -682,14 +685,8 @@
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
@@ -712,10 +709,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1044,8 +1046,8 @@
       &lt;!-- 필터 탭 --&gt;
       &lt;section class="filter-section"&gt;
         &lt;div class="filter-tabs"&gt;
-          &lt;button 
-            v-for="filter in filters" 
+          &lt;button
+            v-for="filter in filters"
             :key="filter.value"
             class="filter-tab"
             :class="{ active: statusFilter === filter.value }"
@@ -1062,10 +1064,10 @@
 <span class="cstat-no" title="statement not covered" >          &lt;SkeletonCard v-for="i in 3<span class="fstat-no" title="function not covered" >" :k</span>ey="i" /&gt;</span>
         &lt;/template&gt;
         &lt;template v-else-if="filteredScrims.length<span class="branch-0 cbranch-no" title="branch not covered" > &gt; 0"&gt;</span>
-<span class="cstat-no" title="statement not covered" >          &lt;Card </span>
-            v-for="scrim in filteredScrims<span class="fstat-no" title="function not covered" >" </span>
-            :key="scrim.id" 
-            hoverable 
+<span class="cstat-no" title="statement not covered" >          &lt;Card</span>
+            v-for="scrim in filteredScrims<span class="fstat-no" title="function not covered" >"</span>
+            :key="scrim.id"
+            hoverable
             class="scrim-card"
             @click<span class="fstat-no" title="function not covered" >="<span class="cstat-no" title="statement not covered" >s</span>electScrim(scrim)"</span>
           &gt;
@@ -1090,7 +1092,9 @@
               &lt;span class="results-label"&gt;결과:&lt;/span&gt;
               &lt;div class="results-summary"&gt;
 <span class="cstat-no" title="statement not covered" >                &lt;span v-for="(result, idx) in scrim.results.slice<span class="fstat-no" title="function not covered" >(0, 3)" :k</span>ey="result.id"&gt;</span>
-                  {{ result.placement }}위 ({{ result.kills }}킬){{ idx &lt; Math.min(scrim.results.length, 3) - 1 ? ', ' : '' }}
+                  {{ result.placement }}위 ({{ result.kills }}킬){{
+                    idx &lt; Math.min(scrim.results.length, 3) - 1 ? ', ' : ''
+                  }}
                 &lt;/span&gt;
                 &lt;span v-if="scrim.results.length &gt; 3"&gt;... +{{ scrim.results.length - 3 }}&lt;/span&gt;
               &lt;/div&gt;
@@ -1145,14 +1149,8 @@ import { formatDateTime } from '@/utils/formatters'
 const scrimStore = useScrimStore()
 const { confirm } = useConfirm()
 &nbsp;
-const { 
-  scrims, 
-  filteredScrims, 
-  scheduledScrims, 
-  scrimStats, 
-  isLoading, 
-  statusFilter 
-} = storeToRefs(scrimStore)
+const { scrims, filteredScrims, scheduledScrims, scrimStats, isLoading, statusFilter } =
+  storeToRefs(scrimStore)
 &nbsp;
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
@@ -1162,7 +1160,7 @@ const filters = [
   { label: '전체', value: 'ALL' as const },
   { label: '예정됨', value: 'SCHEDULED' as ScrimStatus },
   { label: '진행 중', value: 'IN_PROGRESS' as ScrimStatus },
-  { label: '완료', value: 'COMPLETED' as ScrimStatus },
+  { label: '완료', value: 'COMPLETED' as ScrimStatus }
 ]
 &nbsp;
 onMounted(() =&gt; {
@@ -1175,11 +1173,16 @@ function <span class="fstat-no" title="function not covered" >formatDate(d</span
 &nbsp;
 function <span class="fstat-no" title="function not covered" >getStatusLabel(s</span>tatus: ScrimStatus): string {
 <span class="cstat-no" title="statement not covered" >  switch (status) {</span>
-    case 'SCHEDULED': <span class="cstat-no" title="statement not covered" >return '예정됨'</span>
-    case 'IN_PROGRESS': <span class="cstat-no" title="statement not covered" >return '진행 중'</span>
-    case 'COMPLETED': <span class="cstat-no" title="statement not covered" >return '완료'</span>
-    case 'CANCELLED': <span class="cstat-no" title="statement not covered" >return '취소됨'</span>
-    default: <span class="cstat-no" title="statement not covered" >return status</span>
+    case 'SCHEDULED':
+<span class="cstat-no" title="statement not covered" >      return '예정됨'</span>
+    case 'IN_PROGRESS':
+<span class="cstat-no" title="statement not covered" >      return '진행 중'</span>
+    case 'COMPLETED':
+<span class="cstat-no" title="statement not covered" >      return '완료'</span>
+    case 'CANCELLED':
+<span class="cstat-no" title="statement not covered" >      return '취소됨'</span>
+    default:
+<span class="cstat-no" title="statement not covered" >      return status</span>
   }
 }
 &nbsp;
@@ -1214,7 +1217,7 @@ async function <span class="fstat-no" title="function not covered" >confirmDelet
     cancelText: '취소',
     variant: 'danger'
   })
-  
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  if (confirmed) {</span>
 <span class="cstat-no" title="statement not covered" >    await scrimStore.deleteScrim(scrim.id)</span>
   }
@@ -1446,7 +1449,7 @@ async function <span class="fstat-no" title="function not covered" >confirmDelet
   .stats-section {
     grid-template-columns: 1fr;
   }
-  
+&nbsp;
   .scrim-actions {
     opacity: 1;
   }
@@ -1459,7 +1462,7 @@ async function <span class="fstat-no" title="function not covered" >confirmDelet
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../prettify.js"></script>
         <script>
