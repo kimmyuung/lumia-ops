@@ -2,7 +2,9 @@
   <div id="app">
     <Navbar />
     <main class="main-content">
-      <router-view />
+      <ErrorBoundary>
+        <router-view />
+      </ErrorBoundary>
     </main>
     <Footer />
     <ToastContainer />
@@ -12,7 +14,7 @@
 
 <script setup lang="ts">
 import { Navbar, Footer } from '@/components/layout'
-import { ToastContainer, ConfirmProvider } from '@/components/common'
+import { ToastContainer, ConfirmProvider, ErrorBoundary } from '@/components/common'
 </script>
 
 <style>

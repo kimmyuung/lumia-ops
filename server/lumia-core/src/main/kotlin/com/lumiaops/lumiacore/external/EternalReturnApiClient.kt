@@ -112,6 +112,28 @@ class EternalReturnApiClient(
     }
 
     /**
+     * 상위 랭커 목록 조회
+     * @param seasonId 시즌 ID
+     * @param teamMode 팀 모드 (1=솔로, 2=듀오, 3=스쿼드)
+     */
+    fun getTopRankers(seasonId: Int, teamMode: Int = 3): List<ErTopRanker> {
+        val url = "${properties.baseUrl}/v1/rank/top/$seasonId/$teamMode"
+        
+        return try {
+            val response = executeGet<ErApiResponse<ErTopRankersWrapper>>(url)
+            if (response?.code == 200) {
+                response.data?.topRanks ?: emptyList()
+            } else {
+                logger.warn("Failed to get top rankers: ${response?.message}")
+                emptyList()
+            }
+        } catch (e: Exception) {
+            logger.error("Error getting top rankers: seasonId=$seasonId, teamMode=$teamMode", e)
+            emptyList()
+        }
+    }
+
+    /**
      * API 키가 설정되어 있는지 확인
      */
     fun isConfigured(): Boolean = properties.key.isNotBlank()

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
-import { useWebSocket, type LegacyChatMessage } from '@/composables/useWebSocket'
+import { ref, computed, nextTick, watch, onMounted } from 'vue'
+import { useChat, type ChatMessage, MessageType } from '@/composables/useChat'
 
 interface Props {
   roomId: string
@@ -15,16 +15,11 @@ const emit = defineEmits<{
 
 const messageInput = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
+const hasJoinedRoom = ref(false)
 
 const { isConnected, messages, error, connect, disconnect, joinRoom, leaveRoom, sendMessage } =
-  useWebSocket({
-    url: 'ws://localhost:8081/ws',
-    onConnect: () => {
-      joinRoom(props.roomId, props.username)
-    },
-    onMessage: () => {
-      scrollToBottom()
-    }
+  useChat({
+    url: import.meta.env.VITE_WS_URL || 'http://localhost:8081/ws'
   })
 
 // 채팅방 메시지만 필터링
@@ -37,11 +32,24 @@ const scrollToBottom = async () => {
   }
 }
 
+// 메시지 변경 시 스크롤
+watch(messages, () => {
+  scrollToBottom()
+}, { deep: true })
+
+// 연결 후 방 입장
+watch(isConnected, (connected) => {
+  if (connected && !hasJoinedRoom.value) {
+    joinRoom(props.roomId, props.username, props.userId)
+    hasJoinedRoom.value = true
+  }
+})
+
 const handleSend = () => {
   const content = messageInput.value.trim()
   if (!content) return
 
-  sendMessage(props.roomId, props.username, content)
+  sendMessage(content, props.userId)
   messageInput.value = ''
 }
 
@@ -53,25 +61,28 @@ const handleKeydown = (e: KeyboardEvent) => {
 }
 
 const handleClose = () => {
-  leaveRoom(props.roomId, props.username)
+  leaveRoom()
   disconnect()
   emit('close')
 }
 
-const formatTime = (timestamp: string) => {
+const formatTime = (timestamp?: string) => {
+  if (!timestamp) return ''
   const date = new Date(timestamp)
   return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
 }
 
-const getMessageClass = (message: LegacyChatMessage) => {
-  if (message.type === 'JOIN' || message.type === 'LEAVE') {
+const getMessageClass = (message: ChatMessage) => {
+  if (message.type === MessageType.JOIN || message.type === MessageType.LEAVE) {
     return 'system-message'
   }
   return message.sender === props.username ? 'my-message' : 'other-message'
 }
 
 // 컴포넌트 마운트 시 연결
-connect()
+onMounted(() => {
+  connect()
+})
 
 // 언마운트 시 정리는 composable에서 처리됨
 </script>

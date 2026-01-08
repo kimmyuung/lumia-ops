@@ -8,4 +8,11 @@ import org.springframework.stereotype.Repository
 interface UserRepository : JpaRepository<User, Long> {
     fun findByEmail(email: String): User?
     fun existsByEmail(email: String): Boolean
+    
+    // OAuth 조회
+    fun findBySteamId(steamId: String): User?
+    fun findByKakaoId(kakaoId: Long): User?
+    fun existsBySteamId(steamId: String): Boolean
+    fun existsByKakaoId(kakaoId: Long): Boolean
 }
+

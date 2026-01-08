@@ -156,3 +156,83 @@ data class RecentGameData(
     val playTime: Int,
     val startDtm: String
 )
+
+// ==================== 상위 랭커 ====================
+
+/**
+ * 상위 랭커 정보
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ErTopRanker(
+    val userNum: Long = 0,
+    val nickname: String = "",
+    val rank: Int = 0,
+    val mmr: Int = 0,
+    val totalGames: Int = 0,
+    val totalWins: Int = 0,
+    val rankPercent: Double = 0.0,
+    val averageRank: Double = 0.0,
+    val averageKills: Double = 0.0,
+    val top1: Int = 0,
+    val top2: Int = 0,
+    val top3: Int = 0
+)
+
+/**
+ * 상위 랭커 목록 래퍼
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class ErTopRankersWrapper(
+    val topRanks: List<ErTopRanker> = emptyList()
+)
+
+// ==================== 메타 분석 데이터 ====================
+
+/**
+ * 메타 실험체 정보 (랭커들의 사용 빈도 기반)
+ */
+data class MetaCharacterData(
+    val characterCode: Int,
+    val characterName: String?,
+    val pickCount: Int,          // 상위 랭커들 중 사용자 수
+    val totalGames: Int,         // 총 플레이 횟수
+    val averageWinRate: Double,  // 평균 승률
+    val averageRank: Double,     // 평균 순위
+    val pickRate: Double         // 픽률 (랭커들 중 비율)
+)
+
+/**
+ * 상위 랭커 정보 (가공된 데이터)
+ */
+data class TopRankerData(
+    val rank: Int,
+    val userNum: Long,
+    val nickname: String,
+    val mmr: Int,
+    val totalGames: Int,
+    val wins: Int,
+    val winRate: Double,
+    val averageRank: Double,
+    val topCharacter: TopCharacterData?  // 주력 실험체
+)
+
+/**
+ * 조합 추천 결과
+ */
+data class CompositionRecommendation(
+    val score: Double,           // 추천 점수
+    val characters: List<RecommendedCharacter>,
+    val reason: String           // 추천 이유
+)
+
+/**
+ * 추천 실험체 정보
+ */
+data class RecommendedCharacter(
+    val characterCode: Int,
+    val characterName: String?,
+    val role: String?,           // 역할 (딜러, 서포터 등)
+    val averageWinRate: Double,
+    val synergy: Double          // 팀 시너지 점수
+)
+

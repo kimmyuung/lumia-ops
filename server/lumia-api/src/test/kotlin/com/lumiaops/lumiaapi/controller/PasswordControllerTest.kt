@@ -68,7 +68,7 @@ class PasswordControllerTest {
         testUser = userRepository.save(testUser)
 
         // JWT 토큰 생성
-        authToken = jwtTokenProvider.generateAccessToken(testUser.id!!, testUser.email)
+        authToken = jwtTokenProvider.generateAccessToken(testUser.id!!, testUser.email ?: "")
     }
 
     @Nested

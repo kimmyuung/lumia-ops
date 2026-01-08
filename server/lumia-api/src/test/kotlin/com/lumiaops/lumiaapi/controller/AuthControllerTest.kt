@@ -191,7 +191,7 @@ class AuthControllerTest {
             user.setInitialNickname("TestUser")
             val savedUser = userRepository.save(user)
 
-            val token = jwtTokenProvider.generateAccessToken(savedUser.id!!, savedUser.email)
+            val token = jwtTokenProvider.generateAccessToken(savedUser.id!!, savedUser.email ?: "")
 
             // when & then - /statistics/leaderboard는 인증된 사용자에게 200 반환
             mockMvc.perform(

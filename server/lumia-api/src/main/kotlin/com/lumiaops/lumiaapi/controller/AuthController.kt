@@ -91,7 +91,7 @@ class AuthController(
         return when (val result = authService.login(request.email, request.password)) {
             is LoginResult.Success -> {
                 val user = result.user
-                val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
+                val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email ?: "")
                 val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
                 
                 // 세션 제한 적용 (기존 세션이 최대치면 가장 오래된 것 폐기)
@@ -112,7 +112,7 @@ class AuthController(
             }
             is LoginResult.NeedsNickname -> {
                 val user = result.user
-                val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
+                val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email ?: "")
                 val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
                 
                 // 세션 제한 적용 (기존 세션이 최대치면 가장 오래된 것 폐기)
@@ -182,7 +182,7 @@ class AuthController(
             tokenService.revokeRefreshToken(request.refreshToken)
             
             // 새 토큰 발급
-            val newAccessToken = jwtTokenProvider.generateAccessToken(user.id!!, user.email)
+            val newAccessToken = jwtTokenProvider.generateAccessToken(user.id!!, user.email ?: "")
             val newRefreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
             
             // 새 Refresh Token DB에 저장

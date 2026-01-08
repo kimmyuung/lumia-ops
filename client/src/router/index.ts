@@ -57,6 +57,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/FindUsernameView.vue'),
     meta: { guestOnly: true }
   },
+  // OAuth2 콜백 라우트
+  {
+    path: '/auth/oauth2/:provider/callback',
+    name: 'OAuth2Callback',
+    component: () => import('@/views/OAuth2CallbackView.vue')
+  },
   // 보호된 라우트
   {
     path: '/team',

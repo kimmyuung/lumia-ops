@@ -148,4 +148,109 @@ export const authApi = {
   }
 }
 
+// ==================== OAuth2 타입 정의 ====================
+
+/** OAuth2 로그인 응답 */
+export interface OAuth2LoginResponse {
+  token: string
+  refreshToken: string
+  userId: number
+  nickname: string | null
+  gameNickname: string | null
+  needsGameNickname: boolean
+  authProvider: 'STEAM' | 'KAKAO'
+}
+
+/** Steam 로그인 요청 */
+export interface SteamLoginRequest {
+  steamId: string
+  steamNickname: string
+}
+
+/** Kakao 로그인 요청 */
+export interface KakaoLoginRequest {
+  kakaoId: number
+  kakaoNickname: string
+  kakaoEmail?: string
+}
+
+/** 게임 닉네임 설정 요청 */
+export interface SetupGameNicknameRequest {
+  gameNickname: string
+}
+
+// ==================== OAuth2 API 함수 ====================
+
+export const oauth2Api = {
+  /**
+   * Steam 로그인 콜백
+   */
+  async steamCallback(data: SteamLoginRequest): Promise<OAuth2LoginResponse> {
+    const response = await apiClient.post<OAuth2LoginResponse>('/auth/oauth2/steam/callback', data)
+    return response.data
+  },
+
+  /**
+   * Kakao 로그인 콜백
+   */
+  async kakaoCallback(data: KakaoLoginRequest): Promise<OAuth2LoginResponse> {
+    const response = await apiClient.post<OAuth2LoginResponse>('/auth/oauth2/kakao/callback', data)
+    return response.data
+  },
+
+  /**
+   * 이터널 리턴 닉네임 설정
+   */
+  async setupGameNickname(gameNickname: string): Promise<MessageResponse> {
+    const response = await apiClient.post<MessageResponse>('/auth/oauth2/setup-game-nickname', {
+      gameNickname
+    })
+    return response.data
+  },
+
+  /**
+   * OAuth 사용자 여부 확인
+   */
+  async getOAuthStatus(): Promise<{ isOAuthUser: boolean }> {
+    const response = await apiClient.get<{ isOAuthUser: boolean }>('/auth/oauth2/status')
+    return response.data
+  },
+
+  /**
+   * Steam 로그인 URL 생성
+   */
+  getSteamLoginUrl(): string {
+    const steamOpenIdUrl = 'https://steamcommunity.com/openid/login'
+    const returnUrl = `${window.location.origin}/auth/oauth2/steam/callback`
+
+    const params = new URLSearchParams({
+      'openid.ns': 'http://specs.openid.net/auth/2.0',
+      'openid.mode': 'checkid_setup',
+      'openid.return_to': returnUrl,
+      'openid.realm': window.location.origin,
+      'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
+      'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select'
+    })
+
+    return `${steamOpenIdUrl}?${params.toString()}`
+  },
+
+  /**
+   * Kakao 로그인 URL 생성
+   */
+  getKakaoLoginUrl(clientId: string): string {
+    const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize'
+    const redirectUri = `${window.location.origin}/auth/oauth2/kakao/callback`
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code'
+    })
+
+    return `${kakaoAuthUrl}?${params.toString()}`
+  }
+}
+
 export default authApi
+
