@@ -4,39 +4,39 @@
       <h3>{{ stats.teamName }}</h3>
       <span class="match-count">{{ stats.totalMatches }}경기</span>
     </div>
-    
+
     <div class="stats-grid">
       <div class="stat-item">
         <span class="stat-label">평균 순위</span>
         <span class="stat-value rank">{{ stats.averageRank.toFixed(1) }}</span>
       </div>
-      
+
       <div class="stat-item">
         <span class="stat-label">승률</span>
         <span class="stat-value">{{ stats.winRate.toFixed(1) }}%</span>
       </div>
-      
+
       <div class="stat-item">
         <span class="stat-label">Top3 비율</span>
         <span class="stat-value">{{ stats.top3Rate.toFixed(1) }}%</span>
       </div>
-      
+
       <div class="stat-item">
         <span class="stat-label">총 킬</span>
         <span class="stat-value">{{ stats.totalKills }}</span>
       </div>
-      
+
       <div class="stat-item">
         <span class="stat-label">경기당 킬</span>
         <span class="stat-value">{{ stats.averageKillsPerMatch.toFixed(1) }}</span>
       </div>
-      
+
       <div class="stat-item">
         <span class="stat-label">총 점수</span>
         <span class="stat-value highlight">{{ stats.totalScore.toLocaleString() }}</span>
       </div>
     </div>
-    
+
     <div class="win-stats">
       <div class="win-bar">
         <div class="win-fill" :style="{ width: stats.winRate + '%' }"></div>

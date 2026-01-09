@@ -4,6 +4,7 @@ import com.lumiaops.lumiacore.domain.Team
 import com.lumiaops.lumiacore.domain.scrim.MatchResult
 import com.lumiaops.lumiacore.repository.MatchResultRepository
 import com.lumiaops.lumiacore.repository.TeamRepository
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -21,6 +22,7 @@ class TeamStatisticsService(
     /**
      * 팀 종합 통계 조회
      */
+    @Cacheable(value = ["teamStatistics"], key = "#teamId")
     fun getTeamStats(teamId: Long): TeamStats {
         val team = teamRepository.findById(teamId).orElse(null)
             ?: throw IllegalArgumentException("팀을 찾을 수 없습니다: $teamId")
@@ -148,6 +150,7 @@ class TeamStatisticsService(
     /**
      * 전체 팀 순위표 조회
      */
+    @Cacheable(value = ["leaderboard"])
     fun getLeaderboard(): List<LeaderboardEntry> {
         val data = matchResultRepository.getLeaderboardData()
         

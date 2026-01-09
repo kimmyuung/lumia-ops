@@ -2,6 +2,7 @@ package com.lumiaops.lumiacore.service
 
 import com.lumiaops.lumiacore.external.*
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 /**
@@ -43,6 +44,7 @@ class PlayerStatsService(
      * @param seasonId 시즌 ID (null이면 현재 시즌)
      * @param teamMode 팀 모드 (1=솔로, 2=듀오, 3=스쿼드, null=전체)
      */
+    @Cacheable(value = ["playerStats"], key = "#nickname + '-' + #seasonId + '-' + #teamMode")
     fun getPlayerStats(
         nickname: String,
         seasonId: Int? = null,
@@ -105,6 +107,7 @@ class PlayerStatsService(
     /**
      * 많이 사용한 실험체 Top N 조회
      */
+    @Cacheable(value = ["playerStats"], key = "'chars-' + #nickname + '-' + #seasonId")
     fun getTopCharacters(
         nickname: String, 
         limit: Int = 5,
@@ -138,6 +141,7 @@ class PlayerStatsService(
     /**
      * 최근 게임 기록 조회
      */
+    @Cacheable(value = ["playerGames"], key = "#nickname")
     fun getRecentGames(
         nickname: String,
         limit: Int = 10

@@ -65,11 +65,11 @@
           </div>
 
           <div class="action-buttons">
-            <Button variant="primary" @click="accept" :loading="isProcessing" class="accept-btn">
+            <Button variant="primary" :loading="isProcessing" class="accept-btn" @click="accept">
               <Check :size="20" />
               <span>초대 수락하기</span>
             </Button>
-            <Button variant="secondary" @click="decline" :disabled="isProcessing">
+            <Button variant="secondary" :disabled="isProcessing" @click="decline">
               <X :size="20" />
               <span>거절</span>
             </Button>

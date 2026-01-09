@@ -33,7 +33,7 @@
                 <h2>{{ currentTeam.name }}</h2>
                 <p v-if="currentTeam.description">{{ currentTeam.description }}</p>
               </div>
-              <div class="team-actions" v-if="isOwner">
+              <div v-if="isOwner" class="team-actions">
                 <Button variant="ghost" size="sm" @click="editTeam">
                   <Edit :size="18" />
                 </Button>
@@ -79,7 +79,7 @@
           <PendingInvitations ref="pendingInvitationsRef" :team-id="currentTeam.id" />
         </section>
 
-        <div class="danger-zone" v-if="!isOwner">
+        <div v-if="!isOwner" class="danger-zone">
           <Button variant="danger" @click="confirmLeave">
             <LogOut :size="18" />
             <span>팀 탈퇴</span>

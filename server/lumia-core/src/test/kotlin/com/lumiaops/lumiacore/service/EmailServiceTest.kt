@@ -4,6 +4,7 @@ import com.lumiaops.lumiacore.domain.EmailVerification
 import com.lumiaops.lumiacore.domain.TeamInvitation
 import com.lumiaops.lumiacore.domain.VerificationType
 import com.lumiaops.lumiacore.domain.Team
+import com.lumiaops.lumiacore.domain.User
 import io.mockk.*
 import jakarta.mail.internet.MimeMessage
 import org.junit.jupiter.api.BeforeEach
@@ -90,10 +91,13 @@ class EmailServiceTest {
             val team = mockk<Team>()
             every { team.name } returns "Test Team"
             
+            val inviter = mockk<User>()
+            every { inviter.nickname } returns "TestInviter"
+            
             val invitation = mockk<TeamInvitation>()
-            every { invitation.email } returns "invitee@example.com"
+            every { invitation.invitedEmail } returns "invitee@example.com"
             every { invitation.team } returns team
-            every { invitation.inviterName } returns "TestInviter"
+            every { invitation.invitedBy } returns inviter
             every { invitation.token } returns "invite-token"
             every { invitation.message } returns null
 

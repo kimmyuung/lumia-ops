@@ -3,7 +3,7 @@
     <div class="table-header">
       <h3>🏆 팀 순위표</h3>
     </div>
-    
+
     <div class="table-container">
       <table>
         <thead>
@@ -18,8 +18,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr 
-            v-for="entry in entries" 
+          <tr
+            v-for="entry in entries"
             :key="entry.teamId"
             :class="{ 'top-rank': entry.rank <= 3, 'my-team': entry.teamId === myTeamId }"
           >
@@ -39,7 +39,7 @@
           </tr>
         </tbody>
       </table>
-      
+
       <div v-if="entries.length === 0" class="empty-state">
         <p>아직 등록된 팀이 없습니다.</p>
       </div>
@@ -101,7 +101,8 @@ thead {
   background: var(--bg-color-alt);
 }
 
-th, td {
+th,
+td {
   padding: 0.75rem 1rem;
   text-align: left;
 }

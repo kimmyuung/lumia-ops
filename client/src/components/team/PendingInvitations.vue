@@ -11,7 +11,7 @@
     </div>
 
     <template v-if="isLoading">
-      <Skeleton class="skeleton-item" v-for="i in 2" :key="i" />
+      <Skeleton v-for="i in 2" :key="i" class="skeleton-item" />
     </template>
 
     <template v-else-if="invitations?.length > 0">
@@ -32,12 +32,12 @@
               variant="ghost"
               size="sm"
               :loading="resendingId === invitation.id"
-              @click="resend(invitation)"
               title="재발송"
+              @click="resend(invitation)"
             >
               <Send :size="14" />
             </Button>
-            <Button variant="ghost" size="sm" @click="cancel(invitation)" title="취소">
+            <Button variant="ghost" size="sm" title="취소" @click="cancel(invitation)">
               <X :size="14" />
             </Button>
           </div>

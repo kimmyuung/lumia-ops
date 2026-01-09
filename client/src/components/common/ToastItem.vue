@@ -2,7 +2,7 @@
   <div :class="['toast-item', `toast-${toast.type}`]">
     <component :is="iconComponent" class="toast-icon" :size="20" />
     <span class="toast-message">{{ toast.message }}</span>
-    <button class="toast-close" @click="$emit('close')" aria-label="닫기">
+    <button class="toast-close" aria-label="닫기" @click="$emit('close')">
       <X :size="16" />
     </button>
   </div>

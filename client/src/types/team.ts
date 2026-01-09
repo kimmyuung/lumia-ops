@@ -5,6 +5,7 @@ export interface Team {
   name: string
   description: string
   logoUrl?: string
+  discordWebhookUrl?: string
   createdAt: string
   updatedAt: string
   members: TeamMember[]

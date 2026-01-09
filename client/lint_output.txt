@@ -1,0 +1,94 @@
+﻿
+C:\workspace\lumia-ops\client\src\api\auth.ts
+  134:7  warning  Unexpected console statement  no-console
+
+C:\workspace\lumia-ops\client\src\api\client.ts
+   69:9   warning  Unexpected console statement  no-console
+   79:13  warning  Unexpected console statement  no-console
+   81:13  warning  Unexpected console statement  no-console
+  101:5   warning  Unexpected console statement  no-console
+  116:9   warning  Unexpected console statement  no-console
+  124:7   warning  Unexpected console statement  no-console
+  135:9   warning  Unexpected console statement  no-console
+  138:9   warning  Unexpected console statement  no-console
+  146:9   warning  Unexpected console statement  no-console
+  149:9   warning  Unexpected console statement  no-console
+  152:9   warning  Unexpected console statement  no-console
+  155:9   warning  Unexpected console statement  no-console
+  160:9   warning  Unexpected console statement  no-console
+  163:9   warning  Unexpected console statement  no-console
+
+C:\workspace\lumia-ops\client\src\components\common\ErrorBoundary.vue
+  64:3  warning  Unexpected console statement  no-console
+  65:3  warning  Unexpected console statement  no-console
+  66:3  warning  Unexpected console statement  no-console
+
+C:\workspace\lumia-ops\client\src\components\common\Modal.vue
+  30:7  warning  'props' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\workspace\lumia-ops\client\src\components\common\NotificationBell.vue
+  111:40  warning  'id' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\workspace\lumia-ops\client\src\components\common\__tests__\PageHeader.spec.ts
+  8:11  warning  Prop "size" should define at least its type  vue/require-prop-types
+
+C:\workspace\lumia-ops\client\src\components\strategy\__tests__\TacticalMap.spec.ts
+  24:70  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\workspace\lumia-ops\client\src\composables\__tests__\useMediaQuery.spec.ts
+   39:45  warning  There is more than one component in this file  vue/one-component-per-file
+   54:45  warning  There is more than one component in this file  vue/one-component-per-file
+   69:45  warning  There is more than one component in this file  vue/one-component-per-file
+   85:45  warning  There is more than one component in this file  vue/one-component-per-file
+  110:45  warning  There is more than one component in this file  vue/one-component-per-file
+
+C:\workspace\lumia-ops\client\src\composables\useChat.ts
+   97:7  warning  Unexpected console statement  no-console
+  153:7  warning  Unexpected console statement  no-console
+
+C:\workspace\lumia-ops\client\src\composables\useStompClient.ts
+  125:9   warning  Unexpected console statement  no-console
+  131:9   warning  Unexpected console statement  no-console
+  138:9   warning  Unexpected console statement  no-console
+  147:11  warning  Unexpected console statement  no-console
+  151:11  warning  Unexpected console statement  no-console
+  162:11  warning  Unexpected console statement  no-console
+  199:7   warning  Unexpected console statement  no-console
+  217:9   warning  Unexpected console statement  no-console
+  242:7   warning  Unexpected console statement  no-console
+
+C:\workspace\lumia-ops\client\src\composables\useStrategySync.ts
+   78:66  warning  '_onParticipantJoin' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   94:21  warning  '_unsubscribeAll' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  118:7   warning  Unexpected console statement                             no-console
+  176:7   warning  Unexpected console statement                             no-console
+
+C:\workspace\lumia-ops\client\src\main.ts
+  13:3   warning  Unexpected console statement       no-console
+  14:3   warning  Unexpected console statement       no-console
+  15:3   warning  Unexpected console statement       no-console
+  25:3   warning  Unexpected console statement       no-console
+  26:14  warning  Unexpected console statement       no-console
+  31:3   warning  Unexpected console statement       no-console
+  37:3   warning  Unexpected console statement       no-console
+  42:3   warning  Unexpected console statement       no-console
+  63:7   warning  Unexpected console statement       no-console
+  64:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  65:7   warning  Unexpected console statement       no-console
+
+C:\workspace\lumia-ops\client\src\stores\user.ts
+   81:11  warning  Unexpected console statement  no-console
+  113:9   warning  Unexpected console statement  no-console
+
+C:\workspace\lumia-ops\client\src\views\AcceptInvitationView.vue
+  117:12  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\workspace\lumia-ops\client\src\views\ForgotPasswordView.vue
+  93:12  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\workspace\lumia-ops\client\src\views\StrategyView.vue
+  132:5   warning  Unexpected console statement       no-console
+  181:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+??59 problems (1 error, 58 warnings)
+

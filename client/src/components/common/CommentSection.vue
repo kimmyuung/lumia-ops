@@ -12,8 +12,8 @@
         :disabled="isSubmitting"
         @keydown.ctrl.enter="handleSubmit"
       ></textarea>
-      <button 
-        class="submit-btn" 
+      <button
+        class="submit-btn"
         :disabled="!newComment.trim() || isSubmitting"
         @click="handleSubmit"
       >
@@ -23,16 +23,12 @@
 
     <!-- 코멘트 목록 -->
     <div class="comment-list">
-      <div
-        v-for="comment in comments"
-        :key="comment.id"
-        class="comment-item"
-      >
+      <div v-for="comment in comments" :key="comment.id" class="comment-item">
         <div class="comment-header">
           <span class="author">{{ comment.userName }}</span>
           <span class="time">{{ formatTime(comment.createdAt) }}</span>
         </div>
-        
+
         <div v-if="editingId === comment.id" class="edit-mode">
           <textarea v-model="editContent"></textarea>
           <div class="edit-actions">
@@ -40,7 +36,7 @@
             <button class="cancel-btn" @click="cancelEdit">취소</button>
           </div>
         </div>
-        
+
         <template v-else>
           <p class="comment-content">{{ comment.content }}</p>
           <div v-if="comment.userId === currentUserId" class="comment-actions">
@@ -102,7 +98,7 @@ async function fetchComments() {
 
 async function handleSubmit() {
   if (!newComment.value.trim()) return
-  
+
   isSubmitting.value = true
   error.value = null
   try {
@@ -132,7 +128,7 @@ function cancelEdit() {
 
 async function handleUpdate(commentId: number) {
   if (!editContent.value.trim()) return
-  
+
   try {
     const updated = await commentApi.updateComment(commentId, editContent.value.trim())
     const index = comments.value.findIndex(c => c.id === commentId)
@@ -147,7 +143,7 @@ async function handleUpdate(commentId: number) {
 
 async function handleDelete(commentId: number) {
   if (!confirm('코멘트를 삭제하시겠습니까?')) return
-  
+
   try {
     await commentApi.deleteComment(commentId)
     comments.value = comments.value.filter(c => c.id !== commentId)
@@ -288,7 +284,8 @@ onMounted(() => {
   gap: 0.5rem;
 }
 
-.save-btn, .cancel-btn {
+.save-btn,
+.cancel-btn {
   padding: 0.25rem 0.75rem;
   border: none;
   border-radius: var(--radius-sm);
@@ -306,7 +303,8 @@ onMounted(() => {
   color: var(--text-muted);
 }
 
-.empty-state, .loading-state {
+.empty-state,
+.loading-state {
   text-align: center;
   padding: 2rem;
   color: var(--text-muted);

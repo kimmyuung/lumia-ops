@@ -1,12 +1,12 @@
 <template>
   <div class="notification-bell">
-    <button class="bell-button" @click="toggleDropdown" :class="{ 'has-unread': hasUnread }">
+    <button class="bell-button" :class="{ 'has-unread': hasUnread }" @click="toggleDropdown">
       <Bell :size="22" />
       <span v-if="hasUnread" class="badge">{{ displayCount }}</span>
     </button>
 
     <Transition name="dropdown">
-      <div v-if="isOpen" class="dropdown" ref="dropdownRef">
+      <div v-if="isOpen" ref="dropdownRef" class="dropdown">
         <div class="dropdown-header">
           <h4>알림</h4>
           <button v-if="hasUnread" class="mark-all-btn" @click="handleMarkAllAsRead">
@@ -14,7 +14,7 @@
           </button>
         </div>
 
-        <div class="notification-list" v-if="!isLoading">
+        <div v-if="!isLoading" class="notification-list">
           <div
             v-for="notification in recentNotifications"
             :key="notification.id"
@@ -42,10 +42,8 @@
           <span>불러오는 중...</span>
         </div>
 
-        <div class="dropdown-footer" v-if="recentNotifications.length > 0">
-          <router-link to="/notifications" @click="isOpen = false">
-            모든 알림 보기
-          </router-link>
+        <div v-if="recentNotifications.length > 0" class="dropdown-footer">
+          <router-link to="/notifications" @click="isOpen = false"> 모든 알림 보기 </router-link>
         </div>
       </div>
     </Transition>
@@ -99,7 +97,7 @@ async function handleNotificationClick(notification: NotificationResponse) {
   if (!notification.isRead) {
     await notificationStore.markAsRead(notification.id)
   }
-  
+
   // 관련 페이지로 이동
   if (notification.relatedType && notification.relatedId) {
     const route = getRelatedRoute(notification.relatedType, notification.relatedId)
@@ -112,10 +110,14 @@ async function handleNotificationClick(notification: NotificationResponse) {
 
 function getRelatedRoute(type: string, id: number): string | null {
   switch (type) {
-    case 'TEAM': return `/team`
-    case 'SCRIM': return `/scrim`
-    case 'STRATEGY': return `/strategy`
-    default: return null
+    case 'TEAM':
+      return `/team`
+    case 'SCRIM':
+      return `/scrim`
+    case 'STRATEGY':
+      return `/strategy`
+    default:
+      return null
   }
 }
 
@@ -143,7 +145,7 @@ function formatTime(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
   const diff = now.getTime() - date.getTime()
-  
+
   const minutes = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
@@ -158,7 +160,7 @@ function formatTime(dateString: string): string {
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
   notificationStore.fetchUnreadCount()
-  
+
   // 로그인 상태면 WebSocket 구독
   if (userStore.user?.id) {
     notificationStore.subscribeToNotifications(Number(userStore.user.id))

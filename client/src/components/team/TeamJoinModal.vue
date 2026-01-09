@@ -33,12 +33,12 @@
     </form>
 
     <template #footer>
-      <Button variant="secondary" @click="close" :disabled="isLoading"> 취소 </Button>
+      <Button variant="secondary" :disabled="isLoading" @click="close"> 취소 </Button>
       <Button
         variant="primary"
-        @click="handleSubmit"
         :loading="isLoading"
         :disabled="!inviteCode.trim()"
+        @click="handleSubmit"
       >
         <UserPlus :size="18" />
         <span>팀 참여</span>

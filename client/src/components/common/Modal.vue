@@ -5,7 +5,7 @@
         <div class="modal" :style="{ maxWidth: maxWidth }">
           <div class="modal-header">
             <h3>{{ title }}</h3>
-            <button class="modal-close" @click="close" aria-label="닫기">×</button>
+            <button class="modal-close" aria-label="닫기" @click="close">×</button>
           </div>
           <div class="modal-body">
             <slot />

@@ -22,6 +22,10 @@ dependencies {
 	// [Security - BCrypt]
 	api("org.springframework.security:spring-security-crypto")
 
+	// [Redis - 캐싱]
+	api("org.springframework.boot:spring-boot-starter-data-redis")
+	api("org.springframework.boot:spring-boot-starter-cache")
+
 	// [Database]
 	runtimeOnly("com.h2database:h2")  // 개발/테스트용
 	runtimeOnly("org.postgresql:postgresql")  // 프로덕션용

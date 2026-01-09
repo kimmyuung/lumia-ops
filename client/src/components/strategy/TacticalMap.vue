@@ -402,7 +402,7 @@ const showExportMenu = ref(false)
 
 const handleExport = (format: ExportFormat) => {
   if (!canvasRef.value) return
-  
+
   const title = prompt('전략 제목을 입력하세요:', '전략 맵') || '전략 맵'
   exportMap(canvasRef.value, format, title)
   showExportMenu.value = false
@@ -460,7 +460,11 @@ const handleExport = (format: ExportFormat) => {
       <!-- Export dropdown -->
       <div class="tool-group export-group">
         <div class="export-dropdown">
-          <button class="tool-btn export-btn" title="내보내기" @click="showExportMenu = !showExportMenu">
+          <button
+            class="tool-btn export-btn"
+            title="내보내기"
+            @click="showExportMenu = !showExportMenu"
+          >
             📥
           </button>
           <div v-if="showExportMenu" class="export-menu">

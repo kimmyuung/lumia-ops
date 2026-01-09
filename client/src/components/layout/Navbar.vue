@@ -30,8 +30,8 @@
       <!-- 테마 토글 버튼 -->
       <button
         class="theme-toggle"
-        @click="toggleTheme"
         :aria-label="resolvedTheme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'"
+        @click="toggleTheme"
       >
         <Sun v-if="resolvedTheme === 'dark'" :size="20" />
         <Moon v-else :size="20" />
@@ -42,7 +42,7 @@
           <User :size="18" />
           <span>{{ user?.nickname }}</span>
         </div>
-        <button class="logout-btn" @click="handleLogout" aria-label="로그아웃">
+        <button class="logout-btn" aria-label="로그아웃" @click="handleLogout">
           <LogOut :size="18" />
         </button>
       </template>
@@ -55,7 +55,7 @@
     </div>
 
     <!-- 모바일 메뉴 버튼 -->
-    <button class="nav-mobile-toggle" @click="isMenuOpen = !isMenuOpen" aria-label="메뉴">
+    <button class="nav-mobile-toggle" aria-label="메뉴" @click="isMenuOpen = !isMenuOpen">
       <Menu v-if="!isMenuOpen" :size="24" />
       <X v-else :size="24" />
     </button>
