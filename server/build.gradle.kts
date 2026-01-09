@@ -96,7 +96,7 @@ subprojects {
 		)
 	}
 	
-	tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+	tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
 		dependsOn(tasks.named("test"))
 		
 		violationRules {
