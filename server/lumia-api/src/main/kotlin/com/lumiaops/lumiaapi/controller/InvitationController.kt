@@ -121,7 +121,8 @@ class InvitationController(
         @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<List<InvitationResponse>> {
         val user = userDetails as User
-        val invitations = invitationService.getMyPendingInvitations(user.email)
+        val email = user.email ?: return ResponseEntity.badRequest().build()
+        val invitations = invitationService.getMyPendingInvitations(email)
             .map { toInvitationResponse(it) }
 
         return ResponseEntity.ok(invitations)

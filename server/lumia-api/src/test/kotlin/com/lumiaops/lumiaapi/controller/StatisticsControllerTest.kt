@@ -3,9 +3,9 @@ package com.lumiaops.lumiaapi.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.lumiaops.lumiaapi.dto.CalculateScoreRequest
 import com.lumiaops.lumiacore.service.TeamStatisticsService
-import com.lumiaops.lumiacore.domain.statistics.TeamStats
-import com.lumiaops.lumiacore.domain.statistics.RecentPerformance
-import com.lumiaops.lumiacore.domain.statistics.LeaderboardEntry
+import com.lumiaops.lumiacore.service.TeamStats
+import com.lumiaops.lumiacore.service.RecentPerformance
+import com.lumiaops.lumiacore.service.LeaderboardEntry
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

@@ -13,6 +13,9 @@ jobs:
   frontend-coverage:
     name: Frontend Coverage
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     defaults:
       run:
         working-directory: ./client
@@ -57,6 +60,9 @@ jobs:
   backend-coverage:
     name: Backend Coverage
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     defaults:
       run:
         working-directory: ./server

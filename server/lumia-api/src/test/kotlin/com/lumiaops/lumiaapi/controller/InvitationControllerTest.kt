@@ -62,7 +62,8 @@ class InvitationControllerTest {
 
         testTeam = Team(
             name = "Test Team",
-            description = "Test Description"
+            description = "Test Description",
+            ownerId = 1L
         ).apply {
             val idField = Team::class.java.getDeclaredField("id")
             idField.isAccessible = true
@@ -95,8 +96,9 @@ class InvitationControllerTest {
             )
 
             `when`(teamService.findById(1L)).thenReturn(testTeam)
-            `when`(invitationService.createInvitation(any(), any(), any(), any(), any()))
-                .thenReturn(Pair(testInvitation, true))
+            `when`(invitationService.createInvitation(
+                any<Team>(), any<String>(), any<User>(), any<TeamRole>(), any<String>()
+            )).thenReturn(Pair(testInvitation, true))
 
             mockMvc.perform(post("/api/teams/1/invitations")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +114,8 @@ class InvitationControllerTest {
         @Test
         @WithMockUser
         fun `팀 초대 목록 조회 성공`() {
-            `when`(invitationService.getTeamInvitations(1L)).thenReturn(listOf(testInvitation))
+            `when`(teamService.findById(1L)).thenReturn(testTeam)
+            `when`(invitationService.getTeamInvitations(any<Team>())).thenReturn(listOf(testInvitation))
 
             mockMvc.perform(get("/teams/1/invitations"))
                 .andExpect(status().isOk)
@@ -127,7 +130,15 @@ class InvitationControllerTest {
         @Test
         @WithMockUser
         fun `초대 취소 성공`() {
-            `when`(invitationService.cancelInvitation(1L)).thenReturn(true)
+            // Note: cancelInvitation returns Unit, so we don't need to stub return value or use doNothing logic for void methods in Kotlin unless using spies specifically.
+            // But since it's a mock, standard `when` syntax doesn't work for void methods.
+            // However, in the original code, it stubbed `thenReturn(true)`.
+            // Let's verify `cancelInvitation` return type. It is `Unit` (void).
+            // So `when(...).thenReturn(...)` is invalid for Unit returning methods.
+            // We can just verify it was called, or doNothing().
+            // But `Mockito.doNothing().when(invitationService).cancelInvitation(1L)` is the way.
+            // Or just leave it if it does nothing by default for mocks.
+            // Let's use simpler approach: assume standard mock behavior (does nothing).
 
             mockMvc.perform(delete("/teams/1/invitations/1"))
                 .andExpect(status().isNoContent)
@@ -180,7 +191,7 @@ class InvitationControllerTest {
         @Test
         fun `초대 거절 성공`() {
             val token = "test-token-123"
-            `when`(invitationService.declineInvitation(token)).thenReturn(true)
+            // invitationService.declineInvitation returns Unit, unnecessary to stub with Mockito defaults
 
             mockMvc.perform(post("/invitations/$token/decline"))
                 .andExpect(status().isOk)

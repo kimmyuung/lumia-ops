@@ -72,7 +72,7 @@ subprojects {
 	}
 	
 	tasks.named<JacocoReport>("jacocoTestReport") {
-		dependsOn(tasks.test)
+		dependsOn(tasks.named("test"))
 		
 		reports {
 			xml.required.set(true)  // Codecov 업로드용
@@ -96,8 +96,8 @@ subprojects {
 		)
 	}
 	
-	tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
-		dependsOn(tasks.test)
+	tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+		dependsOn(tasks.named("test"))
 		
 		violationRules {
 			rule {
