@@ -18,6 +18,13 @@ data class KakaoLoginRequest(
 )
 
 /**
+ * Kakao 인가 코드 요청 (백엔드에서 토큰 교환)
+ */
+data class KakaoCodeRequest(
+    val code: String  // Kakao 인가 코드
+)
+
+/**
  * OAuth2 로그인 응답
  */
 data class OAuth2LoginResponse(

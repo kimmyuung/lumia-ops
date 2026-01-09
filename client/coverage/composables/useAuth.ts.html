@@ -298,7 +298,15 @@
 <a name='L233'></a><a href='#L233'>233</a>
 <a name='L234'></a><a href='#L234'>234</a>
 <a name='L235'></a><a href='#L235'>235</a>
-<a name='L236'></a><a href='#L236'>236</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -341,6 +349,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -386,7 +395,11 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -424,6 +437,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -452,6 +466,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -512,6 +527,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -544,229 +560,237 @@ import { useToast } from '@/composables/useToast'
  * 인증 관련 훅
  */
 export function useAuth() {
-    const router = useRouter()
-    const userStore = useUserStore()
-    const toast = useToast()
+  const router = useRouter()
+  const userStore = useUserStore()
+  const toast = useToast()
 &nbsp;
-    const isLoading = ref(false)
-    const error = ref&lt;string | null&gt;(null)
+  const isLoading = ref(false)
+  const error = ref&lt;string | null&gt;(null)
 &nbsp;
-    const isLoggedIn = computed(() =&gt; userStore.isLoggedIn)
-    const user = computed(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >u</span>serStore.user)</span>
+  const isLoggedIn = computed(() =&gt; userStore.isLoggedIn)
+  const user = computed(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >u</span>serStore.user)</span>
 &nbsp;
-    /**
-     * 회원가입 (이메일/비밀번호만)
-     * 가입 후 이메일 인증 필요
-     */
-    async function register(data: RegisterRequest) {
-        isLoading.value = true
-        error.value = null
+  /**
+   * 회원가입 (이메일/비밀번호만)
+   * 가입 후 이메일 인증 필요
+   */
+  async function register(data: RegisterRequest) {
+    isLoading.value = true
+    error.value = null
 &nbsp;
-        try {
-            const response = await authApi.register(data)
-            if (response.success) {
-                toast.success('회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료해주세요.')
-                router.push('/login')
-                return true
-            } else {
-                error.value = response.message
-                toast.error(response.message)
-                return false
-            }
-        } catch (err: unknown) {
-            const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }, message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = apiError.response?.data?.message || apiError.message || '회원가입에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-            isLoading.value = false
-        }
-    }
-&nbsp;
-    /**
-     * 로그인
-     * 다양한 상태 처리: 닉네임 필요, 잠금, 휴면
-     */
-    async function login(data: LoginRequest) {
-        isLoading.value = true
-        error.value = null
-&nbsp;
-        try {
-            const response = await authApi.login(data)
-&nbsp;
-            // 토큰 저장 (닉네임 설정 필요 여부와 관계없이)
-            userStore.setToken(response.token, response.refreshToken)
-&nbsp;
-            // 닉네임 설정 필요
-            if (response.needsNickname) {
-                userStore.setTempUser({
-                    id: response.userId,
-                    email: response.email,
-                    status: response.status
-                })
-                toast.info('닉네임을 설정해주세요.')
-                router.push('/auth/set-nickname')
-                return true
-            }
-&nbsp;
-            // 로그인 성공
-            userStore.setUser({
-                id: String(response.userId),
-                email: response.email,
-                nickname: response.nickname || <span class="branch-1 cbranch-no" title="branch not covered" >'',</span>
-                status: response.status
-            })
-            toast.success('로그인되었습니다.')
-            router.push('/')
-            return true
-        } catch (err: unknown) {
-            const apiError = err as { response?: { data?: { message?: string }, status?: number }, message?: string }
-            const status = apiError.response?.status
-            const message = apiError.response?.data?.message || <span class="branch-1 cbranch-no" title="branch not covered" >apiError.message || <span class="branch-2 cbranch-no" title="branch not covered" >'</span>로그인에 실패했습니다.'</span>
-&nbsp;
-            error.value = message
-&nbsp;
-            // 계정 잠금 (5회 실패)
-            <span class="missing-if-branch" title="if path not taken" >I</span>if (status === 403) {
-<span class="cstat-no" title="statement not covered" >                toast.error(message)</span>
-            } else {
-                toast.error(message)
-            }
-&nbsp;
-            return false
-        } finally {
-            isLoading.value = false
-        }
-    }
-&nbsp;
-    /**
-     * 이메일 인증
-     */
-    async function verifyEmail(token: string) {
-        isLoading.value = true
-        error.value = null
-&nbsp;
-        try {
-            const response = await authApi.verifyEmail(token)
-            if (response.success) {
-                toast.success(response.message)
-                return true
-            } else {
-                error.value = response.message
-                toast.error(response.message)
-                return false
-            }
-        } catch (err: unknown) {
-            const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }, message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = apiError.response?.data?.message || apiError.message || '이메일 인증에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-            isLoading.value = false
-        }
-    }
-&nbsp;
-    /**
-     * 닉네임 설정 (첫 로그인 시)
-     */
-    async function setNickname(nickname: string) {
-        isLoading.value = true
-        error.value = null
-&nbsp;
-        try {
-            const response = await userApi.setInitialNickname(nickname)
-            userStore.setUser({
-                id: String(response.id),
-                email: response.email,
-                nickname: response.nickname || <span class="branch-1 cbranch-no" title="branch not covered" >'',</span>
-                status: response.status
-            })
-            toast.success('닉네임이 설정되었습니다.')
-            router.push('/')
-            return true
-        } catch (err: unknown) {
-            const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }, message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = apiError.response?.data?.message || apiError.message || '닉네임 설정에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-            isLoading.value = false
-        }
-    }
-&nbsp;
-    /**
-     * 로그아웃
-     */
-    async function logout() {
-        try {
-            await authApi.logout()
-        } catch {
-            // 서버 로그아웃 실패해도 클라이언트 로그아웃 진행
-        }
-        userStore.logout()
-        toast.info('로그아웃되었습니다.')
+    try {
+      const response = await authApi.register(data)
+      if (response.success) {
+        toast.success('회원가입이 완료되었습니다. 이메일을 확인하여 인증을 완료해주세요.')
         router.push('/login')
+        return true
+      } else {
+        error.value = response.message
+        toast.error(response.message)
+        return false
+      }
+    } catch (err: unknown) {
+      const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }; message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value =</span>
+        apiError.response?.data?.message || apiError.message || '회원가입에 실패했습니다.'
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+      isLoading.value = false
     }
+  }
 &nbsp;
-    /**
-     * 현재 사용자 정보 조회
-     */
-    async function <span class="fstat-no" title="function not covered" >fetchUser() {</span>
-<span class="cstat-no" title="statement not covered" >        if (!userStore.token) <span class="cstat-no" title="statement not covered" >return</span></span>
+  /**
+   * 로그인
+   * 다양한 상태 처리: 닉네임 필요, 잠금, 휴면
+   */
+  async function login(data: LoginRequest) {
+    isLoading.value = true
+    error.value = null
 &nbsp;
-<span class="cstat-no" title="statement not covered" >        try {</span>
-            const userData = <span class="cstat-no" title="statement not covered" >await userApi.getMyInfo()</span>
-<span class="cstat-no" title="statement not covered" >            userStore.setUser({</span>
-                id: String(userData.id),
-                email: userData.email,
-                nickname: userData.nickname || '',
-                status: userData.status
-            })
-        } catch {
-<span class="cstat-no" title="statement not covered" >            userStore.logout()</span>
-        }
+    try {
+      const response = await authApi.login(data)
+&nbsp;
+      // 토큰 저장 (닉네임 설정 필요 여부와 관계없이)
+      userStore.setToken(response.token, response.refreshToken)
+&nbsp;
+      // 닉네임 설정 필요
+      if (response.needsNickname) {
+        userStore.setTempUser({
+          id: response.userId,
+          email: response.email,
+          status: response.status
+        })
+        toast.info('닉네임을 설정해주세요.')
+        router.push('/auth/set-nickname')
+        return true
+      }
+&nbsp;
+      // 로그인 성공
+      userStore.setUser({
+        id: String(response.userId),
+        email: response.email,
+        nickname: response.nickname || <span class="branch-1 cbranch-no" title="branch not covered" >'',</span>
+        status: response.status
+      })
+      toast.success('로그인되었습니다.')
+      router.push('/')
+      return true
+    } catch (err: unknown) {
+      const apiError = err as {
+        response?: { data?: { message?: string }; status?: number }
+        message?: string
+      }
+      const status = apiError.response?.status
+      const message =
+        apiError.response?.data?.message || <span class="branch-1 cbranch-no" title="branch not covered" >apiError.message || <span class="branch-2 cbranch-no" title="branch not covered" >'</span>로그인에 실패했습니다.'</span>
+&nbsp;
+      error.value = message
+&nbsp;
+      // 계정 잠금 (5회 실패)
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (status === 403) {
+<span class="cstat-no" title="statement not covered" >        toast.error(message)</span>
+      } else {
+        toast.error(message)
+      }
+&nbsp;
+      return false
+    } finally {
+      isLoading.value = false
     }
+  }
 &nbsp;
-    /**
-     * 인증 이메일 재발송
-     */
-    async function resendVerification(email: string) {
-        isLoading.value = true
-        error.value = null
+  /**
+   * 이메일 인증
+   */
+  async function verifyEmail(token: string) {
+    isLoading.value = true
+    error.value = null
 &nbsp;
-        try {
-            const response = await authApi.resendVerification(email)
-            if (response.success) {
-                toast.success(response.message)
-                return true
-            } else <span class="missing-if-branch" title="else path not taken" >E</span>{
-<span class="cstat-no" title="statement not covered" >                error.value = response.message</span>
-<span class="cstat-no" title="statement not covered" >                toast.error(response.message)</span>
-<span class="cstat-no" title="statement not covered" >                return false</span>
-            }
-        } catch (err: unknown) {
-            const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }, message?: string }</span>
-<span class="cstat-no" title="statement not covered" >            error.value = apiError.response?.data?.message || apiError.message || '이메일 발송에 실패했습니다.'</span>
-<span class="cstat-no" title="statement not covered" >            toast.error(error.value)</span>
-<span class="cstat-no" title="statement not covered" >            return false</span>
-        } finally {
-            isLoading.value = false
-        }
+    try {
+      const response = await authApi.verifyEmail(token)
+      if (response.success) {
+        toast.success(response.message)
+        return true
+      } else {
+        error.value = response.message
+        toast.error(response.message)
+        return false
+      }
+    } catch (err: unknown) {
+      const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }; message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value =</span>
+        apiError.response?.data?.message || apiError.message || '이메일 인증에 실패했습니다.'
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+      isLoading.value = false
     }
+  }
 &nbsp;
-    return {
-        isLoading,
-        error,
-        isLoggedIn,
-        user,
-        login,
-        register,
-        logout,
-        fetchUser,
-        verifyEmail,
-        setNickname,
-        resendVerification
+  /**
+   * 닉네임 설정 (첫 로그인 시)
+   */
+  async function setNickname(nickname: string) {
+    isLoading.value = true
+    error.value = null
+&nbsp;
+    try {
+      const response = await userApi.setInitialNickname(nickname)
+      userStore.setUser({
+        id: String(response.id),
+        email: response.email,
+        nickname: response.nickname || <span class="branch-1 cbranch-no" title="branch not covered" >'',</span>
+        status: response.status
+      })
+      toast.success('닉네임이 설정되었습니다.')
+      router.push('/')
+      return true
+    } catch (err: unknown) {
+      const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }; message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value =</span>
+        apiError.response?.data?.message || apiError.message || '닉네임 설정에 실패했습니다.'
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+      isLoading.value = false
     }
+  }
+&nbsp;
+  /**
+   * 로그아웃
+   */
+  async function logout() {
+    try {
+      await authApi.logout()
+    } catch {
+      // 서버 로그아웃 실패해도 클라이언트 로그아웃 진행
+    }
+    userStore.logout()
+    toast.info('로그아웃되었습니다.')
+    router.push('/login')
+  }
+&nbsp;
+  /**
+   * 현재 사용자 정보 조회
+   */
+  async function <span class="fstat-no" title="function not covered" >fetchUser() {</span>
+<span class="cstat-no" title="statement not covered" >    if (!userStore.token) <span class="cstat-no" title="statement not covered" >return</span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    try {</span>
+      const userData = <span class="cstat-no" title="statement not covered" >await userApi.getMyInfo()</span>
+<span class="cstat-no" title="statement not covered" >      userStore.setUser({</span>
+        id: String(userData.id),
+        email: userData.email,
+        nickname: userData.nickname || '',
+        status: userData.status
+      })
+    } catch {
+<span class="cstat-no" title="statement not covered" >      userStore.logout()</span>
+    }
+  }
+&nbsp;
+  /**
+   * 인증 이메일 재발송
+   */
+  async function resendVerification(email: string) {
+    isLoading.value = true
+    error.value = null
+&nbsp;
+    try {
+      const response = await authApi.resendVerification(email)
+      if (response.success) {
+        toast.success(response.message)
+        return true
+      } else <span class="missing-if-branch" title="else path not taken" >E</span>{
+<span class="cstat-no" title="statement not covered" >        error.value = response.message</span>
+<span class="cstat-no" title="statement not covered" >        toast.error(response.message)</span>
+<span class="cstat-no" title="statement not covered" >        return false</span>
+      }
+    } catch (err: unknown) {
+      const apiError = <span class="cstat-no" title="statement not covered" >err as { response?: { data?: { message?: string } }; message?: string }</span>
+<span class="cstat-no" title="statement not covered" >      error.value =</span>
+        apiError.response?.data?.message || apiError.message || '이메일 발송에 실패했습니다.'
+<span class="cstat-no" title="statement not covered" >      toast.error(error.value)</span>
+<span class="cstat-no" title="statement not covered" >      return false</span>
+    } finally {
+      isLoading.value = false
+    }
+  }
+&nbsp;
+  return {
+    isLoading,
+    error,
+    isLoggedIn,
+    user,
+    login,
+    register,
+    logout,
+    fetchUser,
+    verifyEmail,
+    setNickname,
+    resendVerification
+  }
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -775,7 +799,7 @@ export function useAuth() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../prettify.js"></script>
         <script>

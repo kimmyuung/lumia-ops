@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { exportMap, type ExportFormat } from '@/utils/mapExport'
 
 // Types
 interface Marker {
@@ -395,6 +396,17 @@ const selectTool = (tool: Tool) => {
   currentTool.value = tool
   selectedItem.value = null
 }
+
+// Export
+const showExportMenu = ref(false)
+
+const handleExport = (format: ExportFormat) => {
+  if (!canvasRef.value) return
+  
+  const title = prompt('전략 제목을 입력하세요:', '전략 맵') || '전략 맵'
+  exportMap(canvasRef.value, format, title)
+  showExportMenu.value = false
+}
 </script>
 
 <template>
@@ -443,6 +455,21 @@ const selectTool = (tool: Tool) => {
 
       <div class="tool-group">
         <button class="tool-btn danger" title="전체 삭제" @click="clearAll">🗑️</button>
+      </div>
+
+      <!-- Export dropdown -->
+      <div class="tool-group export-group">
+        <div class="export-dropdown">
+          <button class="tool-btn export-btn" title="내보내기" @click="showExportMenu = !showExportMenu">
+            📥
+          </button>
+          <div v-if="showExportMenu" class="export-menu">
+            <button @click="handleExport('png')">PNG 이미지</button>
+            <button @click="handleExport('jpeg')">JPEG 이미지</button>
+            <button @click="handleExport('pdf')">PDF 문서</button>
+            <button @click="handleExport('pptx')">PPTX 슬라이드</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -544,5 +571,48 @@ canvas {
 
 .canvas-container:has(.tool-btn.active[title='선택']) canvas {
   cursor: pointer;
+}
+
+/* Export dropdown */
+.export-group {
+  margin-left: auto;
+}
+
+.export-dropdown {
+  position: relative;
+}
+
+.export-btn {
+  background: rgba(59, 130, 246, 0.3) !important;
+  border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.export-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: rgba(30, 30, 45, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 100;
+  min-width: 150px;
+}
+
+.export-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.export-menu button:hover {
+  background: rgba(59, 130, 246, 0.3);
 }
 </style>

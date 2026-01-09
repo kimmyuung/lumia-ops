@@ -205,11 +205,4 @@ class InvitationController(
             respondedAt = invitation.respondedAt?.format(formatter)
         )
     }
-
-    // ==================== Exception Handler ====================
-
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<Map<String, String>> {
-        return ResponseEntity.badRequest().body(mapOf("error" to (e.message ?: "잘못된 요청입니다")))
-    }
 }

@@ -4,6 +4,7 @@ import { teamApi, type UpdateTeamRequest, type InviteMemberRequest } from '@/api
 import type { Team, CreateTeamRequest } from '@/types/team'
 import { useUserStore } from './user'
 import { useToast } from '@/composables/useToast'
+import { getErrorMessage } from '@/utils/error'
 
 export const useTeamStore = defineStore('team', () => {
   const userStore = useUserStore()
@@ -38,9 +39,8 @@ export const useTeamStore = defineStore('team', () => {
     error.value = null
     try {
       teams.value = await teamApi.getTeams()
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '팀 목록을 불러오지 못했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '팀 목록을 불러오지 못했습니다.')
     } finally {
       isLoading.value = false
     }
@@ -51,9 +51,8 @@ export const useTeamStore = defineStore('team', () => {
     error.value = null
     try {
       currentTeam.value = await teamApi.getMyTeam()
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '팀 정보를 불러오지 못했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '팀 정보를 불러오지 못했습니다.')
     } finally {
       isLoading.value = false
     }
@@ -64,9 +63,8 @@ export const useTeamStore = defineStore('team', () => {
     error.value = null
     try {
       currentTeam.value = await teamApi.getTeam(id)
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '팀 정보를 불러오지 못했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '팀 정보를 불러오지 못했습니다.')
     } finally {
       isLoading.value = false
     }
@@ -81,9 +79,8 @@ export const useTeamStore = defineStore('team', () => {
       currentTeam.value = newTeam
       toast.success('팀이 생성되었습니다.')
       return newTeam
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '팀 생성에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '팀 생성에 실패했습니다.')
       toast.error(error.value)
       return null
     } finally {
@@ -105,9 +102,8 @@ export const useTeamStore = defineStore('team', () => {
       }
       toast.success('팀 정보가 수정되었습니다.')
       return updatedTeam
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '팀 수정에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '팀 수정에 실패했습니다.')
       toast.error(error.value)
       return null
     } finally {
@@ -126,9 +122,8 @@ export const useTeamStore = defineStore('team', () => {
       }
       toast.success('팀이 삭제되었습니다.')
       return true
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '팀 삭제에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '팀 삭제에 실패했습니다.')
       toast.error(error.value)
       return false
     } finally {
@@ -145,9 +140,8 @@ export const useTeamStore = defineStore('team', () => {
       currentTeam.value.members.push(member)
       toast.success('멤버를 초대했습니다.')
       return member
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '멤버 초대에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '멤버 초대에 실패했습니다.')
       toast.error(error.value)
       return null
     } finally {
@@ -164,9 +158,8 @@ export const useTeamStore = defineStore('team', () => {
       currentTeam.value.members = currentTeam.value.members.filter(m => m.id !== memberId)
       toast.success('멤버를 제거했습니다.')
       return true
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '멤버 제거에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '멤버 제거에 실패했습니다.')
       toast.error(error.value)
       return false
     } finally {
@@ -183,9 +176,8 @@ export const useTeamStore = defineStore('team', () => {
       currentTeam.value = null
       toast.info('팀에서 탈퇴했습니다.')
       return true
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || '팀 탈퇴에 실패했습니다.'
+    } catch (err) {
+      error.value = getErrorMessage(err, '팀 탈퇴에 실패했습니다.')
       toast.error(error.value)
       return false
     } finally {

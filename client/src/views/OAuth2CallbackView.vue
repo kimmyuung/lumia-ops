@@ -114,9 +114,9 @@ async function handleKakaoCallback() {
     throw new Error('Kakao 인증 코드를 찾을 수 없습니다.')
   }
 
-  // TODO: Kakao 액세스 토큰 교환 및 사용자 정보 조회 필요
-  // 현재는 간단한 구현
-  error.value = 'Kakao 로그인은 백엔드 통합이 필요합니다.'
+  // 백엔드에서 토큰 교환 및 로그인 처리
+  const response = await oauth2Api.kakaoCodeCallback(code)
+  handleLoginSuccess(response)
 }
 
 function handleLoginSuccess(response: Awaited<ReturnType<typeof oauth2Api.steamCallback>>) {

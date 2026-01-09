@@ -18,7 +18,11 @@ class Team(
     var description: String? = null,
 
     @Column(nullable = false)
-    var ownerId: Long // 팀장(방장)의 User ID
+    var ownerId: Long, // 팀장(방장)의 User ID
+
+    /** 디스코드 웹훅 URL */
+    @Column(length = 500)
+    var discordWebhookUrl: String? = null
 ) : BaseTimeEntity() {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null

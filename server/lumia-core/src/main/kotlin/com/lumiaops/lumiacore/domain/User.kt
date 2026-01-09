@@ -30,16 +30,18 @@ class User(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val role: UserRole = UserRole.USER,
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    val authProvider: AuthProvider = AuthProvider.EMAIL // 인증 제공자
+    val role: UserRole = UserRole.USER
 ) : BaseTimeEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    // 인증 제공자 (연동 시 변경 가능)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var authProvider: AuthProvider = AuthProvider.EMAIL
+        internal set
 
     // OAuth 관련 필드
     @Column(nullable = true, unique = true)
@@ -237,7 +239,6 @@ class User(
      * OAuth 로그인 성공 처리
      */
     fun loginOAuth() {
-        require(authProvider != AuthProvider.EMAIL) { "OAuth 사용자만 이 메서드를 사용할 수 있습니다" }
         lastLoginAt = LocalDateTime.now()
     }
 
@@ -248,6 +249,31 @@ class User(
         email = newEmail?.takeIf { it.isNotBlank() }
     }
 
+    /**
+     * 기존 이메일 계정에 Steam 연동
+     * 비밀번호 로그인과 Steam OAuth 로그인 모두 가능
+     */
+    fun linkSteamAccount(steamId: String) {
+        require(this.steamId == null) { "이미 Steam 계정이 연동되어 있습니다" }
+        this.steamId = steamId
+    }
+
+    /**
+     * 기존 이메일 계정에 Kakao 연동
+     * 비밀번호 로그인과 Kakao OAuth 로그인 모두 가능
+     */
+    fun linkKakaoAccount(kakaoId: Long) {
+        require(this.kakaoId == null) { "이미 Kakao 계정이 연동되어 있습니다" }
+        this.kakaoId = kakaoId
+    }
+
+    /**
+     * OAuth ID가 연동되어 있는지 확인
+     */
+    fun hasLinkedOAuth(): Boolean {
+        return steamId != null || kakaoId != null
+    }
+
     companion object {
         /**
          * Steam OAuth 사용자 생성
@@ -256,9 +282,9 @@ class User(
             return User(
                 email = email,
                 password = null,
-                nickname = nickname,
-                authProvider = AuthProvider.STEAM
+                nickname = nickname
             ).apply {
+                this.authProvider = AuthProvider.STEAM
                 this.steamId = steamId
                 this.status = AccountStatus.PENDING_NICKNAME
             }
@@ -271,9 +297,9 @@ class User(
             return User(
                 email = email,
                 password = null,
-                nickname = nickname,
-                authProvider = AuthProvider.KAKAO
+                nickname = nickname
             ).apply {
+                this.authProvider = AuthProvider.KAKAO
                 this.kakaoId = kakaoId
                 this.status = AccountStatus.PENDING_NICKNAME
             }

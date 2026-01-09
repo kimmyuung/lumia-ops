@@ -306,104 +306,104 @@ const resolvedTheme = ref&lt;'light' | 'dark'&gt;('light')
  * 라이트/다크/시스템 모드를 지원합니다.
  */
 export function useTheme() {
-    /**
-     * 시스템 테마 감지
-     */
-    function getSystemTheme(): 'light' | 'dark' {
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window === 'undefined') <span class="cstat-no" title="statement not covered" >return 'light'</span>
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  /**
+   * 시스템 테마 감지
+   */
+  function getSystemTheme(): 'light' | 'dark' {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof window === 'undefined') <span class="cstat-no" title="statement not covered" >return 'light'</span>
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+&nbsp;
+  /**
+   * 테마를 DOM에 적용
+   */
+  function applyTheme(theme: Theme) {
+    const resolved = theme === 'system' ? getSystemTheme() : theme
+    resolvedTheme.value = resolved
+&nbsp;
+    // HTML 요소에 data-theme 속성 설정
+    document.documentElement.setAttribute('data-theme', resolved)
+&nbsp;
+    // meta theme-color 업데이트 (모바일 브라우저용)
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (metaThemeColor) {
+<span class="cstat-no" title="statement not covered" >      metaThemeColor.setAttribute('content', resolved === 'dark' ? '#0f0f1a' : '#f5f7fa')</span>
+    }
+  }
+&nbsp;
+  /**
+   * 테마 변경
+   */
+  function setTheme(theme: Theme) {
+    currentTheme.value = theme
+    localStorage.setItem(THEME_STORAGE_KEY, theme)
+    applyTheme(theme)
+  }
+&nbsp;
+  /**
+   * 테마 토글 (light ↔ dark, system이면 현재 resolved 기준)
+   */
+  function toggleTheme() {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (currentTheme.value === 'system') {
+      // 시스템 모드일 때는 현재 적용된 테마의 반대로 설정
+<span class="cstat-no" title="statement not covered" >      setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark')</span>
+    } else {
+      setTheme(currentTheme.value === 'dark' ? 'light' : 'dark')
+    }
+  }
+&nbsp;
+  /**
+   * 저장된 테마 불러오기
+   */
+  function loadTheme() {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null
+    if (saved &amp;&amp; ['light', 'dark', 'system'].includes(saved)) {
+      currentTheme.value = saved
+    }
+    applyTheme(currentTheme.value)
+  }
+&nbsp;
+  /**
+   * 시스템 테마 변경 감지
+   */
+  function <span class="fstat-no" title="function not covered" >setupSystemThemeListener() {</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof window === 'undefined') <span class="cstat-no" title="statement not covered" >return</span></span>
+&nbsp;
+    const mediaQuery = <span class="cstat-no" title="statement not covered" >window.matchMedia('(prefers-color-scheme: dark)')</span>
+&nbsp;
+    const handler = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" >      if (currentTheme.value === 'system') {</span>
+<span class="cstat-no" title="statement not covered" >        applyTheme('system')</span>
+      }
     }
 &nbsp;
-    /**
-     * 테마를 DOM에 적용
-     */
-    function applyTheme(theme: Theme) {
-        const resolved = theme === 'system' ? getSystemTheme() : theme
-        resolvedTheme.value = resolved
-&nbsp;
-        // HTML 요소에 data-theme 속성 설정
-        document.documentElement.setAttribute('data-theme', resolved)
-&nbsp;
-        // meta theme-color 업데이트 (모바일 브라우저용)
-        const metaThemeColor = document.querySelector('meta[name="theme-color"]')
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (metaThemeColor) {
-<span class="cstat-no" title="statement not covered" >            metaThemeColor.setAttribute('content', resolved === 'dark' ? '#0f0f1a' : '#f5f7fa')</span>
-        }
+    // 이벤트 리스너 등록
+<span class="cstat-no" title="statement not covered" >    if (mediaQuery.addEventListener) {</span>
+<span class="cstat-no" title="statement not covered" >      mediaQuery.addEventListener('change', handler)</span>
+    } else {
+      // Safari 14 이하 호환
+<span class="cstat-no" title="statement not covered" >      mediaQuery.addListener(handler)</span>
     }
+  }
 &nbsp;
-    /**
-     * 테마 변경
-     */
-    function setTheme(theme: Theme) {
-        currentTheme.value = theme
-        localStorage.setItem(THEME_STORAGE_KEY, theme)
-        applyTheme(theme)
-    }
+  // 컴포넌트 마운트 시 초기화
+  onMounted(<span class="fstat-no" title="function not covered" >() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    loadTheme()</span>
+<span class="cstat-no" title="statement not covered" >    setupSystemThemeListener()</span>
+  })
 &nbsp;
-    /**
-     * 테마 토글 (light ↔ dark, system이면 현재 resolved 기준)
-     */
-    function toggleTheme() {
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (currentTheme.value === 'system') {
-            // 시스템 모드일 때는 현재 적용된 테마의 반대로 설정
-<span class="cstat-no" title="statement not covered" >            setTheme(resolvedTheme.value === 'dark' ? 'light' : 'dark')</span>
-        } else {
-            setTheme(currentTheme.value === 'dark' ? 'light' : 'dark')
-        }
-    }
+  // 테마 변경 감시
+  watch(currentTheme, newTheme =&gt; {
+    applyTheme(newTheme)
+  })
 &nbsp;
-    /**
-     * 저장된 테마 불러오기
-     */
-    function loadTheme() {
-        const saved = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null
-        if (saved &amp;&amp; ['light', 'dark', 'system'].includes(saved)) {
-            currentTheme.value = saved
-        }
-        applyTheme(currentTheme.value)
-    }
-&nbsp;
-    /**
-     * 시스템 테마 변경 감지
-     */
-    function <span class="fstat-no" title="function not covered" >setupSystemThemeListener() {</span>
-<span class="cstat-no" title="statement not covered" >        if (typeof window === 'undefined') <span class="cstat-no" title="statement not covered" >return</span></span>
-&nbsp;
-        const mediaQuery = <span class="cstat-no" title="statement not covered" >window.matchMedia('(prefers-color-scheme: dark)')</span>
-&nbsp;
-        const handler = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; {</span></span>
-<span class="cstat-no" title="statement not covered" >            if (currentTheme.value === 'system') {</span>
-<span class="cstat-no" title="statement not covered" >                applyTheme('system')</span>
-            }
-        }
-&nbsp;
-        // 이벤트 리스너 등록
-<span class="cstat-no" title="statement not covered" >        if (mediaQuery.addEventListener) {</span>
-<span class="cstat-no" title="statement not covered" >            mediaQuery.addEventListener('change', handler)</span>
-        } else {
-            // Safari 14 이하 호환
-<span class="cstat-no" title="statement not covered" >            mediaQuery.addListener(handler)</span>
-        }
-    }
-&nbsp;
-    // 컴포넌트 마운트 시 초기화
-    onMounted(<span class="fstat-no" title="function not covered" >() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >        loadTheme()</span>
-<span class="cstat-no" title="statement not covered" >        setupSystemThemeListener()</span>
-    })
-&nbsp;
-    // 테마 변경 감시
-    watch(currentTheme, (newTheme) =&gt; {
-        applyTheme(newTheme)
-    })
-&nbsp;
-    return {
-        currentTheme,
-        resolvedTheme,
-        setTheme,
-        toggleTheme,
-        loadTheme
-    }
+  return {
+    currentTheme,
+    resolvedTheme,
+    setTheme,
+    toggleTheme,
+    loadTheme
+  }
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -412,7 +412,7 @@ export function useTheme() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-04T06:35:52.427Z
+                at 2026-01-08T02:18:40.367Z
             </div>
         <script src="../prettify.js"></script>
         <script>

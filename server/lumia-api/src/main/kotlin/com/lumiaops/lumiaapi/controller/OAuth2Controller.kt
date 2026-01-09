@@ -88,6 +88,34 @@ class OAuth2Controller(
     }
 
     @Operation(
+        summary = "Kakao 로그인 (인가 코드)",
+        description = "Kakao 인가 코드를 백엔드에서 처리합니다. 토큰 교환 및 사용자 정보 조회를 서버에서 수행합니다."
+    )
+    @ApiResponses(
+        ApiResponse(responseCode = "200", description = "로그인 성공"),
+        ApiResponse(responseCode = "400", description = "잘못된 인가 코드")
+    )
+    @PostMapping("/kakao/code")
+    fun kakaoCodeCallback(
+        @RequestBody request: KakaoCodeRequest
+    ): ResponseEntity<OAuth2LoginResponse> {
+        val user = oAuth2AuthService.processingKakaoLoginWithCode(request.code)
+
+        val token = jwtTokenProvider.generateAccessToken(user.id!!, user.email ?: "")
+        val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
+
+        return ResponseEntity.ok(OAuth2LoginResponse(
+            token = token,
+            refreshToken = refreshToken,
+            userId = user.id!!,
+            nickname = user.nickname,
+            gameNickname = user.gameNickname,
+            needsGameNickname = user.gameNickname == null,
+            authProvider = user.authProvider.name
+        ))
+    }
+
+    @Operation(
         summary = "이터널 리턴 닉네임 설정",
         description = "OAuth 로그인 후 이터널 리턴 인게임 닉네임을 설정합니다. 닉네임이 유효한지 API로 검증합니다."
     )

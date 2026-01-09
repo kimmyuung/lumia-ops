@@ -31,7 +31,4 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
-	// [Test - MockK]
-	testImplementation("io.mockk:mockk:1.13.8")
-	testImplementation("io.mockk:mockk-jvm:1.13.8")
 }

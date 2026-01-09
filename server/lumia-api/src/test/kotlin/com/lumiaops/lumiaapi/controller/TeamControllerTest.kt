@@ -124,7 +124,7 @@ class TeamControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
             )
-                .andExpect(status().isOk)
+                .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.name").value("New Team"))
                 .andExpect(jsonPath("$.description").value("Team description"))
         }
@@ -236,7 +236,7 @@ class TeamControllerTest {
                 delete("/api/teams/${team.id}")
                     .header("Authorization", "Bearer $authToken")
             )
-                .andExpect(status().isOk)
+                .andExpect(status().isNoContent)
 
             // verify deletion
             mockMvc.perform(
@@ -295,7 +295,7 @@ class TeamControllerTest {
                 post("/api/teams/${team.id}/leave")
                     .header("Authorization", "Bearer $authToken")
             )
-                .andExpect(status().isOk)
+                .andExpect(status().isNoContent)
         }
     }
 }

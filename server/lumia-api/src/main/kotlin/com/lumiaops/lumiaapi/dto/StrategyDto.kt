@@ -15,3 +15,16 @@ data class UpdateStrategyRequest(
     
     val mapData: String
 )
+
+/**
+ * 전략 응답 DTO
+ */
+data class StrategyResponse(
+    val id: Long,
+    val title: String,
+    val mapData: String,
+    val teamId: Long?,
+    val createdBy: Long,
+    val createdAt: java.time.LocalDateTime?,
+    val updatedAt: java.time.LocalDateTime?
+)

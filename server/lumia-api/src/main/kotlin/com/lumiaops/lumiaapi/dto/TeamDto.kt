@@ -31,3 +31,25 @@ data class InviteMemberRequest(
 data class UpdateMemberRoleRequest(
     val role: TeamRole
 )
+
+/**
+ * 팀 응답 DTO
+ */
+data class TeamResponse(
+    val id: Long,
+    val name: String,
+    val description: String?,
+    val createdAt: java.time.LocalDateTime?,
+    val updatedAt: java.time.LocalDateTime?
+)
+
+/**
+ * 팀 멤버 응답 DTO
+ */
+data class TeamMemberResponse(
+    val id: Long,
+    val userId: Long,
+    val nickname: String?,
+    val role: String,
+    val createdAt: java.time.LocalDateTime?
+)

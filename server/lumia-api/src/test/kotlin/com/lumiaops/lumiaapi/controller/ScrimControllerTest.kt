@@ -139,7 +139,7 @@ class ScrimControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
             )
-                .andExpect(status().isOk)
+                .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.title").value("New Scrim"))
                 .andExpect(jsonPath("$.status").value("SCHEDULED"))
         }
@@ -346,7 +346,7 @@ class ScrimControllerTest {
                 post("/api/scrims/${scrim.id}/matches")
                     .header("Authorization", "Bearer $authToken")
             )
-                .andExpect(status().isOk)
+                .andExpect(status().isCreated)
                 .andExpect(jsonPath("$.roundNumber").value(1))
         }
     }
