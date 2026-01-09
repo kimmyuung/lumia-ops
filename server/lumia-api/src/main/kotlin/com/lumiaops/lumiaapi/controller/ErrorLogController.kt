@@ -6,7 +6,6 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
-import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -36,16 +35,16 @@ class ErrorLogController {
             ?: request.getHeader("X-Real-IP")
             ?: request.remoteAddr
 
-        // 구조화된 로깅 (Logstash/ELK와 호환)
+        // 구조화된 로깅
         log.error {
             """
             [CLIENT ERROR] ${errorLog.message}
-            ${kv("url", errorLog.url)}
-            ${kv("userAgent", errorLog.userAgent)}
-            ${kv("clientIp", clientIp)}
-            ${kv("timestamp", errorLog.timestamp)}
-            ${kv("stack", errorLog.stack)}
-            ${kv("context", errorLog.context)}
+            URL: ${errorLog.url}
+            User-Agent: ${errorLog.userAgent}
+            Client IP: $clientIp
+            Timestamp: ${errorLog.timestamp}
+            Stack: ${errorLog.stack}
+            Context: ${errorLog.context}
             """.trimIndent()
         }
 
@@ -91,8 +90,8 @@ class ErrorLogController {
             log.error {
                 """
                 [CLIENT ERROR BATCH] ${errorLog.message}
-                ${kv("url", errorLog.url)}
-                ${kv("clientIp", clientIp)}
+                URL: ${errorLog.url}
+                Client IP: $clientIp
                 """.trimIndent()
             }
         }

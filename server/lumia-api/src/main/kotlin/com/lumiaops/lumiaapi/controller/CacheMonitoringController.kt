@@ -30,13 +30,13 @@ class CacheMonitoringController(
         val cache = cacheManager.getCache(cacheName)
             ?: return ResponseEntity.notFound().build()
 
-        return ResponseEntity.ok(
-            mapOf(
-                "cacheName" to cacheName,
-                "nativeCache" to cache.nativeCache::class.simpleName,
-                "exists" to true
-            )
+        val stats: Map<String, Any> = mapOf(
+            "cacheName" to cacheName,
+            "nativeCache" to (cache.nativeCache::class.simpleName ?: "Unknown"),
+            "exists" to true
         )
+
+        return ResponseEntity.ok(stats)
     }
 
     /**
