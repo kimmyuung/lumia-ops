@@ -16,12 +16,14 @@ Lumia Ops는 JPA/Hibernate를 사용하며, 개발 시 H2, 프로덕션 시 Post
 erDiagram
     User ||--o{ TeamMember : "belongs to"
     User ||--o{ EmailVerification : "has"
+    User ||--o{ Notification : "receives"
     Team ||--|{ TeamMember : "contains"
     Team ||--o{ TeamInvitation : "has"
-    Team ||--o{ Scrim : "has"
     Team ||--o{ Strategy : "has"
+    Team ||--o{ MatchResult : "participates"
     Scrim ||--o{ ScrimMatch : "contains"
     ScrimMatch ||--o{ MatchResult : "has"
+    Strategy ||--o{ Comment : "has"
     User ||--o{ RefreshToken : "has"
 
     RefreshToken {
@@ -45,8 +47,12 @@ erDiagram
         String password
         String nickname
         String profileImageUrl
+        String gameNickname
         UserRole role
         AccountStatus status
+        AuthProvider authProvider
+        String steamId UK
+        Long kakaoId UK
         Int failedLoginAttempts
         LocalDateTime lockedAt
         LocalDateTime lastLoginAt
@@ -177,8 +183,29 @@ erDiagram
 |----|------|
 | `SCHEDULED` | 예정됨 |
 | `IN_PROGRESS` | 진행 중 |
-| `COMPLETED` | 완료됨 |
+| `FINISHED` | 완료됨 |
 | `CANCELLED` | 취소됨 |
+
+### AuthProvider
+| 값 | 설명 |
+|----|------|
+| `LOCAL` | 이메일/비밀번호 가입 |
+| `STEAM` | Steam OpenID 로그인 |
+| `KAKAO` | Kakao OAuth 로그인 |
+
+### NotificationType
+| 값 | 설명 |
+|----|------|
+| `TEAM_INVITE` | 팀 초대 |
+| `TEAM_JOIN` | 팀 가입 알림 |
+| `TEAM_LEAVE` | 팀 탈퇴 알림 |
+| `SCRIM_SCHEDULED` | 스크림 예정 |
+| `SCRIM_STARTED` | 스크림 시작 |
+| `SCRIM_FINISHED` | 스크림 종료 |
+| `MATCH_RESULT` | 매치 결과 등록 |
+| `STRATEGY_SHARED` | 전략 공유됨 |
+| `COMMENT_ADDED` | 코멘트 추가됨 |
+| `GENERAL` | 일반 알림 |
 
 ### StrategyVisibility
 | 값 | 설명 |
@@ -191,16 +218,31 @@ erDiagram
 
 ## 🔧 인덱스
 
+### 정의된 인덱스
+
+| 테이블 | 인덱스 | 컬럼 |
+|--------|--------|------|
+| `teams` | `idx_team_owner_id` | `owner_id` |
+| `team_members` | `idx_team_member_team` | `team_id` |
+| `team_members` | `idx_team_member_user` | `user_id` |
+| `team_invitations` | `idx_invitation_token` (UK) | `token` |
+| `team_invitations` | `idx_invitation_email_status` | `invited_email, status` |
+| `scrims` | `idx_scrim_status` | `status` |
+| `scrims` | `idx_scrim_start_time` | `start_time` |
+| `notifications` | `idx_notification_user_read` | `user_id, is_read` |
+| `notifications` | `idx_notification_created` | `created_at` |
+
 ### 자주 조회되는 컬럼
 - `User.email` - 로그인 시 조회
+- `User.steamId` - Steam OAuth 로그인
+- `User.kakaoId` - Kakao OAuth 로그인
 - `TeamMember.userId` - 사용자의 팀 조회
 - `TeamMember.teamId` - 팀의 멤버 목록
 - `TeamInvitation.token` - 초대 수락/거절
-- `Scrim.teamId` - 팀의 스크림 목록
-- `Scrim.teamId` - 팀의 스크림 목록
+- `Scrim.status` - 상태별 스크림 필터링
 - `Strategy.teamId` - 팀의 전략 목록
 - `RefreshToken.token` - 토큰 갱신 시 조회
-- `TokenBlacklist.tokenHash` - 토큰 검증 시 조회
+- `Notification.userId + isRead` - 읽지 않은 알림 조회
 
 ---
 

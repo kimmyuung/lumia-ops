@@ -108,7 +108,7 @@ async function handleNotificationClick(notification: NotificationResponse) {
   }
 }
 
-function getRelatedRoute(type: string, id: number): string | null {
+function getRelatedRoute(type: string, _id: number): string | null {
   switch (type) {
     case 'TEAM':
       return `/team`

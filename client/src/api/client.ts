@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios'
 import { isTokenExpired } from '@/utils/token'
+import { logErrorToServer } from '@/utils/errorLogger'
 import router from '@/router'
 
 // 에러 타입 정의
@@ -158,6 +159,13 @@ apiClient.interceptors.response.use(
       case 502:
       case 503:
         console.error('[API Server Error]', status)
+        // 서버 에러만 로깅 (500번대)
+        logErrorToServer(new Error(`API Server Error: ${status}`), {
+          endpoint: error.config?.url,
+          method: error.config?.method?.toUpperCase(),
+          status,
+          responseData: data
+        })
         break
       default:
         console.error('[API Error]', status, data)

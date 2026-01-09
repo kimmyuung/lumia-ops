@@ -5,7 +5,13 @@ import com.lumiaops.lumiacore.domain.Team
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "strategies")
+@Table(
+    name = "strategies",
+    indexes = [
+        Index(name = "idx_strategy_team", columnList = "team_id"),
+        Index(name = "idx_strategy_created_by", columnList = "createdBy")
+    ]
+)
 class Strategy(
     @Column(nullable = false)
     var title: String,

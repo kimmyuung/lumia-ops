@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: lumia-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-lumia2026}
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - lumia-network
+
+  # 추후 PostgreSQL, ER API Mock 등 추가 가능
+  
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  lumia-network:
+    driver: bridge

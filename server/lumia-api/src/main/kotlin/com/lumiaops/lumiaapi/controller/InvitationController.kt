@@ -2,6 +2,7 @@ package com.lumiaops.lumiaapi.controller
 
 import com.lumiaops.lumiaapi.dto.*
 import com.lumiaops.lumiacore.domain.TeamRole
+import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.service.InvitationService
 import com.lumiaops.lumiacore.service.TeamService
 import com.lumiaops.lumiacore.service.UserService
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import java.time.format.DateTimeFormatter
 
@@ -41,13 +44,12 @@ class InvitationController(
     fun createInvitation(
         @Parameter(description = "팀 ID") @PathVariable teamId: Long,
         @Valid @RequestBody request: CreateInvitationRequest,
-        @RequestHeader("X-User-Id") userId: Long
+        @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<CreateInvitationResponse> {
         val team = teamService.findById(teamId)
             ?: return ResponseEntity.notFound().build()
 
-        val inviter = userService.findById(userId)
-            ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val inviter = userDetails as User
 
         val role = when (request.role?.uppercase()) {
             "ADMIN", "LEADER" -> TeamRole.LEADER
@@ -116,9 +118,10 @@ class InvitationController(
     @ApiResponse(responseCode = "200", description = "조회 성공")
     @GetMapping("/invitations/pending")
     fun getMyPendingInvitations(
-        @RequestHeader("X-User-Email") email: String // TODO: 실제 인증으로 교체
+        @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<List<InvitationResponse>> {
-        val invitations = invitationService.getMyPendingInvitations(email)
+        val user = userDetails as User
+        val invitations = invitationService.getMyPendingInvitations(user.email)
             .map { toInvitationResponse(it) }
 
         return ResponseEntity.ok(invitations)
@@ -149,10 +152,9 @@ class InvitationController(
     @PostMapping("/invitations/{token}/accept")
     fun acceptInvitation(
         @PathVariable token: String,
-        @RequestHeader("X-User-Id") userId: Long // TODO: 실제 인증으로 교체
+        @AuthenticationPrincipal userDetails: UserDetails
     ): ResponseEntity<AcceptInvitationResponse> {
-        val user = userService.findById(userId)
-            ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val user = userDetails as User
 
         return try {
             val member = invitationService.acceptInvitation(token, user)

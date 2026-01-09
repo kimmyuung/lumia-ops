@@ -7,7 +7,7 @@ description: REST API 엔드포인트 목록 및 사용법
 ## 개요
 
 Lumia Ops Backend는 REST API를 제공합니다.
-기본 URL: `http://localhost:8080`
+기본 URL: `http://localhost:8080/api`
 
 ---
 
@@ -36,6 +36,17 @@ Authorization: Bearer <access_token>
 | POST | `/auth/logout` | 로그아웃 | ✅ |
 | POST | `/auth/find-username` | 아이디 찾기 | ❌ |
 
+### 🔗 OAuth2 로그인
+
+| Method | Endpoint | 설명 | 인증 |
+|--------|----------|------|------|
+| GET | `/oauth/steam/login` | Steam 로그인 URL 요청 | ❌ |
+| GET | `/oauth/steam/callback` | Steam 로그인 콜백 | ❌ |
+| GET | `/oauth/kakao/login` | Kakao 로그인 URL 요청 | ❌ |
+| GET | `/oauth/kakao/callback` | Kakao 로그인 콜백 | ❌ |
+| POST | `/oauth/complete-registration` | OAuth 첫 로그인 완료 | ✅ |
+| GET | `/oauth/status` | OAuth 연동 상태 확인 | ✅ |
+
 ### 🔒 비밀번호 (Password)
 
 | Method | Endpoint | 설명 | 인증 |
@@ -43,6 +54,7 @@ Authorization: Bearer <access_token>
 | POST | `/password/forgot` | 비밀번호 찾기 | ❌ |
 | POST | `/password/reset` | 비밀번호 재설정 | ❌ |
 | GET | `/password/validate-token` | 토큰 유효성 확인 | ❌ |
+| POST | `/password/change` | 비밀번호 변경 (로그인 상태) | ✅ |
 
 ### 👤 사용자 (User)
 
@@ -50,6 +62,8 @@ Authorization: Bearer <access_token>
 |--------|----------|------|------|
 | GET | `/users/me` | 내 정보 조회 | ✅ |
 | PATCH | `/users/me/nickname` | 닉네임 변경 | ✅ |
+| GET | `/users/me/nickname-days` | 닉네임 변경 가능 일수 | ✅ |
+| PATCH | `/users/me/game-nickname` | 게임 닉네임 설정 | ✅ |
 | GET | `/users/{id}` | 사용자 조회 | ✅ |
 
 ### 👥 팀 (Team)
@@ -90,8 +104,8 @@ Authorization: Bearer <access_token>
 | PATCH | `/scrims/{id}` | 스크림 수정 | ✅ |
 | DELETE | `/scrims/{id}` | 스크림 삭제 | ✅ |
 | PATCH | `/scrims/{id}/status` | 상태 변경 | ✅ |
-| POST | `/scrims/{id}/results` | 결과 추가 | ✅ |
-| DELETE | `/scrims/{id}/results/{resultId}` | 결과 삭제 | ✅ |
+| POST | `/scrims/{id}/matches` | 매치 추가 | ✅ |
+| POST | `/scrims/{id}/matches/{matchId}/results` | 결과 입력 | ✅ |
 
 ### 📊 전략 (Strategy)
 
@@ -103,6 +117,25 @@ Authorization: Bearer <access_token>
 | PATCH | `/strategies/{id}` | 전략 수정 | ✅ |
 | DELETE | `/strategies/{id}` | 전략 삭제 | ✅ |
 
+### 💬 코멘트 (Comment)
+
+| Method | Endpoint | 설명 | 인증 |
+|--------|----------|------|------|
+| GET | `/comments` | 코멘트 목록 | ✅ |
+| POST | `/comments` | 코멘트 작성 | ✅ |
+| PATCH | `/comments/{id}` | 코멘트 수정 | ✅ |
+| DELETE | `/comments/{id}` | 코멘트 삭제 | ✅ |
+
+### 🔔 알림 (Notification)
+
+| Method | Endpoint | 설명 | 인증 |
+|--------|----------|------|------|
+| GET | `/notifications` | 알림 목록 | ✅ |
+| GET | `/notifications/unread` | 읽지 않은 알림 | ✅ |
+| GET | `/notifications/unread-count` | 읽지 않은 개수 | ✅ |
+| POST | `/notifications/{id}/read` | 읽음 처리 | ✅ |
+| POST | `/notifications/read-all` | 모두 읽음 | ✅ |
+
 ### 📈 통계 (Statistics)
 
 | Method | Endpoint | 설명 | 인증 |
@@ -113,29 +146,110 @@ Authorization: Bearer <access_token>
 | POST | `/statistics/calculate-score` | 점수 계산 | ✅ |
 | GET | `/statistics/placement-points` | 순위별 점수 | ✅ |
 
+### 🎮 플레이어 통계 (Player Stats)
+
+| Method | Endpoint | 설명 | 인증 |
+|--------|----------|------|------|
+| GET | `/player-stats/{nickname}` | 플레이어 시즌 통계 | ✅ |
+| GET | `/player-stats/{nickname}/characters` | 캐릭터별 통계 | ✅ |
+| GET | `/player-stats/{nickname}/games` | 최근 게임 기록 | ✅ |
+
 ---
 
 ## 📦 요청/응답 예시
 
-### 로그인
-```bash
-POST /auth/login
+### 회원가입
+```http
+POST /api/auth/register
 Content-Type: application/json
 
 {
   "email": "user@example.com",
-  "password": "password123"
+  "password": "Password123!"
 }
 ```
 
-**응답:**
+**응답 (201 Created):**
+```json
+{
+  "message": "인증 이메일을 발송했습니다",
+  "userId": 1,
+  "email": "user@example.com"
+}
+```
+
+### 로그인
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+```
+
+**응답 (200 OK):**
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIs...",
+  "refreshToken": "eyJhbGciOiJIUzI1N...",
   "userId": 1,
   "email": "user@example.com",
   "nickname": "Player1",
   "status": "ACTIVE"
+}
+```
+
+### 팀 생성
+```http
+POST /api/teams
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "name": "Team Alpha",
+  "description": "프로 스크림 팀"
+}
+```
+
+**응답 (201 Created):**
+```json
+{
+  "id": 1,
+  "name": "Team Alpha",
+  "description": "프로 스크림 팀",
+  "ownerId": 1,
+  "members": [
+    {
+      "userId": 1,
+      "nickname": "Player1",
+      "role": "OWNER"
+    }
+  ]
+}
+```
+
+### 스크림 생성
+```http
+POST /api/scrims
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "title": "Weekly Scrim #1",
+  "startTime": "2026-01-15T20:00:00"
+}
+```
+
+**응답 (201 Created):**
+```json
+{
+  "id": 1,
+  "title": "Weekly Scrim #1",
+  "startTime": "2026-01-15T20:00:00",
+  "status": "SCHEDULED",
+  "matches": []
 }
 ```
 
@@ -146,7 +260,7 @@ Content-Type: application/json
   "error": "Unauthorized",
   "code": "INVALID_CREDENTIALS",
   "message": "이메일 또는 비밀번호가 올바르지 않습니다",
-  "path": "/auth/login"
+  "path": "/api/auth/login"
 }
 ```
 
@@ -158,10 +272,12 @@ Content-Type: application/json
 |------|------|
 | 200 | 성공 |
 | 201 | 생성 성공 |
+| 204 | 성공 (응답 본문 없음) |
 | 400 | 잘못된 요청 |
 | 401 | 인증 필요 |
 | 403 | 권한 없음 |
 | 404 | 리소스 없음 |
 | 409 | 중복 (Conflict) |
 | 422 | 유효성 검사 실패 |
+| 429 | 요청 한도 초과 |
 | 500 | 서버 오류 |

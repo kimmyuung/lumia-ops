@@ -99,10 +99,11 @@ async function handleSteamCallback() {
     throw new Error('Steam ID를 추출할 수 없습니다.')
   }
 
-  // TODO: Steam API로 닉네임 조회 필요 (현재는 임시로 Steam ID 사용)
+  // Phase 2에서 Steam Web API 통합 예정 (GetPlayerSummaries)
+  // 현재는 임시 닉네임 사용, 사용자가 설정 화면에서 변경 가능
   const response = await oauth2Api.steamCallback({
     steamId: steamId,
-    steamNickname: `Steam_${steamId.slice(-6)}`
+    steamNickname: `User${steamId.slice(-6)}`
   })
 
   handleLoginSuccess(response)

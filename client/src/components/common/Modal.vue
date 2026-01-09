@@ -1,11 +1,32 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div v-if="modelValue" class="modal-overlay" @click.self="closeOnOverlay && close()">
-        <div class="modal" :style="{ maxWidth: maxWidth }">
+      <div 
+        v-if="modelValue" 
+        class="modal-overlay" 
+        role="presentation"
+        @click.self="closeOnOverlay && close()"
+        @keydown.esc="close"
+      >
+        <div 
+          ref="modalRef"
+          class="modal" 
+          role="dialog"
+          aria-modal="true"
+          :aria-labelledby="titleId"
+          :style="{ maxWidth: maxWidth }"
+          tabindex="-1"
+        >
           <div class="modal-header">
-            <h3>{{ title }}</h3>
-            <button class="modal-close" aria-label="닫기" @click="close">×</button>
+            <h3 :id="titleId">{{ title }}</h3>
+            <button 
+              class="modal-close" 
+              type="button"
+              aria-label="닫기" 
+              @click="close"
+            >
+              ×
+            </button>
           </div>
           <div class="modal-body">
             <slot />
@@ -20,6 +41,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+
 interface Props {
   modelValue: boolean
   title?: string
@@ -37,9 +60,37 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
+const modalRef = ref<HTMLElement | null>(null)
+const titleId = `modal-title-${Math.random().toString(36).substring(7)}`
+
 function close() {
   emit('update:modelValue', false)
 }
+
+// 포커스 트랩: 모달 열릴 때 포커스 이동
+watch(() => props.modelValue, (isOpen) => {
+  if (isOpen) {
+    // 모달이 열리면 첫 번째 포커스 가능 요소로 이동
+    setTimeout(() => {
+      modalRef.value?.focus()
+    }, 100)
+  }
+})
+
+// ESC 키 전역 핸들러
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && props.modelValue) {
+    close()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <style scoped>

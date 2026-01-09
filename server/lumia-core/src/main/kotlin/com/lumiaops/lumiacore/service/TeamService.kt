@@ -9,6 +9,8 @@ import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.repository.TeamMemberRepository
 import com.lumiaops.lumiacore.repository.TeamRepository
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -20,6 +22,7 @@ class TeamService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
+    @Cacheable(value = ["team"], key = "#id", unless = "#result == null")
     fun findById(id: Long): Team? = teamRepository.findById(id).orElse(null)
 
     fun findByName(name: String): Team? = teamRepository.findByName(name)
@@ -37,6 +40,7 @@ class TeamService(
     }
 
 
+    @CacheEvict(value = ["team", "team:members"], key = "#teamId")
     @Transactional
     fun updateTeam(teamId: Long, name: String, description: String?): Team {
         val team = findById(teamId) ?: throw IllegalArgumentException("팀을 찾을 수 없습니다: $teamId")
@@ -48,6 +52,7 @@ class TeamService(
     }
 
 
+    @CacheEvict(value = ["team", "team:members"], key = "#teamId")
     @Transactional
     fun deleteTeam(teamId: Long) {
         log.warn("팀 삭제: teamId=$teamId")
@@ -55,6 +60,7 @@ class TeamService(
     }
 
     // TeamMember 관련 메서드
+    @Cacheable(value = ["team:members"], key = "#team.id")
     fun findMembersByTeam(team: Team): List<TeamMember> = teamMemberRepository.findByTeam(team)
 
     fun findTeamsByUser(user: User): List<TeamMember> = teamMemberRepository.findByUser(user)
@@ -62,6 +68,7 @@ class TeamService(
     fun isMember(team: Team, user: User): Boolean = teamMemberRepository.existsByTeamAndUser(team, user)
 
 
+    @CacheEvict(value = ["team:members"], key = "#team.id")
     @Transactional
     fun addMember(team: Team, user: User, role: TeamRole = TeamRole.MEMBER): TeamMember {
         if (isMember(team, user)) {
@@ -73,6 +80,7 @@ class TeamService(
     }
 
 
+    @CacheEvict(value = ["team:members"], key = "#team.id")
     @Transactional
     fun removeMember(team: Team, user: User) {
         val member = teamMemberRepository.findByTeamAndUser(team, user)

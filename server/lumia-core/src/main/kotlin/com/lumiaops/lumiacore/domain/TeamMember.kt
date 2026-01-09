@@ -11,6 +11,10 @@ import jakarta.persistence.*
             name = "uk_team_member_team_user",
             columnNames = ["team_id", "user_id"]
         )
+    ],
+    indexes = [
+        Index(name = "idx_team_member_team", columnList = "team_id"),
+        Index(name = "idx_team_member_user", columnList = "user_id")
     ]
 )
 class TeamMember(

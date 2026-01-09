@@ -5,6 +5,8 @@ import com.lumiaops.lumiacore.domain.AccountStatus
 import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.repository.UserRepository
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,6 +17,7 @@ class UserService(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
+    @Cacheable(value = ["user"], key = "#id", unless = "#result == null")
     fun findById(id: Long): User? = userRepository.findById(id).orElse(null)
 
     fun findByEmail(email: String): User? = userRepository.findByEmail(email)
@@ -26,6 +29,7 @@ class UserService(
     /**
      * 닉네임 설정 (첫 설정 - 이메일 인증 후)
      */
+    @CacheEvict(value = ["user"], key = "#userId")
     @Transactional
     fun setInitialNickname(userId: Long, nickname: String): User {
         val user = findById(userId) 
@@ -43,6 +47,7 @@ class UserService(
     /**
      * 닉네임 변경 (30일 제한)
      */
+    @CacheEvict(value = ["user", "team:members"], key = "#userId")
     @Transactional
     fun updateNickname(userId: Long, newNickname: String): User {
         val user = findById(userId) 
@@ -72,6 +77,7 @@ class UserService(
     /**
      * 이터널 리턴 인게임 닉네임 업데이트
      */
+    @CacheEvict(value = ["user"], key = "#userId")
     @Transactional
     fun updateGameNickname(userId: Long, gameNickname: String?): User {
         val user = findById(userId)

@@ -1,6 +1,5 @@
-package com.lumiaops.lumiaapi.controller
-
 import com.lumiaops.lumiaapi.dto.*
+import com.lumiaops.lumiacore.domain.User
 import com.lumiaops.lumiacore.service.PasswordService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -8,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 /**
@@ -73,11 +73,11 @@ class PasswordController(
     )
     @PutMapping("/change")
     fun changePassword(
-        @RequestHeader("X-User-Id") userId: Long, // TODO: 실제 인증으로 교체
+        @AuthenticationPrincipal user: User,
         @Valid @RequestBody request: ChangePasswordRequest
     ): ResponseEntity<MessageResponse> {
         return try {
-            passwordService.changePassword(userId, request.oldPassword, request.newPassword)
+            passwordService.changePassword(user.id!!, request.oldPassword, request.newPassword)
             ResponseEntity.ok(MessageResponse(
                 success = true,
                 message = "비밀번호가 변경되었습니다."
