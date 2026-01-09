@@ -89,6 +89,24 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/notifications',
+    name: 'Notifications',
+    component: () => import('@/views/NotificationsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/ProfileView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/team/settings',
+    name: 'TeamSettings',
+    component: () => import('@/views/TeamSettingsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/invitations',
     name: 'Invitations',
     component: () => import('@/views/InvitationsView.vue'),

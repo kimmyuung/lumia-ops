@@ -33,12 +33,16 @@ const scrollToBottom = async () => {
 }
 
 // 메시지 변경 시 스크롤
-watch(messages, () => {
-  scrollToBottom()
-}, { deep: true })
+watch(
+  messages,
+  () => {
+    scrollToBottom()
+  },
+  { deep: true }
+)
 
 // 연결 후 방 입장
-watch(isConnected, (connected) => {
+watch(isConnected, connected => {
   if (connected && !hasJoinedRoom.value) {
     joinRoom(props.roomId, props.username, props.userId)
     hasJoinedRoom.value = true

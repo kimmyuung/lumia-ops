@@ -16,14 +16,14 @@
           </div>
 
           <div class="confirm-actions">
-            <button class="confirm-btn cancel" @click="handleCancel" :disabled="isLoading">
+            <button class="confirm-btn cancel" :disabled="isLoading" @click="handleCancel">
               {{ cancelText }}
             </button>
             <button
               class="confirm-btn confirm"
               :class="variant"
-              @click="handleConfirm"
               :disabled="isLoading"
+              @click="handleConfirm"
             >
               <span v-if="isLoading" class="btn-spinner"></span>
               <span>{{ confirmText }}</span>

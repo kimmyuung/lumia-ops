@@ -18,11 +18,11 @@
           />
         </div>
         <div class="controls-right">
-          <Button variant="secondary" @click="handleLoad" :disabled="loading">
+          <Button variant="secondary" :disabled="loading" @click="handleLoad">
             <FolderOpen :size="18" />
             <span>불러오기</span>
           </Button>
-          <Button variant="primary" @click="handleSave" :disabled="loading || !strategyTitle">
+          <Button variant="primary" :disabled="loading || !strategyTitle" @click="handleSave">
             <Save :size="18" />
             <span>저장</span>
           </Button>

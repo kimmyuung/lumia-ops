@@ -3,6 +3,7 @@ package com.lumiaops.lumiacore.service
 import com.lumiaops.lumiacore.domain.AccountStatus
 import com.lumiaops.lumiacore.domain.AuthProvider
 import com.lumiaops.lumiacore.domain.User
+import com.lumiaops.lumiacore.external.KakaoApiClient
 import com.lumiaops.lumiacore.repository.UserRepository
 import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
@@ -12,18 +13,19 @@ import org.junit.jupiter.api.Test
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @DisplayName("OAuth2AuthService 테스트")
 class OAuth2AuthServiceTest {
 
     private lateinit var userRepository: UserRepository
+    private lateinit var kakaoApiClient: KakaoApiClient
     private lateinit var oAuth2AuthService: OAuth2AuthService
 
     @BeforeEach
     fun setUp() {
         userRepository = mockk()
-        oAuth2AuthService = OAuth2AuthService(userRepository)
+        kakaoApiClient = mockk()
+        oAuth2AuthService = OAuth2AuthService(userRepository, kakaoApiClient)
     }
 
     @Nested

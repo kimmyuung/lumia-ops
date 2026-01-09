@@ -9,6 +9,11 @@ export interface User {
   email: string
   teamId?: string
   status?: AccountStatus
+  createdAt?: string
+  steamId?: string
+  kakaoId?: number
+  nicknameChangedAt?: string
+  gameNickname?: string
 }
 
 /** 임시 사용자 정보 (닉네임 설정 전) */
@@ -130,6 +135,19 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  // 사용자 정보 가져오기
+  async function fetchUser() {
+    if (!token.value) return null
+    try {
+      const { default: apiClient } = await import('@/api/client')
+      const response = await apiClient.get<User>('/users/me')
+      user.value = response.data
+      return response.data
+    } catch {
+      return null
+    }
+  }
+
   return {
     user,
     token,
@@ -143,6 +161,7 @@ export const useUserStore = defineStore('user', () => {
     setTempUser,
     setToken,
     logout,
-    loadToken
+    loadToken,
+    fetchUser
   }
 })

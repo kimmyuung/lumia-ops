@@ -2,11 +2,9 @@
   <div class="recent-performance">
     <div class="header">
       <h3>📊 최근 {{ performance.matchCount }}경기 성적</h3>
-      <span class="trend-badge" :class="trendClass">
-        {{ trendIcon }} {{ trendLabel }}
-      </span>
+      <span class="trend-badge" :class="trendClass"> {{ trendIcon }} {{ trendLabel }} </span>
     </div>
-    
+
     <div class="summary-stats">
       <div class="summary-item">
         <span class="label">평균 순위</span>
@@ -25,13 +23,13 @@
         <span class="value win">{{ performance.winCount }}회</span>
       </div>
     </div>
-    
+
     <div class="matches-list">
-      <div 
-        v-for="match in performance.matches" 
+      <div
+        v-for="match in performance.matches"
         :key="match.matchId"
         class="match-item"
-        :class="{ 'win': match.rank === 1, 'top3': match.rank <= 3 }"
+        :class="{ win: match.rank === 1, top3: match.rank <= 3 }"
       >
         <span class="match-rank">
           {{ match.rank === 1 ? '🏆' : match.rank <= 3 ? '🎖️' : '' }}
@@ -54,25 +52,34 @@ const props = defineProps<{
 
 const trendClass = computed(() => {
   switch (props.performance.trend) {
-    case 'IMPROVING': return 'improving'
-    case 'DECLINING': return 'declining'
-    default: return 'stable'
+    case 'IMPROVING':
+      return 'improving'
+    case 'DECLINING':
+      return 'declining'
+    default:
+      return 'stable'
   }
 })
 
 const trendIcon = computed(() => {
   switch (props.performance.trend) {
-    case 'IMPROVING': return '📈'
-    case 'DECLINING': return '📉'
-    default: return '➡️'
+    case 'IMPROVING':
+      return '📈'
+    case 'DECLINING':
+      return '📉'
+    default:
+      return '➡️'
   }
 })
 
 const trendLabel = computed(() => {
   switch (props.performance.trend) {
-    case 'IMPROVING': return '상승세'
-    case 'DECLINING': return '하락세'
-    default: return '안정'
+    case 'IMPROVING':
+      return '상승세'
+    case 'DECLINING':
+      return '하락세'
+    default:
+      return '안정'
   }
 })
 </script>
@@ -173,7 +180,11 @@ const trendLabel = computed(() => {
 }
 
 .match-item.win {
-  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.15), rgba(var(--success-rgb), 0.15));
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-rgb), 0.15),
+    rgba(var(--success-rgb), 0.15)
+  );
   border: 1px solid rgba(var(--primary-rgb), 0.3);
 }
 

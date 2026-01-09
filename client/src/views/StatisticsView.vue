@@ -9,21 +9,21 @@
     <section v-if="hasTeam" class="my-team-section">
       <div class="section-header">
         <h2>내 팀 통계</h2>
-        <button class="refresh-btn" @click="refreshMyTeamStats" :disabled="isLoading">
+        <button class="refresh-btn" :disabled="isLoading" @click="refreshMyTeamStats">
           <RefreshCw :size="18" :class="{ spinning: isLoading }" />
         </button>
       </div>
-      
+
       <div v-if="teamStats" class="team-stats-grid">
         <TeamStatsCard :stats="teamStats" />
         <RecentPerformance v-if="recentPerformance" :performance="recentPerformance" />
       </div>
-      
+
       <div v-else-if="isLoading" class="loading-state">
         <Spinner />
         <p>통계를 불러오는 중...</p>
       </div>
-      
+
       <div v-else class="empty-state">
         <p>아직 기록된 스크림이 없습니다.</p>
       </div>
@@ -43,15 +43,12 @@
     <section class="leaderboard-section">
       <div class="section-header">
         <h2>전체 팀 순위</h2>
-        <button class="refresh-btn" @click="refreshLeaderboard" :disabled="isLoading">
+        <button class="refresh-btn" :disabled="isLoading" @click="refreshLeaderboard">
           <RefreshCw :size="18" :class="{ spinning: isLoading }" />
         </button>
       </div>
-      
-      <LeaderboardTable 
-        :entries="leaderboard" 
-        :my-team-id="currentTeamId"
-      />
+
+      <LeaderboardTable :entries="leaderboard" :my-team-id="currentTeamId" />
     </section>
 
     <!-- 에러 메시지 -->
@@ -111,10 +108,10 @@ onMounted(async () => {
   if (!teamStore.currentTeam) {
     await teamStore.fetchMyTeam()
   }
-  
+
   // 리더보드 로드
   await statisticsStore.fetchLeaderboard()
-  
+
   // 내 팀 통계 로드
   if (currentTeamId.value) {
     await Promise.all([
@@ -187,8 +184,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .my-team-section {

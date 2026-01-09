@@ -56,14 +56,13 @@ const errorDetails = computed(() => {
 })
 
 // Vue 에러 캡처
-onErrorCaptured((err: Error, instance, info: string) => {
+onErrorCaptured((err: Error, _instance: unknown, info: string) => {
   hasError.value = true
   error.value = err
   errorInfo.value = info
 
-  console.error('[ErrorBoundary] Captured error:', err)
-  console.error('[ErrorBoundary] Component:', instance)
-  console.error('[ErrorBoundary] Info:', info)
+  // eslint-disable-next-line no-console
+  if (import.meta.env.DEV) console.error('[ErrorBoundary] Captured error:', err, info)
 
   // 에러를 상위로 전파하지 않음
   return false

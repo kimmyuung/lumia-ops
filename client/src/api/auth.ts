@@ -261,4 +261,3 @@ export const oauth2Api = {
 }
 
 export default authApi
-

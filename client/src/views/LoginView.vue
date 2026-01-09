@@ -75,14 +75,18 @@
       <div class="oauth-buttons">
         <Button variant="secondary" class="social-btn steam-btn" @click="handleSteamLogin">
           <svg class="steam-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95 0-5.52-4.48-10-10-10z"/>
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95 0-5.52-4.48-10-10-10z"
+            />
           </svg>
           <span>Steam으로 계속하기</span>
         </Button>
 
         <Button variant="secondary" class="social-btn kakao-btn" @click="handleKakaoLogin">
           <svg class="kakao-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-            <path d="M12 3C6.48 3 2 6.58 2 10.94c0 2.8 1.86 5.26 4.66 6.65-.15.54-.96 3.47-1 3.64 0 .05.02.1.05.14.05.05.12.07.19.07.09 0 .18-.05.23-.08.69-.48 2.83-1.93 4.02-2.74.58.08 1.18.12 1.79.12 5.52 0 10-3.58 10-7.94S17.52 3 12 3z"/>
+            <path
+              d="M12 3C6.48 3 2 6.58 2 10.94c0 2.8 1.86 5.26 4.66 6.65-.15.54-.96 3.47-1 3.64 0 .05.02.1.05.14.05.05.12.07.19.07.09 0 .18-.05.23-.08.69-.48 2.83-1.93 4.02-2.74.58.08 1.18.12 1.79.12 5.52 0 10-3.58 10-7.94S17.52 3 12 3z"
+            />
           </svg>
           <span>Kakao로 계속하기</span>
         </Button>

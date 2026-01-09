@@ -60,8 +60,8 @@
     </form>
 
     <template #footer>
-      <Button variant="secondary" @click="close" :disabled="isLoading"> 취소 </Button>
-      <Button variant="primary" @click="handleSubmit" :loading="isLoading">
+      <Button variant="secondary" :disabled="isLoading" @click="close"> 취소 </Button>
+      <Button variant="primary" :loading="isLoading" @click="handleSubmit">
         <Save :size="18" />
         <span>{{ isEdit ? '수정' : '생성' }}</span>
       </Button>
