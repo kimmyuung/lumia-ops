@@ -8,7 +8,13 @@ import java.time.LocalDateTime
  * 알림 엔티티
  */
 @Entity
-@Table(name = "notifications")
+@Table(
+    name = "notifications",
+    indexes = [
+        Index(name = "idx_notification_user_read", columnList = "user_id, isRead"),
+        Index(name = "idx_notification_created", columnList = "createdAt")
+    ]
+)
 class Notification(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

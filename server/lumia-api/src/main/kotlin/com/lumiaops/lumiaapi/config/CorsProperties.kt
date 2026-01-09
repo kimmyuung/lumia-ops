@@ -2,6 +2,7 @@ package com.lumiaops.lumiaapi.config
 
 import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.core.env.Environment
 
@@ -14,10 +15,11 @@ import org.springframework.core.env.Environment
  * - 와일드카드(*) 사용 지양
  */
 @ConfigurationProperties(prefix = "app.cors")
-class CorsProperties(
-    private val environment: Environment
-) {
+class CorsProperties {
     private val log = LoggerFactory.getLogger(javaClass)
+    
+    @Autowired
+    private lateinit var environment: Environment
 
     /**
      * 허용할 Origin 목록

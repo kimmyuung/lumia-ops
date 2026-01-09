@@ -183,7 +183,9 @@ class ScrimService(
 
     @Transactional
     fun recalculateScrimScores(scrimId: Long, killMultiplier: Int = ScoreCalculator.DEFAULT_KILL_MULTIPLIER) {
-        val scrim = getScrimById(scrimId)
+        // N+1 방지: Fetch Join으로 matches와 results를 함께 로딩
+        val scrim = scrimRepository.findByIdWithMatchesAndResults(scrimId)
+            ?: throw NotFoundException("스크림을 찾을 수 없습니다: $scrimId")
         
         scrim.matches.forEach { match ->
             match.results.forEach { result ->
@@ -192,5 +194,6 @@ class ScrimService(
                 )
             }
         }
+        log.info("스크림 점수 재계산 완료: scrimId=$scrimId, matchCount=${scrim.matchCount()}")
     }
 }

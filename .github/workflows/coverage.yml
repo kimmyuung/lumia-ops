@@ -1,0 +1,113 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  # ─────────────────────────────────────────
+  # Frontend Coverage
+  # ─────────────────────────────────────────
+  frontend-coverage:
+    name: Frontend Coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './client/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./client/coverage/coverage-final.json,./client/coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          lcov-file: ./client/coverage/lcov.info
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          title: '프론트엔드 테스트 커버리지'
+
+  # ─────────────────────────────────────────
+  # Backend Coverage
+  # ─────────────────────────────────────────
+  backend-coverage:
+    name: Backend Coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run tests with coverage
+        run: ./gradlew test jacocoTestReport
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: |
+            ./server/lumia-api/build/reports/jacoco/test/jacocoTestReport.xml
+            ./server/lumia-core/build/reports/jacoco/test/jacocoTestReport.xml
+            ./server/lumia-socket/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: backend
+          name: backend-coverage
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request'
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          paths: |
+            ${{ github.workspace }}/server/lumia-api/build/reports/jacoco/test/jacocoTestReport.xml
+            ${{ github.workspace }}/server/lumia-core/build/reports/jacoco/test/jacocoTestReport.xml
+            ${{ github.workspace }}/server/lumia-socket/build/reports/jacoco/test/jacocoTestReport.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: '백엔드 테스트 커버리지'
+          min-coverage-overall: 70
+          min-coverage-changed-files: 80
+
+      - name: Upload coverage reports (artifacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            server/*/build/reports/jacoco/test/html/
+          retention-days: 7

@@ -57,6 +57,8 @@ class SecurityConfig(
                     // 인증 없이 접근 가능한 경로
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/password/**").permitAll()
+                    // 클라이언트 에러 로깅 (인증 불필요)
+                    .requestMatchers("/logs/**").permitAll()
                     // 초대 토큰 검증만 허용 (수락/거절은 인증 필요)
                     .requestMatchers(org.springframework.http.HttpMethod.GET, "/invitations/{token}").permitAll()
                     // H2 콘솔 (개발용)

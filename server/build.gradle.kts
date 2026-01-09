@@ -9,6 +9,8 @@ plugins {
 	kotlin("plugin.spring") version "2.0.0" apply false
 	// JPA Entity에 기본 생성자(No-arg)를 자동으로 만들어줌 (Hibernate 필수)
 	kotlin("plugin.jpa") version "2.0.0" apply false
+	// JaCoCo 테스트 커버리지
+	jacoco apply false
 }
 
 allprojects {
@@ -61,5 +63,59 @@ subprojects {
 
 	tasks.withType<Test> {
 		useJUnitPlatform()
+		finalizedBy("jacocoTestReport") // 테스트 후 리포트 자동 생성
+	}
+	
+	// JaCoCo 설정
+	apply(plugin = "jacoco")
+	
+	configure<JacocoPluginExtension> {
+		toolVersion = "0.8.11"
+	}
+	
+	tasks.named<JacocoReport>("jacocoTestReport") {
+		dependsOn(tasks.test)
+		
+		reports {
+			xml.required.set(true)  // Codecov 업로드용
+			html.required.set(true) // 로컬 확인용
+			csv.required.set(false)
+		}
+		
+		classDirectories.setFrom(
+			files(classDirectories.files.map {
+				fileTree(it) {
+					exclude(
+						"**/*Application*",
+						"**/*Config*",
+						"**/*Dto*",
+						"**/*Request*",
+						"**/*Response*",
+						"**/domain/**"  // Entity는 커버리지에서 제외
+					)
+				}
+			})
+		)
+	}
+	
+	tasks.register<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
+		dependsOn(tasks.test)
+		
+		violationRules {
+			rule {
+				limit {
+					minimum = "0.70".toBigDecimal()  // 70% 최소 커버리지
+				}
+			}
+			
+			rule {
+				element = "CLASS"
+				limit {
+					counter = "LINE"
+					value = "COVEREDRATIO"
+					minimum = "0.60".toBigDecimal()  // 클래스별 60%
+				}
+			}
+		}
 	}
 }

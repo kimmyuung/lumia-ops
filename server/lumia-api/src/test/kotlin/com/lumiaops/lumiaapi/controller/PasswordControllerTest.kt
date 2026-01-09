@@ -140,7 +140,6 @@ class PasswordControllerTest {
             mockMvc.perform(
                 put("/auth/password/change")
                     .header("Authorization", "Bearer $authToken")
-                    .header("X-User-Id", testUser.id!!)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
             )
@@ -159,7 +158,6 @@ class PasswordControllerTest {
             mockMvc.perform(
                 put("/auth/password/change")
                     .header("Authorization", "Bearer $authToken")
-                    .header("X-User-Id", testUser.id!!)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
             )

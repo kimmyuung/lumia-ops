@@ -5,6 +5,7 @@ import router from './router'
 import pinia from './stores'
 import { useUserStore } from './stores/user'
 import { userApi } from './api/user'
+import { logErrorToServer } from './utils/errorLogger'
 
 const app = createApp(App)
 
@@ -14,10 +15,12 @@ app.config.errorHandler = (err, instance, info) => {
   console.error('[Component]', instance)
   console.error('[Info]', info)
 
-  // 프로덕션에서는 에러 로깅 서비스로 전송
-  if (import.meta.env.PROD) {
-    // TODO: Sentry, LogRocket 등으로 전송
-  }
+  // 서버로 에러 전송
+  logErrorToServer(err as Error, {
+    componentName: instance?.$options?.name,
+    propsData: instance?.$props,
+    info
+  })
 }
 
 // 전역 경고 핸들러 (개발 모드)
@@ -29,12 +32,28 @@ app.config.warnHandler = (msg, _instance, trace) => {
 // 처리되지 않은 Promise 거부 핸들러
 window.addEventListener('unhandledrejection', event => {
   console.error('[Unhandled Promise Rejection]', event.reason)
+
+  // 서버로 에러 전송
+  const error = event.reason instanceof Error
+    ? event.reason
+    : new Error(String(event.reason))
+  logErrorToServer(error, { type: 'unhandledRejection' })
+
   event.preventDefault()
 })
 
 // 전역 JavaScript 에러 핸들러
 window.addEventListener('error', event => {
   console.error('[Global Error]', event.error || event.message)
+
+  // 서버로 에러 전송
+  const error = event.error || new Error(event.message)
+  logErrorToServer(error, {
+    type: 'globalError',
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno
+  })
 })
 
 // 토큰 만료 이벤트 리스너

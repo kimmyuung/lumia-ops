@@ -151,7 +151,6 @@ function handleSteamLogin() {
 
 // Kakao 로그인
 function handleKakaoLogin() {
-  // TODO: Kakao REST API Key를 환경변수로 관리
   const kakaoClientId = import.meta.env.VITE_KAKAO_CLIENT_ID || ''
   if (!kakaoClientId) {
     alert('Kakao 로그인이 설정되지 않았습니다.')
