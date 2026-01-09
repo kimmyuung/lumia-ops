@@ -24,5 +24,7 @@ dependencies {
     // Built with Kotlin, no external library needed
 
     // Test
+    // Test
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
 }
