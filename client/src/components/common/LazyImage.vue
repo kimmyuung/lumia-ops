@@ -25,7 +25,7 @@ interface Props {
   srcset?: string
   sizes?: string
   alt: string
-  aspectRatio?: string  // 예: "16:9", "4:3", "1:1"
+  aspectRatio?: string // 예: "16:9", "4:3", "1:1"
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -42,10 +42,10 @@ let observer: IntersectionObserver | null = null
 // aspect ratio를 padding-bottom %로 변환
 const containerStyle = computed(() => {
   if (!props.aspectRatio) return {}
-  
+
   const [width, height] = props.aspectRatio.split(':').map(Number)
   const paddingBottom = (height / width) * 100
-  
+
   return {
     paddingBottom: `${paddingBottom}%`
   }
@@ -53,11 +53,11 @@ const containerStyle = computed(() => {
 
 onMounted(() => {
   if (!root.value) return
-  
+
   // Intersection Observer로 뷰포트 진입 감지
   observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
+    entries => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
           isVisible.value = true
           observer?.disconnect()
@@ -68,7 +68,7 @@ onMounted(() => {
       rootMargin: '50px' // 뷰포트 50px 전에 미리 로드
     }
   )
-  
+
   observer.observe(root.value)
 })
 
@@ -77,7 +77,7 @@ onUnmounted(() => {
 })
 
 // 가시성이 true가 되면 이미지 로드
-watch(isVisible, (visible) => {
+watch(isVisible, visible => {
   if (visible && !isLoaded.value) {
     isLoaded.value = true
   }

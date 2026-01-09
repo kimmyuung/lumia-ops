@@ -46,24 +46,39 @@ class StatisticsControllerTest {
         testTeamStats = TeamStats(
             teamId = 1L,
             teamName = "Test Team",
-            totalScrims = 10,
+            totalMatches = 10,
             averageRank = 2.5,
-            averageKills = 5.2,
-            totalScore = 1500
+            totalKills = 52,
+            averageKillsPerMatch = 5.2,
+            totalScore = 1500,
+            winCount = 3,
+            top3Count = 7,
+            winRate = 0.3,
+            top3Rate = 0.7
         )
 
         testRecentPerformance = RecentPerformance(
             teamId = 1L,
             teamName = "Test Team",
-            games = emptyList()
+            matchCount = 0,
+            matches = emptyList(),
+            averageRank = 2.5,
+            totalKills = 52,
+            totalScore = 1500,
+            winCount = 3,
+            trend = com.lumiaops.lumiacore.service.PerformanceTrend.STABLE
         )
 
         testLeaderboardEntry = LeaderboardEntry(
             rank = 1,
             teamId = 1L,
             teamName = "Test Team",
+            totalMatches = 10,
+            averageRank = 2.5,
+            totalKills = 52,
             totalScore = 1500,
-            gamesPlayed = 10
+            winCount = 3,
+            top3Count = 7
         )
     }
 
@@ -79,7 +94,7 @@ class StatisticsControllerTest {
             mockMvc.perform(get("/statistics/teams/1"))
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.teamName").value("Test Team"))
-                .andExpect(jsonPath("$.totalScrims").value(10))
+                .andExpect(jsonPath("$.totalMatches").value(10))
         }
 
         @Test
