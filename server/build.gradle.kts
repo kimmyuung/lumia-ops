@@ -9,8 +9,6 @@ plugins {
 	kotlin("plugin.spring") version "2.0.0" apply false
 	// JPA Entity에 기본 생성자(No-arg)를 자동으로 만들어줌 (Hibernate 필수)
 	kotlin("plugin.jpa") version "2.0.0" apply false
-	// JaCoCo 테스트 커버리지
-	jacoco apply false
 }
 
 allprojects {
