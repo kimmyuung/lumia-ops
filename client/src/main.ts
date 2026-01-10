@@ -34,9 +34,7 @@ window.addEventListener('unhandledrejection', event => {
   console.error('[Unhandled Promise Rejection]', event.reason)
 
   // 서버로 에러 전송
-  const error = event.reason instanceof Error
-    ? event.reason
-    : new Error(String(event.reason))
+  const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason))
   logErrorToServer(error, { type: 'unhandledRejection' })
 
   event.preventDefault()

@@ -1,16 +1,16 @@
 <template>
   <Teleport to="body">
     <Transition name="modal">
-      <div 
-        v-if="modelValue" 
-        class="modal-overlay" 
+      <div
+        v-if="modelValue"
+        class="modal-overlay"
         role="presentation"
         @click.self="closeOnOverlay && close()"
         @keydown.esc="close"
       >
-        <div 
+        <div
           ref="modalRef"
-          class="modal" 
+          class="modal"
           role="dialog"
           aria-modal="true"
           :aria-labelledby="titleId"
@@ -19,14 +19,7 @@
         >
           <div class="modal-header">
             <h3 :id="titleId">{{ title }}</h3>
-            <button 
-              class="modal-close" 
-              type="button"
-              aria-label="닫기" 
-              @click="close"
-            >
-              ×
-            </button>
+            <button class="modal-close" type="button" aria-label="닫기" @click="close">×</button>
           </div>
           <div class="modal-body">
             <slot />
@@ -68,14 +61,17 @@ function close() {
 }
 
 // 포커스 트랩: 모달 열릴 때 포커스 이동
-watch(() => props.modelValue, (isOpen) => {
-  if (isOpen) {
-    // 모달이 열리면 첫 번째 포커스 가능 요소로 이동
-    setTimeout(() => {
-      modalRef.value?.focus()
-    }, 100)
+watch(
+  () => props.modelValue,
+  isOpen => {
+    if (isOpen) {
+      // 모달이 열리면 첫 번째 포커스 가능 요소로 이동
+      setTimeout(() => {
+        modalRef.value?.focus()
+      }, 100)
+    }
   }
-})
+)
 
 // ESC 키 전역 핸들러
 function handleKeydown(e: KeyboardEvent) {

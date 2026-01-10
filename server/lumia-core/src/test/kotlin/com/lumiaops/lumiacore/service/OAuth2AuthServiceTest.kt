@@ -95,7 +95,7 @@ class OAuth2AuthServiceTest {
             val kakaoEmail = "test@kakao.com"
 
             every { userRepository.findByKakaoId(kakaoId) } returns null
-            every { userRepository.save(any()) } answers { firstArg() }
+            every { userRepository.save(any()) } answers { firstArg<User>() }
 
             // when
             val result = oAuth2AuthService.processingKakaoLogin(kakaoId, kakaoNickname, kakaoEmail)
